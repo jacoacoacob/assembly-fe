@@ -6,7 +6,6 @@
 @layer base {
     a {
         @apply text-pink-500;
-        /* @apply text-violet-500; */
     }
 }
 
@@ -22,5 +21,3 @@
         box-shadow: 2px 2px black;
     }
 }
-
-/* .router-link-ac */

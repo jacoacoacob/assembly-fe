@@ -4,6 +4,17 @@ import SavedGamesView from "@/views/SavedGamesView.vue";
 import NewGameView from "@/views/NewGameView.vue";
 import WelcomeView from "@/views/WelcomeView.vue";
 
+interface Breadcrumb {
+    name: string;
+    to?: RouterLinkProps["to"];
+}
+
+declare module "vue-router" {
+    interface RouteMeta {
+        breadcrumbs: Breadcrumb[];
+    }
+}
+
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
     routes: [
@@ -53,16 +64,5 @@ const router = createRouter({
         }
     ],
 });
-
-interface Breadcrumb {
-    name: string;
-    to?: RouterLinkProps["to"];
-}
-
-declare module "vue-router" {
-    interface RouteMeta {
-        breadcrumbs: Breadcrumb[];
-    }
-}
 
 export { router };

@@ -1,5 +1,3 @@
-import { defineStore } from "pinia";
-import { ref } from "vue";
 
 const PLAYER_COLOR_OPTIONS = {
     red: "bg-red-400",
@@ -25,7 +23,6 @@ interface Game {
     players: Player[];
 }
 
-
 function isGame(data: unknown): data is Game {
     if (
         Object.prototype.hasOwnProperty.call(data, "name") &&
@@ -42,13 +39,5 @@ function isGame(data: unknown): data is Game {
     return false;
 }
 
-const useGameStore = defineStore("game", () => {
-    const name = ref<Game["name"]>("");
-    const history = ref<Game["history"]>([])
-    const players = ref<Game["players"]>([]);
-
-    return { name, history, players };
-});
-
-export { useGameStore, isGame, PLAYER_COLOR_OPTIONS };
-export type { Game };
+export { isGame, PLAYER_COLOR_OPTIONS };
+export type { Game, GameEvent, PlayerColor, Player };

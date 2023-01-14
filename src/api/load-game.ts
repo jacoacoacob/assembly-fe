@@ -1,5 +1,5 @@
 import { load } from "@/storage";
-import { useGameStore } from "@/stores/game";
+import { useGameStore } from "@/stores/game.store";
 import type { Game } from "@/stores/game";
 
 function loadGame(name: string) {

@@ -1,10 +1,6 @@
 
 const NAMESPACE = "assemblage-";
 
-function save(key: string, obj: object) {
-    localStorage.setItem(NAMESPACE + key, JSON.stringify(obj));
-}
-
 function load<Data>(key: string): Data | null {
     const data = localStorage.getItem(NAMESPACE + key);
     if (data) {
@@ -13,4 +9,12 @@ function load<Data>(key: string): Data | null {
     return null;
 }
 
-export { save, load };
+function save(key: string, obj: object) {
+    localStorage.setItem(NAMESPACE + key, JSON.stringify(obj));
+}
+
+function remove(key: string) {
+    localStorage.removeItem(NAMESPACE + key);
+}
+
+export { load, save, remove };

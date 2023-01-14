@@ -1,8 +1,7 @@
-<script setup lang="ts">
-import { computed, ref, nextTick, watchEffect } from 'vue';
-import type { VNodeRef } from 'vue';
+<!-- <script setup lang="ts">
+import { computed, ref, watchEffect } from "vue";
 
-import AppInput from '@/components/AppInput.vue';
+import AppInput from "@/components/AppInput.vue";
 
 const colors = {
     red: "bg-red-400",
@@ -16,12 +15,7 @@ interface Player {
     color?: keyof typeof colors,
 }
 
-const players = ref<Player[]>([
-    // { name: "p1", color: "blue" },
-    // { name: "p2", color: "green" },
-    // { name: "p3", color: "red" },
-    // { name: "p4", color: "orange" },
-]);
+const players = ref<Player[]>([]);
 
 
 const editingPlayerIndex = ref(-1);
@@ -35,7 +29,80 @@ const availableColors = computed(
 
 const playerFormValidation = computed(() => {
     const errors: { name: string }[] = []
-    
+    const player = players.value[editingPlayerIndex.value];
+    if (player) {
+        const name = player.name.trim();
+        if (name.length === 0) {
+            errors.push({ name: "Please enter a name." });
+        }
+        if (name.length > 16) {
+            errors.push({ name: "Name must be less than or equal to 16 characters in length." });
+        }
+        if (!/^[\w-]*$/.test(name)) {
+            errors.push({ name: "Name may only contain letters, numbers, hyphens, and underscores" });
+        }
+    }
+
+    return {
+        errors,
+        isValid: errors.length === 0,
+    };
+});
+
+const playerColorSelect = ref<HTMLSelectElement | null>(null);
+
+watchEffect(() => {
+    if (playerColorSelect.value) {
+        playerColorSelect.value.focus();
+    }
+})
+
+
+function addPlayer() {
+    if (playerFormValidation.value.isValid) {
+        players.value.push({ name: "", color: availableColors.value[0] as Player["color"] });
+        editingPlayerIndex.value = players.value.length - 1;
+    }
+}   
+
+function savePlayer() {
+    if (playerFormValidation.value.isValid) {
+        editingPlayerIndex.value = -1;
+    }
+}
+</script> -->
+
+<script setup lang="ts">
+import { computed, ref, watchEffect } from "vue";
+
+import AppInput from "@/components/AppInput.vue";
+
+const colors = {
+    red: "bg-red-400",
+    blue: "bg-blue-400",
+    green: "bg-green-400",
+    orange: "bg-orange-400",
+};
+
+interface Player {
+    name: string;
+    color?: keyof typeof colors,
+}
+
+const players = ref<Player[]>([]);
+
+
+const editingPlayerIndex = ref(-1);
+
+const availableColors = computed(
+    () => {
+        const claimedColors = players.value.map(player => player.color).filter((_, i) => i !== editingPlayerIndex.value);
+        return Object.keys(colors).filter(color => !claimedColors.includes(color as Player["color"]));
+    }
+);
+
+const playerFormValidation = computed(() => {
+    const errors: { name: string }[] = []
     const player = players.value[editingPlayerIndex.value];
     if (player) {
         const name = player.name.trim();
@@ -122,8 +189,8 @@ function savePlayer() {
                             <div class="flex items-center space-x-2">
                                 <div v-if="player.color" class="h-[16px] w-[16px] rounded-full" :class="colors[player.color]"></div>
                                 <div>
-                                {{ player.name }}
-                            </div>
+                                    {{ player.name }}
+                                </div>
                             </div>
                             <div>
                                 <button class="button button-dense" @click="editingPlayerIndex = i">

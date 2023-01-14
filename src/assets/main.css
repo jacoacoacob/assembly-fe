@@ -22,10 +22,13 @@
     .button-text {
         @apply shadow-none border-none;
     }
+    .button-outline {
+        @apply shadow-none border-slate-700;
+    }
     .button-dense {
         @apply px-2 py-1;
     }
-    .button:active:not(.button-text):not(:disabled) {
+    .button:active:not(.button-text):not(.button-outline):not(:disabled) {
         box-shadow: 2px 2px black;
     }
 }

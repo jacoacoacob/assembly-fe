@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { RouterLink } from 'vue-router';
+import { RouterLink, type RouteParams } from 'vue-router';
 </script>
 
 <template>
@@ -9,10 +9,10 @@ import { RouterLink } from 'vue-router';
                 <ol class="flex space-x-2">
                     <li v-for="crumb, i in $route.meta.breadcrumbs">
                         <RouterLink v-if="crumb.to" :to="crumb.to" aria-current="location">
-                            {{ crumb.name }}
+                            {{ typeof crumb.name === "function" ? crumb.name($route.params) : crumb.name }}
                         </RouterLink>
                         <span v-else class="font-semibold">
-                            {{ crumb.name }}
+                            {{ typeof crumb.name === "function" ? crumb.name($route.params) : crumb.name }}
                         </span> 
                         <span v-if="i < $route.meta.breadcrumbs.length - 1" class="ml-2">/</span>
                     </li>

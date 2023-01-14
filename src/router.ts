@@ -1,11 +1,12 @@
-import { createRouter, createWebHistory, type RouterLinkProps } from "vue-router";
+import { createRouter, createWebHistory, type RouteParams, type RouterLinkProps } from "vue-router";
 
 import SavedGamesView from "@/views/SavedGamesView.vue";
 import NewGameView from "@/views/NewGameView.vue";
 import WelcomeView from "@/views/WelcomeView.vue";
+import GameView from "@/views/GameView.vue";
 
 interface Breadcrumb {
-    name: string;
+    name: string | ((params: RouteParams) => string);
     to?: RouterLinkProps["to"];
 }
 
@@ -58,6 +59,22 @@ const router = createRouter({
                     },
                     {
                         name: "Saved Games"
+                    },
+                ]
+            }
+        },
+        {
+            path: "/game/:name",
+            name: "game",
+            component: GameView,
+            meta: {
+                breadcrumbs: [
+                    {
+                        name: "Home",
+                        to: "/"
+                    },
+                    {
+                        name: (params) => `Game: ${params.name}`,
                     },
                 ]
             }

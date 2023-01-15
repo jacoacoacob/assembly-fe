@@ -47,6 +47,33 @@ const useGameStore = defineStore("game", {
                 token.tileIndex = tileIndex;
             }
         },
+    },
+    getters: {
+        board(state) {
+            const graph: Token["id"][][] = state.tiles.map(() => []);
+            const tokenEntries = Object.entries(state.tokens);
+            for (let i = 0; i < tokenEntries.length; i++) {
+                const [tokenId, token] = tokenEntries[i];
+                if (token.tileIndex > -1) {
+                    graph[token.tileIndex].push(tokenId);
+                }
+            }
+            return graph;
+        },
+        tokenReserves(state) {
+            return Object.entries(state.tokens).reduce(
+                (accum: Record<Player["id"], Token["id"][]>, [tokenId, token]) => {
+                    if (token.tileIndex < 0) {
+                        if (!accum[token.player]) {
+                            accum[token.player] = [];
+                        }
+                        accum[token.player].push(tokenId);
+                    }
+                    return accum;
+                },
+                {}
+            );
+        },
     }
 });
 

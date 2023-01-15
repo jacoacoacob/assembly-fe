@@ -3,7 +3,7 @@ import { randId } from "@/utils/rand";
 const PLAYER_COLOR_OPTIONS = {
     red: "bg-red-400",
     blue: "bg-blue-400",
-    green: "bg-green-400",
+    green: "bg-green-500",
     orange: "bg-orange-400",
 };
 

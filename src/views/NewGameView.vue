@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { computed, ref, watchEffect, nextTick } from "vue";
+import { computed, ref, watchEffect, onBeforeMount } from "vue";
 import { onBeforeRouteLeave } from "vue-router";
 
 import { PLAYER_COLOR_OPTIONS, type PlayerColor } from "@/stores/game";
 import { checkMaxLength, checkMinLength, checkSepecialChars  } from "@/utils/validators";
 import { useGameStore } from "@/stores/game.store";
 import AppInput from "@/components/AppInput.vue";
-import { saveGame } from "@/api/save-game";
+import { listGames, saveGame } from "@/api/game-api";
 
 const gameStore = useGameStore();
 
@@ -25,13 +25,20 @@ function createInputValidator(name: string, minLength: number, maxLength: number
     }
 }
 
-
 const gameNameValidator = createInputValidator("The game name", 1, 32);
 const playerNameValidator = createInputValidator("name", 1, 32);
 
+const existingGames = listGames();
+
 const gameNameErrors = computed(() => {
-    return gameNameValidator(gameStore.name);
-})
+    const errors = gameNameValidator(gameStore.name);
+    if (existingGames.some(game => game.name === gameStore.name)) {
+        errors.push(`A game with name "${gameStore.name}" already exists.`);
+    }
+    return errors;
+});
+
+const gameFormError = ref<string>("");
 
 const maxPlayers = 4;
 
@@ -42,6 +49,8 @@ const availableColors = computed(() => {
     return Object.keys(PLAYER_COLOR_OPTIONS).filter(color => !claimedColors.includes(color as PlayerColor))
 })
 
+
+
 const playerNameErrors = computed(() => {
     const player = gameStore.players[editingPlayerIndex.value];
     if (player) {
@@ -50,17 +59,25 @@ const playerNameErrors = computed(() => {
     return [];
 });
 
+onBeforeMount(() => {
+    gameStore.$reset();
+});
+
 onBeforeRouteLeave((to) => {
     if (to.name === "game") {
-        if (
-            gameNameErrors.value.length ||
-            playerNameErrors.value.length ||
-            gameStore.name.length === 0
-        ) {
+        if (gameStore.name.length === 0) {
+            gameFormError.value = "Please enter a valid name for this game.";
             return false;
         }
-        saveGame();
-        gameStore.$reset();
+        if (gameStore.players.length < 2) {
+            gameFormError.value = "A game must have between 2 and 4 players.";
+            return false;
+        }
+        if (gameNameErrors.value.length || playerNameErrors.value.length) {
+            gameFormError.value = "Please fix any form errors.";
+            return false;
+        }
+        saveGame(gameStore.$state);
     }
     return true;
 });
@@ -71,12 +88,11 @@ watchEffect(() => {
     if (playerColorSelect.value) {
         playerColorSelect.value.focus();
     }
-})
-
+});
 
 function addPlayer() {
     if (playerNameErrors.value.length === 0) {
-        gameStore.players.push({ name: "", color: availableColors.value[0] as PlayerColor });
+        gameStore.addPlayer("", availableColors.value[0] as PlayerColor);
         editingPlayerIndex.value = gameStore.players.length - 1;
     }
 }   
@@ -90,10 +106,10 @@ function savePlayer() {
 </script>
 
 <template>
-    <div class="space-y-16">
-        <div class="space-y-10">
+    <div class="space-y-16 w-64">
+        <div class="space-y-10 ">
             <h1 class="font-bold text-2xl">Start a new game</h1>
-            <div class="space-y-12 w-64">
+            <div class="space-y-12">
                 <div class="space-y-4">
                     <h2 class="text-lg font-bold" id="game-name-heading">Name</h2>
                     <AppInput
@@ -164,11 +180,14 @@ function savePlayer() {
                 </div>
             </div>
         </div>
-        <RouterLink
-            :to="`/game/${gameStore.name}`"
-            class="button button-text w-full bg-slate-900 text-slate-50"
-        >
-            Start
-        </RouterLink>
+        <div>
+            <RouterLink
+                :to="{ name: 'game', params: { name: gameStore.name } }"
+                class="button button-text w-full bg-slate-900 text-slate-50"
+            >
+                Start
+            </RouterLink>
+            <span class="text-xs text-red-500 inline-block">{{ gameFormError }}</span>
+        </div>
     </div>
 </template>

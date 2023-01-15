@@ -31,6 +31,7 @@ const useGameStore = defineStore("game", {
                 this.addPlayer(name, color);
             } else {
                 this.players.push(player);
+                
             }
         },
         addToken(player: Player["id"], value: number, tileIndex: number) {
@@ -76,7 +77,5 @@ const useGameStore = defineStore("game", {
         },
     }
 });
-
-
 
 export { useGameStore };

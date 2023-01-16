@@ -34,7 +34,7 @@ interface Token {
 
 interface Tile {
     threshold: number;
-    color: [number, number, number] | [number, number, number, number];
+    color?: [number, number, number] | [number, number, number, number];
 }
 
 interface Game {

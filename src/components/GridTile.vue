@@ -3,23 +3,23 @@ import { computed, inject, TransitionGroup } from 'vue';
 import type { Ref } from 'vue';
 
 import GameToken from './GameToken.vue';
-import { useGameStore } from '@/stores/game.store';
+import { useGameDataStore } from '@/stores/game-data.store';
 
-const game = useGameStore();
+const gameData = useGameDataStore();
 
 const props = defineProps<{
     tileIndex: number;
 }>();
 
 
-const tile = computed(() => game.tiles[props.tileIndex]);
+const tile = computed(() => gameData.tiles[props.tileIndex]);
 const tileContents = computed(() =>
-    game.board[props.tileIndex].map((tokenId) => game.tokens[tokenId]
+    gameData.board[props.tileIndex].map((tokenId) => gameData.tokens[tokenId]
 ));
 
 const style = computed(() => ({
-    width: `${game.grid.tileSize}px`,
-    height: `${game.grid.tileSize}px`,
+    width: `${gameData.grid.tileSize}px`,
+    height: `${gameData.grid.tileSize}px`,
 }));
 
 const hoveredTile = inject<Ref<number>>("board:hoveredTile");

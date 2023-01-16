@@ -1,21 +1,21 @@
 <script setup lang="ts">
 import { computed, inject, type StyleValue, type Ref } from "vue";
 
-import { useGameStore } from '@/stores/game.store';
-import { PLAYER_COLOR_OPTIONS, type PlayerColor } from "@/stores/game";
-import type { Player, Token } from '@/stores/game';
+import { useGameDataStore } from '@/stores/game-data.store';
+import { PLAYER_COLOR_OPTIONS, type PlayerColor } from "@/stores/game-data";
+import type { Player, Token } from '@/stores/game-data';
 
 const props = defineProps<{ data: Token }>();
 
-const game = useGameStore();
+const gameData = useGameDataStore();
 
 const activeToken = inject<Ref<string>>("board:activeToken")
 const onDragStart = inject<(event: DragEvent) => void>("token:dragstart");
 
 const style = computed((): StyleValue => {
-    const { tileSize } = game.grid;
+    const { tileSize } = gameData.grid;
     const { tileIndex } = props.data;
-    const tileContents = game.board[tileIndex];
+    const tileContents = gameData.board[tileIndex];
     const tileTokenIndex = tileContents.indexOf(props.data.id);
     const left = tileSize / 4 * (tileTokenIndex % 2 === 0 ? 1 : 3) - ((tileSize / 4 - 5));
     const top = tileSize / 4 * (tileTokenIndex < 2 ? 1 : 3) - (tileSize / 4 - 5);
@@ -26,7 +26,7 @@ const style = computed((): StyleValue => {
     };
 });
 
-const player = computed(() => game.players.find(player => player.id === props.data.player));
+const player = computed(() => gameData.players.find(player => player.id === props.data.player));
 
 const className = computed(() => ({
     [PLAYER_COLOR_OPTIONS[player.value?.color as PlayerColor]]: true,

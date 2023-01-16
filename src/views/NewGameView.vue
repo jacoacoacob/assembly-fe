@@ -2,13 +2,13 @@
 import { computed, ref, watchEffect, onBeforeMount } from "vue";
 import { onBeforeRouteLeave } from "vue-router";
 
-import { PLAYER_COLOR_OPTIONS, type PlayerColor } from "@/stores/game";
+import { PLAYER_COLOR_OPTIONS, type PlayerColor } from "@/stores/game-data";
 import { checkMaxLength, checkMinLength, checkSepecialChars  } from "@/utils/validators";
-import { useGameStore } from "@/stores/game.store";
+import { useGameDataStore } from "@/stores/game-data.store";
 import AppInput from "@/components/AppInput.vue";
 import { listGames, saveGame } from "@/api/game-api";
 
-const gameStore = useGameStore();
+const gameData = useGameDataStore();
 
 function createInputValidator(name: string, minLength: number, maxLength: number) {
     return (value: string) => {
@@ -31,9 +31,9 @@ const playerNameValidator = createInputValidator("name", 1, 32);
 const existingGames = listGames();
 
 const gameNameErrors = computed(() => {
-    const errors = gameNameValidator(gameStore.name);
-    if (existingGames.some(game => game.name === gameStore.name)) {
-        errors.push(`A game with name "${gameStore.name}" already exists.`);
+    const errors = gameNameValidator(gameData.name);
+    if (existingGames.some(game => game.name === gameData.name)) {
+        errors.push(`A game with name "${gameData.name}" already exists.`);
     }
     return errors;
 });
@@ -45,14 +45,14 @@ const maxPlayers = 4;
 const editingPlayerIndex = ref(-1);
 
 const availableColors = computed(() => {
-    const claimedColors = gameStore.players.map(player => player.color).filter((_, i) => i !== editingPlayerIndex.value);
+    const claimedColors = gameData.players.map(player => player.color).filter((_, i) => i !== editingPlayerIndex.value);
     return Object.keys(PLAYER_COLOR_OPTIONS).filter(color => !claimedColors.includes(color as PlayerColor))
 })
 
 
 
 const playerNameErrors = computed(() => {
-    const player = gameStore.players[editingPlayerIndex.value];
+    const player = gameData.players[editingPlayerIndex.value];
     if (player) {
         return playerNameValidator(player.name);
     }
@@ -60,16 +60,16 @@ const playerNameErrors = computed(() => {
 });
 
 onBeforeMount(() => {
-    gameStore.$reset();
+    gameData.$reset();
 });
 
 onBeforeRouteLeave((to) => {
     if (to.name === "game") {
-        if (gameStore.name.length === 0) {
+        if (gameData.name.length === 0) {
             gameFormError.value = "Please enter a valid name for this game.";
             return false;
         }
-        if (gameStore.players.length < 2) {
+        if (gameData.players.length < 2) {
             gameFormError.value = "A game must have between 2 and 4 players.";
             return false;
         }
@@ -77,7 +77,7 @@ onBeforeRouteLeave((to) => {
             gameFormError.value = "Please fix any form errors.";
             return false;
         }
-        saveGame(gameStore.$state);
+        saveGame(gameData.$state);
     }
     return true;
 });
@@ -92,8 +92,8 @@ watchEffect(() => {
 
 function addPlayer() {
     if (playerNameErrors.value.length === 0) {
-        gameStore.addPlayer("", availableColors.value[0] as PlayerColor);
-        editingPlayerIndex.value = gameStore.players.length - 1;
+        gameData.addPlayer("", availableColors.value[0] as PlayerColor);
+        editingPlayerIndex.value = gameData.players.length - 1;
     }
 }   
 
@@ -114,15 +114,15 @@ function savePlayer() {
                     <h2 class="text-lg font-bold" id="game-name-heading">Name</h2>
                     <AppInput
                         :errors="gameNameErrors"
-                        v-model="gameStore.name"
+                        v-model="gameData.name"
                         placeholder="Name your game"
                         aria-labelledby="game-name-heading"
                     />
                 </div>
                 <div class="space-y-4">
                     <h2 class="text-lg font-bold">Players</h2>
-                    <ul v-if="gameStore.players.length" class="space-y-4">
-                        <li v-for="player, i in gameStore.players" :key="i">
+                    <ul v-if="gameData.players.length" class="space-y-4">
+                        <li v-for="player, i in gameData.players" :key="i">
                             <form v-if="editingPlayerIndex === i" @submit.prevent="savePlayer" class="flex flex-col space-y-2">
                                 <div class="flex flex-col flex-1">
                                     <label for="player-color" class="text-sm mx-2 font-sans mb-1">Color</label>
@@ -146,7 +146,7 @@ function savePlayer() {
                                     label="Name"
                                 />
                                 <div class="flex justify-end space-x-2">
-                                    <button class="button button-text button-dense text-red-500" @click="gameStore.players.splice(i, 1)">
+                                    <button class="button button-text button-dense text-red-500" @click="gameData.players.splice(i, 1)">
                                         Remove
                                     </button>
                                     <button class="button button-dense" type="submit">
@@ -169,8 +169,8 @@ function savePlayer() {
                             </div>
                         </li>
                     </ul>
-                    <button :disabled="gameStore.players.length > 3" @click="addPlayer" class="button w-full">
-                        <span v-if="gameStore.players.length >= maxPlayers">
+                    <button :disabled="gameData.players.length > 3" @click="addPlayer" class="button w-full">
+                        <span v-if="gameData.players.length >= maxPlayers">
                             No more players
                         </span>
                         <span v-else>
@@ -182,7 +182,7 @@ function savePlayer() {
         </div>
         <div>
             <RouterLink
-                :to="{ name: 'game', params: { name: gameStore.name } }"
+                :to="{ name: 'game', params: { name: gameData.name } }"
                 class="button button-text w-full bg-slate-900 text-slate-50"
             >
                 Start

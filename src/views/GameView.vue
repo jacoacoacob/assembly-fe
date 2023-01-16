@@ -2,21 +2,24 @@
 import { onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import { loadGame } from '@/api/game-api';
-import { useGameStore } from '@/stores/game.store';
+import { useGameDataStore } from '@/stores/game-data.store';
 import TheBoard from '@/components/TheBoard.vue';
+import TheSidePanel from '@/components/TheSidePanel.vue';
 
 const route = useRoute();
-const gameStore = useGameStore();
+const gameDataStore = useGameDataStore();
 
 onMounted(() => {
-    const game = loadGame(route.params.name as string);
-    if (game) {
-        gameStore.$patch(game);
+    const gameData = loadGame(route.params.name as string);
+    if (gameData) {
+        gameDataStore.$patch(gameData);
     }
 });
 </script>
 
 <template>
-    <h1 class="text-xl font-bold">It's a GAME {{ $route.params.gameName }}</h1>
-    <TheBoard />
+    <div class="flex space-x-8 w-full px-8">
+        <TheBoard />
+        <TheSidePanel class="flex-1 w-full" />
+    </div>
 </template>

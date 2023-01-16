@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 
 import { randFromRange, randId } from "@/utils/rand";
-import type { Game, Player, PlayerColor, Token } from "./game";
+import type { Game, Player, PlayerColor, Token } from "./game-data";
 import { saveGame } from "@/api/game-api";
 
 function createInitialGameState(rows: number, cols: number, tileSize: number): Game {
@@ -13,17 +13,12 @@ function createInitialGameState(rows: number, cols: number, tileSize: number): G
         tokens: {},
         tiles: Array.from(Array(rows * cols)).map(() => ({
             threshold: randFromRange(5, 15),
-            color: [
-                randFromRange(220, 255),
-                randFromRange(220, 255),
-                randFromRange(220, 255),
-            ]
         })),
         ts_updated: new Date().toISOString(),
     }
 }
 
-const useGameStore = defineStore("game", {
+const useGameDataStore = defineStore("game-data", {
     state: () => createInitialGameState(6, 9, 90),
     actions: {
         addPlayer(name: string, color: PlayerColor) {
@@ -32,8 +27,6 @@ const useGameStore = defineStore("game", {
                 this.addPlayer(name, color);
             } else {
                 this.players.push(player);
-                this.addToken(player.id, randFromRange(1, 4), 14);
-                this.addToken(player.id, randFromRange(1, 4), 14);
             }
         },
         addToken(player: Player["id"], value: number, tileIndex: number) {
@@ -81,4 +74,4 @@ const useGameStore = defineStore("game", {
     }
 });
 
-export { useGameStore };
+export { useGameDataStore };

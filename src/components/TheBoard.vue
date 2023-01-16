@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { computed, provide, ref } from 'vue';
 import GridTile from './GridTile.vue';
-import { useGameStore } from '@/stores/game.store';
+import { useGameDataStore } from '@/stores/game-data.store';
 
-const game = useGameStore();
+const gameData = useGameDataStore();
 
 const style = computed(() => ({
-    width: `${game.grid.cols * game.grid.tileSize}px`,
-    height: `${game.grid.rows * game.grid.tileSize}px`
+    width: `${gameData.grid.cols * gameData.grid.tileSize}px`,
+    height: `${gameData.grid.rows * gameData.grid.tileSize}px`
 }));
 
 const activeToken = ref<string>("");
@@ -54,7 +54,7 @@ provide("tile:drop", (event: DragEvent) => {
     const tileIndex = findTileIndex(target) ;
     const tokenId = event.dataTransfer?.getData("text");
     if (typeof tileIndex === "number" && tokenId) {
-        game.moveToken(tokenId, tileIndex);
+        gameData.moveToken(tokenId, tileIndex);
     }
     activeToken.value = "";
     hoveredTile.value = -1;
@@ -64,6 +64,6 @@ provide("tile:drop", (event: DragEvent) => {
 
 <template>
     <div class="flex flex-wrap bg-slate-400 select-none" :style="style">
-        <GridTile v-for="_, i in game.tiles" :tileIndex="i" />
+        <GridTile v-for="_, i in gameData.tiles" :tileIndex="i" />
     </div>
 </template>

@@ -1,4 +1,6 @@
 import { randId } from "@/utils/rand";
+import type { GameDataStore } from "./game-data.store";
+import type { GameEvent } from "./game-data-event-handlers";
 
 const PLAYER_COLOR_OPTIONS = {
     red: "bg-red-400",
@@ -13,10 +15,6 @@ interface Player {
     id: string;
     name: string;
     color: PlayerColor,
-}
-
-interface GameEvent {
-
 }
 
 interface Grid {

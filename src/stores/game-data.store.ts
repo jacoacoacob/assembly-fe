@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 
 import { randFromRange, randId } from "@/utils/rand";
-import type { Game, Player, PlayerColor, Token } from "./game-data";
+import type { Game, GameEvent, Player, PlayerColor, Token } from "./game-data";
 import { saveGame } from "@/api/game-api";
 
 function createInitialGameState(rows: number, cols: number, tileSize: number): Game {
@@ -18,10 +18,18 @@ function createInitialGameState(rows: number, cols: number, tileSize: number): G
     }
 }
 
+function addPlayer(store: GameDataStore, ) {
+
+}
+
 const useGameDataStore = defineStore("game-data", {
     state: () => createInitialGameState(6, 9, 90),
     actions: {
+        pushEvent(event: GameEvent) {
+            this.history.push(event);
+        },
         addPlayer(name: string, color: PlayerColor) {
+            addPlayer(this, );
             const player: Player = { id: randId(8), name, color };
             if (this.players.some(p => p.id === player.id)) {
                 this.addPlayer(name, color);
@@ -71,7 +79,14 @@ const useGameDataStore = defineStore("game-data", {
                 {}
             );
         },
+        lastEvent(state) {
+            return state.history[state.history.length - 1];
+        }
     }
 });
 
+type GameDataStore = ReturnType<typeof useGameDataStore>;
+type GameData = ReturnType<typeof useGameDataStore>["$state"];
+
 export { useGameDataStore };
+export type { GameDataStore, GameData };

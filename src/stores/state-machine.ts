@@ -1,19 +1,23 @@
-import type { StateEvent, EventHandlers, Handler } from "./events";
+// import type { StateEvent, EventHandlers, Handler } from "./events";
+import type { Event, EventHandlers, Handler } from "./events";
 import type { StateName } from "./game-state.store";
 
-interface Params<E extends StateEvent<StateName, string>> {
+// interface Params<E extends StateEvent<StateName, string>> {
+interface Params<E extends Event<string>> {
     setup?: () => void;
     teardown?: () => void;
     handlers: EventHandlers<E>
 }
 
-interface StateMachine<E extends StateEvent<StateName, string>> {
+// interface StateMachine<E extends StateEvent<StateName, string>> {
+interface StateMachine<E extends Event<string>> {
     setup: () => void;
     teardown: () => void;
     handleEvent: (event: E) => void;
 }
 
-function stateMachine<E extends StateEvent<StateName, string>>(params: Params<E>): StateMachine<E> {
+// function stateMachine<E extends StateEvent<StateName, string>>(params: Params<E>): StateMachine<E> {
+function stateMachine<E extends Event<string>>(params: Params<E>): StateMachine<E> {
     return {
         handleEvent(event) {
             const [,action] = event.type.split(":")

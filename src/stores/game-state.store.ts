@@ -40,15 +40,15 @@ const useGameStateStore = defineStore("game-state", () => {
         saveGame(game.$state);
     }
 
-    function initialStateEvent<E extends InitialStateEvent>(action: E["action"], data: E["data"]) {
-        pushEvent<InitialStateEvent>({
-            type: `initial:${action}`,
-            action,
-            data
-        });
-    }
+    // function initialStateEvent<E extends InitialStateEvent>(action: E["action"], data: E["data"]) {
+    //     pushEvent<InitialStateEvent>({
+    //         // type: `initial:${action}`,
+    //         action,
+    //         data
+    //     });
+    // }
 
-    return { currentState, setState, initialStateEvent };
+    return { currentState, setState, pushEvent };
 });
 
 export { useGameStateStore };

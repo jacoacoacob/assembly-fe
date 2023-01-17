@@ -84,10 +84,17 @@ onBeforeRouteLeave((to) => {
             gameFormError.value = "Please fix any form errors.";
             return false;
         }
-        gameState.initialStateEvent("create_game", {
-            players: gamePlayers.value,
-            name: gameName.value
+        gameState.pushEvent({
+            type: "create_game",
+            data: {
+                players: gamePlayers.value,
+                name: gameName.value,
+            }
         });
+        // gameState.initialStateEvent("create_game", {
+        //     players: gamePlayers.value,
+        //     name: gameName.value
+        // });
     }
     return true;
 });

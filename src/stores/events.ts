@@ -1,17 +1,20 @@
 import type { StateName } from "./game-state.store";
 
-// interface Event<State extends StateName, Action extends string, Data = {}> {
-interface StateEvent<State extends StateName, Action extends string, Data = {}> {
-    type: `${State}:${Action}`;
-    action: Action;
+// interface StateEvent<State extends StateName, Action extends string, Data = {}> {
+//     type: `${State}:${Action}`;
+//     action: Action;
+//     data: Data;
+// }
+
+interface Event<Type extends string, Data = {}> {
+    type: Type;
     data: Data;
 }
 
+type Handler<E extends Event<string>> = (payload: E["data"]) => void;
 
-type Handler<E extends StateEvent<StateName, string>> = (payload: E["data"]) => void;
-
-type EventHandlers<Events extends StateEvent<StateName, string>> = {
+type EventHandlers<Events extends Event<string>> = {
     [E in Events as E["type"]]: Handler<E>;
 }
 
-export type { StateEvent, EventHandlers, Handler};
+export type { Event, EventHandlers, Handler};

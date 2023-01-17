@@ -3,47 +3,45 @@ import { ref } from "vue";
 
 import { saveGame } from "@/api/game-api";
 import { useGameDataStore } from "./game-data.store";
-import { createBoardSetupState, type BoardSetupState } from "./state-board-setup";
+import { createSetupBoardState, type SetupBoardState } from "./setup-board.state";
+import type { GameEvent } from "./game-data";
 
 type StateName = 
     // "initial" |
-    "board_setup";
+    "setup_board";
     // "player_turns";
+
+type SetState = (newState: StateName) => void;
+
+type State = SetupBoardState;
 
 const useGameStateStore = defineStore("game-state", () => {
 
     const game = useGameDataStore();
 
-    const currentState = ref<StateName>("board_setup");
-
-    function setState(newState: StateName) {
-        states[currentState.value].teardown(game);
-        currentState.value = newState;
-        states[currentState.value].setup(game);
-    }
-
-
-    type State = BoardSetupState;
+    const currentState = ref<StateName>("setup_board");
 
     const states: Record<StateName, State> = {
-        board_setup: createBoardSetupState(setState),
-
+        setup_board: createSetupBoardState(setState),
     };
 
-    game.$onAction(({ name, args }) => {
-        if (name === "pushEvent") {
-            const [event] = args;
-            states[currentState.value].handleEvent(game, event);
-            saveGame(game.$state);
-        }
-    });
+    function setState(newState: StateName) {
+        states[currentState.value].teardown();
+        currentState.value = newState;
+        states[currentState.value].setup();
+    }
 
+    function pushEvent(event: GameEvent) {
+        states[currentState.value].handleEvent(event);
+        game.history.push(event);
+        saveGame(game.$state);
+    }
 
-    return { currentState };
+    return { currentState, pushEvent };
 });
 
 export { useGameStateStore };
-export type { StateName };
+export type { SetState };
 
 /*
 CREATE GAME

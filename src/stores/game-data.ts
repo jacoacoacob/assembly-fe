@@ -1,6 +1,6 @@
 import { randId } from "@/utils/rand";
 import type { GameDataStore } from "./game-data.store";
-import type { BoardSetupStateEvent } from "./state-board-setup";
+import type { BoardSetupStateEvent } from "./setup-board.state";
 
 const PLAYER_COLOR_OPTIONS = {
     red: "bg-red-400",
@@ -15,11 +15,6 @@ interface Player {
     id: string;
     name: string;
     color: PlayerColor,
-}
-
-type Event<Type extends string, Data = {}> = {
-    type: Type;
-    data: Data;
 }
 
 type GameEvent = BoardSetupStateEvent;

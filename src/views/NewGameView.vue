@@ -91,10 +91,6 @@ onBeforeRouteLeave((to) => {
                 name: gameName.value,
             }
         });
-        // gameState.initialStateEvent("create_game", {
-        //     players: gamePlayers.value,
-        //     name: gameName.value
-        // });
     }
     return true;
 });

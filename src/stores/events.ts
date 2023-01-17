@@ -1,10 +1,3 @@
-import type { StateName } from "./game-state.store";
-
-// interface StateEvent<State extends StateName, Action extends string, Data = {}> {
-//     type: `${State}:${Action}`;
-//     action: Action;
-//     data: Data;
-// }
 
 interface Event<Type extends string, Data = {}> {
     type: Type;

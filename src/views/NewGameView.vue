@@ -83,13 +83,12 @@ onBeforeRouteLeave((to) => {
             return false;
         }
         game.pushEvent({
-            type: "start_game",
+            type: "create_game",
             data: {
                 players: gamePlayers.value,
                 name: gameName.value
             }
         });
-        // saveGame(gameData.$state);
     }
     return true;
 });

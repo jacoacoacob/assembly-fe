@@ -18,9 +18,6 @@ function createInitialGameState(rows: number, cols: number, tileSize: number): G
     }
 }
 
-function addPlayer(store: GameDataStore, ) {
-
-}
 
 const useGameDataStore = defineStore("game-data", {
     state: () => createInitialGameState(6, 9, 90),
@@ -28,8 +25,7 @@ const useGameDataStore = defineStore("game-data", {
         pushEvent(event: GameEvent) {
             this.history.push(event);
         },
-        addPlayer(name: string, color: PlayerColor) {
-            addPlayer(this, );
+        addPlayer(name: string, color: PlayerColor) {;
             const player: Player = { id: randId(8), name, color };
             if (this.players.some(p => p.id === player.id)) {
                 this.addPlayer(name, color);

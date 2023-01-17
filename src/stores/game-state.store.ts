@@ -3,8 +3,8 @@ import { ref, type UnwrapRef } from "vue";
 import type { Ref } from "vue";
 
 import { useGameDataStore, type GameDataStore } from "./game-data.store";
-import type { GameEvent } from "./game-data-event-handlers";
-import type { Player } from "./game-data";
+import type { Player, GameEvent } from "./game-data";
+import { saveGame } from "@/api/game-api";
 
 interface Context<Data> {
     data: Ref<UnwrapRef<Data>>;
@@ -47,11 +47,15 @@ interface State {
 
 type StateName = "initial" | "board_setup" | "player_turns";
 
+
 function createStates(setState: (newState: StateName) => void): Record<StateName, State> {
     return {
         initial: createStateMachine({
             tick({ game }, event) {
-                
+                const { type, data } = event;
+                if (type === "create_game") {
+
+                }
             }
         }),
         board_setup: createStateMachine({
@@ -85,6 +89,7 @@ const useGameStateStore = defineStore("game-state", () => {
         if (name === "pushEvent") {
             const [event] = args;
             states[currentState.value].tick(game, event);
+            saveGame(game.$state);
         }
     });
 

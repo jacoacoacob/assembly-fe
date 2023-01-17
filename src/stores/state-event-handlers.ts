@@ -1,5 +1,5 @@
 import type { GameDataStore } from "./game-data.store";
-import type { Ref } from "vue";
+// import type { Ref } from "vue";
 import type { StateName } from "./game-state.store";
 import type { Player } from "./game-data";
 
@@ -7,6 +7,7 @@ type Event<Type extends string, Data = {}> = {
     type: Type;
     data: Data;
 }
+
 
 type GameEvent =
     Event<"start_game", { players: Player[], name: string; }> |
@@ -19,21 +20,20 @@ type GameEventHandlers = {
             setState: (newState: StateName) => void;
         },
         payload: E["data"]
-    ) => void;  
- 
+    ) => void;
 }
+
 
 function createHandlers(): GameEventHandlers {
     return {
-        "start_game"({ game, setState }, { players, name }) {
+        start_game({ game, setState }, { players, name }) {
             game.$patch({ players, name });
             setState("board_setup");
         },
-        "move_token"(store) {
+        move_token(store) {
 
         },
     }
 }
 
-export { createHandlers };
-export type { GameEvent };
+export {};

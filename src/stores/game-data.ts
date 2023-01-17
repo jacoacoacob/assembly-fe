@@ -1,6 +1,5 @@
 import { randId } from "@/utils/rand";
 import type { GameDataStore } from "./game-data.store";
-import type { GameEvent } from "./game-data-event-handlers";
 
 const PLAYER_COLOR_OPTIONS = {
     red: "bg-red-400",
@@ -16,6 +15,15 @@ interface Player {
     name: string;
     color: PlayerColor,
 }
+
+type Event<Type extends string, Data = {}> = {
+    type: Type;
+    data: Data;
+}
+
+type GameEvent =
+    Event<"create_game", { players: Player[], name: string; }> |
+    Event<"move_token", { tokenId: string; tileIndex: number }>;
 
 interface Grid {
     rows: number;

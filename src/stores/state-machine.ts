@@ -23,10 +23,10 @@ interface State<Event, S extends Store> {
 
 type SetState<StateName> = (newState: StateName) => void;
 
-function createStateMachine<
+function stateMachine<
     E extends Event<string>,
     S extends Store,
-    LocalData,
+    LocalData = {},
 >(config: Config<E, S, LocalData>): State<E, S> {
     const localData = ref<LocalData>(config.localData ?? {} as LocalData);
 
@@ -48,5 +48,5 @@ function createStateMachine<
     }
 }
 
-export { createStateMachine };
+export { stateMachine };
 export type { SetState, State };

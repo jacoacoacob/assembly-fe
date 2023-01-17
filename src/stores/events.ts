@@ -1,6 +1,7 @@
 import type { Store } from "pinia";
 import type { Ref, UnwrapRef } from "vue";
 
+
 interface Event<Type extends string, Data = {}> {
     type: Type;
     data: Data;

@@ -1,5 +1,6 @@
 import { randId } from "@/utils/rand";
 import type { GameDataStore } from "./game-data.store";
+import type { BoardSetupStateEvent } from "./state-board-setup";
 
 const PLAYER_COLOR_OPTIONS = {
     red: "bg-red-400",
@@ -21,9 +22,7 @@ type Event<Type extends string, Data = {}> = {
     data: Data;
 }
 
-type GameEvent =
-    Event<"create_game", { players: Player[], name: string; }> |
-    Event<"move_token", { tokenId: string; tileIndex: number }>;
+type GameEvent = BoardSetupStateEvent;
 
 interface Grid {
     rows: number;

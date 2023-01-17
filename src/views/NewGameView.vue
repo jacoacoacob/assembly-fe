@@ -8,8 +8,10 @@ import { useGameDataStore } from "@/stores/game-data.store";
 import AppInput from "@/components/AppInput.vue";
 import { listGames, saveGame } from "@/api/game-api";
 import { randId } from "@/utils/rand";
+import { useGameStateStore } from "@/stores/game-state.store";
 
 const game = useGameDataStore();
+const gameState = useGameStateStore();
 
 function createInputValidator(name: string, minLength: number, maxLength: number) {
     return (value: string) => {
@@ -82,12 +84,9 @@ onBeforeRouteLeave((to) => {
             gameFormError.value = "Please fix any form errors.";
             return false;
         }
-        game.pushEvent({
-            type: "create_game",
-            data: {
-                players: gamePlayers.value,
-                name: gameName.value
-            }
+        gameState.initialStateEvent("create_game", {
+            players: gamePlayers.value,
+            name: gameName.value
         });
     }
     return true;

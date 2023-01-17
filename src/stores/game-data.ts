@@ -1,6 +1,5 @@
-import { randId } from "@/utils/rand";
-import type { GameDataStore } from "./game-data.store";
-import type { BoardSetupStateEvent } from "./setup-board.state";
+import type { SetupBoardStateEvent } from "./setup-board.state";
+import type { InitialStateEvent } from "./initial.state";
 
 const PLAYER_COLOR_OPTIONS = {
     red: "bg-red-400",
@@ -17,7 +16,7 @@ interface Player {
     color: PlayerColor,
 }
 
-type GameEvent = BoardSetupStateEvent;
+type GameEvent = SetupBoardStateEvent | InitialStateEvent;
 
 interface Grid {
     rows: number;

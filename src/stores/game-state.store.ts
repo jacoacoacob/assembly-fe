@@ -4,16 +4,17 @@ import { ref } from "vue";
 import { saveGame } from "@/api/game-api";
 import { useGameDataStore } from "./game-data.store";
 import { createSetupBoardState, type SetupBoardState } from "./setup-board.state";
+import { createInitialState, type InitialState, type InitialStateEvent } from "./initial.state";
 import type { GameEvent } from "./game-data";
 
 type StateName = 
-    // "initial" |
+    "initial" |
     "setup_board";
     // "player_turns";
 
 type SetState = (newState: StateName) => void;
 
-type State = SetupBoardState;
+type State = SetupBoardState | InitialState;
 
 const useGameStateStore = defineStore("game-state", () => {
 
@@ -21,7 +22,8 @@ const useGameStateStore = defineStore("game-state", () => {
 
     const currentState = ref<StateName>("setup_board");
 
-    const states: Record<StateName, State> = {
+    const states: Record<StateName, SetupBoardState | InitialState> = {
+        initial: createInitialState(setState),
         setup_board: createSetupBoardState(setState),
     };
 
@@ -31,17 +33,26 @@ const useGameStateStore = defineStore("game-state", () => {
         states[currentState.value].setup();
     }
 
-    function pushEvent(event: GameEvent) {
-        states[currentState.value].handleEvent(event);
+    function pushEvent<E extends GameEvent>(event: E) {
+        const state = states[currentState.value];
+        (state.handleEvent as ((event: GameEvent) => void))(event);
         game.history.push(event);
         saveGame(game.$state);
     }
 
-    return { currentState, pushEvent };
+    function initialStateEvent<E extends InitialStateEvent>(action: E["action"], data: E["data"]) {
+        pushEvent<InitialStateEvent>({
+            type: `initial:${action}`,
+            action,
+            data
+        });
+    }
+
+    return { currentState, setState, initialStateEvent };
 });
 
 export { useGameStateStore };
-export type { SetState };
+export type { SetState, StateName };
 
 /*
 CREATE GAME

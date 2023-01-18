@@ -1,7 +1,7 @@
-import { isGame } from "@/stores/game-data";
+import { isGame } from "@/stores/data-store-types";
 import { remove, load, listKeys, save } from "@/storage";
 
-import type { Game } from "@/stores/game-data";
+import type { Game } from "@/stores/data-store-types";
 
 type GameList = Pick<Game, "name" | "players" | "ts_updated">[];
 

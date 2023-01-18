@@ -2,13 +2,13 @@
 import { computed, ref, watchEffect, onBeforeMount } from "vue";
 import { onBeforeRouteLeave } from "vue-router";
 
-import { PLAYER_COLOR_OPTIONS, type PlayerColor, type Player } from "@/stores/game-data";
+import { PLAYER_COLOR_OPTIONS, type PlayerColor, type Player } from "@/stores/data-store-types";
 import { checkMaxLength, checkMinLength, checkSepecialChars  } from "@/utils/validators";
-import { useGameDataStore } from "@/stores/game-data.store";
+import { useGameDataStore } from "@/stores/data-store";
 import AppInput from "@/components/AppInput.vue";
 import { listGames, saveGame } from "@/api/game-api";
 import { randId } from "@/utils/rand";
-import { useGameStateStore } from "@/stores/game-state.store";
+import { useGameStateStore } from "@/stores/state-store";
 
 const game = useGameDataStore();
 const gameState = useGameStateStore();
@@ -85,11 +85,12 @@ onBeforeRouteLeave((to) => {
             return false;
         }
         gameState.pushEvent({
-            type: "create_game",
-            data: {
-                players: gamePlayers.value,
-                name: gameName.value,
-            }
+            type: "finish",
+            data: null
+            // data: {
+            //     players: gamePlayers.value,
+            //     name: gameName.value,
+            // }
         });
     }
     return true;
@@ -166,12 +167,12 @@ function savePlayer() {
                                     placeholder="Enter a name"
                                     label="Name"
                                 />
-                                <div class="flex justify-end space-x-2">
-                                    <button class="button button-text button-dense text-red-500" @click="gamePlayers.splice(i, 1)">
-                                        Remove
-                                    </button>
-                                    <button class="button button-dense" type="submit">
+                                <div class="flex justify-end">
+                                    <button class="order-2 button button-dense ml-2" type="submit">
                                         Save
+                                    </button>
+                                    <button class="order-1 button button-text button-dense text-red-500" @click="gamePlayers.splice(i, 1)">
+                                        Remove
                                     </button>
                                 </div>
                             </form>

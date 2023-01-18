@@ -3,7 +3,7 @@ import { computed, inject, TransitionGroup } from 'vue';
 import type { Ref } from 'vue';
 
 import GameToken from './GameToken.vue';
-import { useGameDataStore } from '@/stores/game-data.store';
+import { useGameDataStore } from '@/stores/data-store';
 
 const gameData = useGameDataStore();
 

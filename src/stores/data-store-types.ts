@@ -1,5 +1,5 @@
-import type { SetupBoardStateEvent } from "./setup-board.state";
-import type { InitialStateEvent } from "./initial.state";
+import type { SetupBoardStateEvent } from "../states/setup-board-state";
+import type { InitialStateEvent } from "../states/initial-state";
 
 const PLAYER_COLOR_OPTIONS = {
     red: "bg-red-400",

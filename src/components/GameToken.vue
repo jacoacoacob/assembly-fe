@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { computed, inject, type StyleValue, type Ref } from "vue";
 
-import { useGameDataStore } from '@/stores/game-data.store';
-import { PLAYER_COLOR_OPTIONS, type PlayerColor } from "@/stores/game-data";
-import type { Player, Token } from '@/stores/game-data';
+import { useGameDataStore } from '@/stores/data-store';
+import { PLAYER_COLOR_OPTIONS, type PlayerColor } from "@/stores/data-store-types";
+import type { Player, Token } from '@/stores/data-store-types';
 
 const props = defineProps<{ data: Token }>();
 
@@ -15,15 +15,18 @@ const onDragStart = inject<(event: DragEvent) => void>("token:dragstart");
 const style = computed((): StyleValue => {
     const { tileSize } = gameData.grid;
     const { tileIndex } = props.data;
-    const tileContents = gameData.board[tileIndex];
-    const tileTokenIndex = tileContents.indexOf(props.data.id);
-    const left = tileSize / 4 * (tileTokenIndex % 2 === 0 ? 1 : 3) - ((tileSize / 4 - 5));
-    const top = tileSize / 4 * (tileTokenIndex < 2 ? 1 : 3) - (tileSize / 4 - 5);
-    return {
-        position: "absolute",
-        top: `${top}px`,
-        left: `${left}px`,
-    };
+    if (tileIndex > -1) {
+        const tileContents = gameData.board[tileIndex];
+        const tileTokenIndex = tileContents.indexOf(props.data.id);
+        const left = tileSize / 4 * (tileTokenIndex % 2 === 0 ? 1 : 3) - ((tileSize / 4 - 5));
+        const top = tileSize / 4 * (tileTokenIndex < 2 ? 1 : 3) - (tileSize / 4 - 5);
+        return {
+            position: "absolute",
+            top: `${top}px`,
+            left: `${left}px`,
+        };
+    }
+    return {}
 });
 
 const player = computed(() => gameData.players.find(player => player.id === props.data.player));

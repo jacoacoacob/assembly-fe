@@ -1,12 +1,12 @@
 import type { Event } from "./events"
-import type { SetState } from "./game-state.store";
+import type { SetState } from "../stores/state-store";
 
-import { useSetupBoardStore } from "./setup-board.store";
+import { useSetupBoardStore } from "../stores/setup-board-store";
 import { stateMachine } from "./state-machine";
-import { useGameDataStore } from "./game-data.store";
+import { useGameDataStore } from "../stores/data-store";
 
 type SetupBoardStateEvent =
-    Event<"place_token", { tokenId: string; tileIndex: number; }>;
+    Event<"move_token", { tokenId: string; tileIndex: number; }>;
 
 function createSetupBoardState(setState: SetState) {
     const setupBoardStore = useSetupBoardStore();
@@ -14,9 +14,14 @@ function createSetupBoardState(setState: SetState) {
 
     return stateMachine<SetupBoardStateEvent>({
         handlers: {
-            place_token({ tokenId, tileIndex }) {
-                
+            move_token({ tokenId, tileIndex }) {
+                console.log("MOVE_TOKEN")
+
+                gameDataStore.moveToken(tokenId, tileIndex);
             }
+        },
+        setup() {
+            // setupBoardStore.
         }
     })
 }

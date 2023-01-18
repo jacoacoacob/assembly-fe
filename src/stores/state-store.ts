@@ -2,15 +2,17 @@ import { defineStore } from "pinia";
 import { ref } from "vue";
 
 import { saveGame } from "@/api/game-api";
-import { useGameDataStore } from "./game-data.store";
-import { createSetupBoardState, type SetupBoardState } from "./setup-board.state";
-import { createInitialState, type InitialState, type InitialStateEvent } from "./initial.state";
-import type { GameEvent } from "./game-data";
+import { useGameDataStore } from "./data-store";
+import { createSetupBoardState, type SetupBoardState } from "../states/setup-board-state";
+import { createInitialState, type InitialState } from "../states/initial-state";
+import type { GameEvent } from "./data-store-types";
+
+import type { StateMachine } from "../states/state-machine";
 
 type StateName = 
     "initial" |
-    "setup_board";
-    // "player_turns";
+    "setup_board" |
+    "game_play";
 
 type SetState = (newState: StateName) => void;
 
@@ -20,12 +22,24 @@ const useGameStateStore = defineStore("game-state", () => {
 
     const game = useGameDataStore();
 
-    const currentState = ref<StateName>("setup_board");
+    const currentState = ref<StateName>("initial");
+
+    function loadHistory() {
+        game.history.forEach(event => {
+            handleEvent(event);
+        });
+    }
 
     const states: Record<StateName, SetupBoardState | InitialState> = {
         initial: createInitialState(setState),
         setup_board: createSetupBoardState(setState),
+        game_play: createInitialState(setState),
     };
+
+    function handleEvent<E extends GameEvent>(event: E) {
+        const state = states[currentState.value];
+        (state.handleEvent as StateMachine<E>["handleEvent"])(event);
+    }
 
     function setState(newState: StateName) {
         states[currentState.value].teardown();
@@ -34,13 +48,12 @@ const useGameStateStore = defineStore("game-state", () => {
     }
 
     function pushEvent<E extends GameEvent>(event: E) {
-        const state = states[currentState.value];
-        (state.handleEvent as ((event: GameEvent) => void))(event);
+        handleEvent(event);
         game.history.push(event);
         saveGame(game.$state);
     }
 
-    return { currentState, setState, pushEvent };
+    return { currentState, pushEvent, loadHistory };
 });
 
 export { useGameStateStore };

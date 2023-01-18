@@ -1,5 +1,5 @@
 
-interface Event<Type extends string, Data = {}> {
+interface Event<Type extends string, Data = any> {
     type: Type;
     data: Data;
 }

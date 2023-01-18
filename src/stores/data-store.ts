@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 
 import { randFromRange, randId } from "@/utils/rand";
-import type { Game, GameEvent, Player, PlayerColor, Token } from "./game-data";
+import type { Game, GameEvent, Player, PlayerColor, Token } from "./data-store-types";
 import { saveGame } from "@/api/game-api";
 
 function createInitialGameState(rows: number, cols: number, tileSize: number): Game {
@@ -30,10 +30,10 @@ const useGameDataStore = defineStore("game-data", {
                 this.players.push(player);
             }
         },
-        addToken(player: Player["id"], value: number, tileIndex: number) {
+        generateToken(player: Player["id"], value: number, tileIndex: number) {
             const token: Token = { value, player, tileIndex, id: randId(8) };
             if (this.tokens[token.id]) {
-                this.addToken(player, value, tileIndex);
+                this.generateToken(player, value, tileIndex);
             } else {
                 this.tokens[token.id] = token;
             }
@@ -58,7 +58,7 @@ const useGameDataStore = defineStore("game-data", {
             }
             return graph;
         },
-        tokenReserves(state) {
+        tokenReserves(state): Record<Player["id"], Token["id"][]> {
             return Object.entries(state.tokens).reduce(
                 (accum: Record<Player["id"], Token["id"][]>, [tokenId, token]) => {
                     if (token.tileIndex < 0) {

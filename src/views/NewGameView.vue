@@ -4,13 +4,15 @@ import { onBeforeRouteLeave } from "vue-router";
 
 import { PLAYER_COLOR_OPTIONS, type PlayerColor, type Player } from "@/stores/data-store-types";
 import { checkMaxLength, checkMinLength, checkSepecialChars  } from "@/utils/validators";
-import { useGameDataStore } from "@/stores/data-store";
+import { useGameDataStore } from "@/stores/game-data-store";
 import AppInput from "@/components/AppInput.vue";
 import { listGames, saveGame } from "@/api/game-api";
 import { randId } from "@/utils/rand";
-import { useGameStateStore } from "@/stores/state-store";
+import { useGameStateStore } from "@/stores/game-state-store";
+import { createGrid, createTiles, createTokens } from "@/utils/create-game-data";
+import type { Token } from "@/stores/data-store-types";
 
-const game = useGameDataStore();
+const gameData = useGameDataStore();
 const gameState = useGameStateStore();
 
 function createInputValidator(name: string, minLength: number, maxLength: number) {
@@ -56,8 +58,6 @@ const availableColors = computed(() => {
     return Object.keys(PLAYER_COLOR_OPTIONS).filter(color => !claimedColors.includes(color as PlayerColor))
 })
 
-
-
 const playerNameErrors = computed(() => {
     const player = gamePlayers.value[editingPlayerIndex.value];
     if (player) {
@@ -66,9 +66,6 @@ const playerNameErrors = computed(() => {
     return [];
 });
 
-onBeforeMount(() => {
-    // gameData.$reset();
-});
 
 onBeforeRouteLeave((to) => {
     if (to.name === "game") {
@@ -84,14 +81,12 @@ onBeforeRouteLeave((to) => {
             gameFormError.value = "Please fix any form errors.";
             return false;
         }
-        gameState.pushEvent({
-            type: "finish",
-            data: null
-            // data: {
-            //     players: gamePlayers.value,
-            //     name: gameName.value,
-            // }
-        });
+        gameState.pushEvent({ type: "set_name", data: gameName.value });
+        gameState.pushEvent({ type: "set_players", data: gamePlayers.value });
+        gameState.pushEvent({ type: "set_tokens", data: createTokens(gamePlayers.value) });
+        gameState.pushEvent({ type: "set_grid", data: createGrid(6, 9, 90) });
+        gameState.pushEvent({ type: "set_tiles", data: createTiles(6, 9, [5, 15]) })
+        gameState.pushEvent({ type: "finish", data: null });
     }
     return true;
 });
@@ -122,8 +117,6 @@ function savePlayer() {
         editingPlayerIndex.value = -1;
     }
 }
-
-
 
 </script>
 

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, inject, ref } from 'vue';
 import GridTile from './GridTile.vue';
-import { useGameDataStore } from '@/stores/data-store';
+import { useGameDataStore } from '@/stores/game-data-store';
 
 const gameData = useGameDataStore();
 

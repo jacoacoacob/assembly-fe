@@ -2,20 +2,17 @@
 import { onMounted, provide, ref } from 'vue';
 import { useRoute } from 'vue-router';
 import { loadGame } from '@/api/game-api';
-import { useGameDataStore } from '@/stores/data-store';
 import TheBoard from '@/components/TheBoard.vue';
 import TheSidePanel from '@/components/TheSidePanel.vue';
-import { useGameStateStore } from '@/stores/state-store';
+import { useGameStateStore } from '@/stores/game-state-store';
 
 const route = useRoute();
-const gameDataStore = useGameDataStore();
 const gameStateStore = useGameStateStore();
 
 onMounted(() => {
     const gameData = loadGame(route.params.name as string);
     if (gameData) {
-        gameDataStore.$patch(gameData);
-        gameStateStore.loadHistory();
+        gameStateStore.loadHistory(gameData.history);
     }
 });
 

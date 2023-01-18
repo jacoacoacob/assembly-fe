@@ -2,8 +2,8 @@
 import { computed, inject } from 'vue';
 
 import GameToken from './GameToken.vue';
-import { useGameDataStore } from '@/stores/data-store';
-import { useGameStateStore } from '@/stores/state-store';
+import { useGameDataStore } from '@/stores/game-data-store';
+import { useGameStateStore } from '@/stores/game-state-store';
 
 const gameData = useGameDataStore();
 const gameState = useGameStateStore();

@@ -1,5 +1,5 @@
 import type { Player, Token, Game} from "@/stores/data-store-types";
-import { randFromRange, randId } from "./rand";
+import { randFromRange, randId } from "@/utils/rand";
 
 function createTokens(players: Player[]): Game["tokens"] {
     const tokenValues = Array.from(Array(4)).map((_, i) => i + 1);

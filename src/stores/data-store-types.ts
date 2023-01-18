@@ -31,6 +31,8 @@ interface Token {
     tileIndex: number;
 }
 
+type PlayerTokens = Record<Player["id"], Token["id"][]>;
+
 interface Tile {
     threshold: number;
     color?: [number, number, number] | [number, number, number, number];
@@ -64,4 +66,4 @@ function isGame(data: unknown): data is Game {
 }
 
 export { isGame, PLAYER_COLOR_OPTIONS };
-export type { Game, GameEvent, PlayerColor, Player, Token };
+export type { Game, GameEvent, PlayerColor, Player, Token, PlayerTokens };

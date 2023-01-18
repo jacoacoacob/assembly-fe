@@ -6,7 +6,6 @@ import WelcomeView from "@/views/WelcomeView.vue";
 import GameView from "@/views/GameView.vue";
 import { loadGame } from "./api/game-api";
 import { useGameStateStore } from "./stores/game-state-store";
-import { useGameDataStore } from "./stores/game-data-store";
 
 interface Breadcrumb {
     name: string | ((params: RouteParams) => string);
@@ -40,9 +39,7 @@ const router = createRouter({
             component: NewGameView,
             beforeEnter() {
                 const gameState = useGameStateStore();
-                const gameData = useGameDataStore();
-                gameData.$reset();
-                gameState.setInitial();
+                gameState.resetState();
             },
             meta: {
                 breadcrumbs: [

@@ -24,19 +24,18 @@ const useGameStateStore = defineStore("game-state", () => {
 
     const currentState = ref<StateName>("initial");
 
-    function setInitial() {
+    function resetState() {
         currentState.value = "initial";
+        game.$reset();
     }
 
     function loadHistory(history: Game["history"]) {
         game.$reset();
         currentState.value = "initial";
-        // setTimeout(() => {
-            history.forEach(event => {
-                console.log(event)
-                handleEvent(event);
-            });
-        // })
+        history.forEach(event => {
+            console.log(event)
+            handleEvent(event);
+        });
     }
 
     const states: Record<StateName, SetupBoardState | InitialState> = {
@@ -55,7 +54,9 @@ const useGameStateStore = defineStore("game-state", () => {
         console.log("[setState]", newState);
         states[currentState.value].teardown();
         currentState.value = newState;
-        states[currentState.value].setup();
+        setTimeout(() => {
+            states[currentState.value].setup();
+        })
     }
 
     function pushEvent<E extends GameEvent>(event: E) {
@@ -63,7 +64,7 @@ const useGameStateStore = defineStore("game-state", () => {
         saveGame(game.$state);
     }
 
-    return { currentState, setInitial, pushEvent, loadHistory };
+    return { currentState, resetState, pushEvent, loadHistory };
 });
 
 export { useGameStateStore };

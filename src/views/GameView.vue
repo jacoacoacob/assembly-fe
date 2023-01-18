@@ -1,24 +1,10 @@
 <script setup lang="ts">
-import { provide, ref, onMounted } from 'vue';
-import { useRoute } from 'vue-router';
+import { provide, ref } from 'vue';
 import TheBoard from '@/components/TheBoard.vue';
 import TheSidePanel from '@/components/TheSidePanel.vue';
 import { useGameStateStore } from '@/stores/game-state-store';
-import { loadGame } from '@/api/game-api';
 
 const gameStateStore = useGameStateStore();
-
-const route = useRoute()
-
-const gameState = useGameStateStore();
-
-// onMounted(() => {
-//     const data = loadGame(route.params.name as string);
-//     if (data) {
-//         gameState.setInitial();
-//         gameState.loadHistory(data.history);
-//     }
-// })
 
 const activeToken = ref<string>("");
 const hoveredTile = ref<number>(-1);

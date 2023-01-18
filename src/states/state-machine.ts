@@ -19,7 +19,7 @@ function stateMachine<E extends Event<string>>(params: Params<E>): StateMachine<
             if (handler) {
                 return handler(event.data);
             }
-            console.warn("No handler registerred for current state.");
+            console.warn("No handler registerred for current state.", event);
         },
         setup() {
             if (params.setup) {

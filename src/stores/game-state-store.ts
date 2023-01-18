@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import { ref } from "vue";
+import { ref, watchEffect } from "vue";
 
 import { saveGame } from "@/api/game-api";
 import { useGameDataStore } from "./game-data-store";
@@ -16,7 +16,7 @@ type StateName =
 
 type SetState = (newState: StateName) => void;
 
-type State = SetupBoardState | InitialState;
+// type State = SetupBoardState | InitialState;
 
 const useGameStateStore = defineStore("game-state", () => {
 
@@ -24,10 +24,19 @@ const useGameStateStore = defineStore("game-state", () => {
 
     const currentState = ref<StateName>("initial");
 
+    function setInitial() {
+        currentState.value = "initial";
+    }
+
     function loadHistory(history: Game["history"]) {
-        history.forEach(event => {
-            handleEvent(event);
-        });
+        game.$reset();
+        currentState.value = "initial";
+        // setTimeout(() => {
+            history.forEach(event => {
+                console.log(event)
+                handleEvent(event);
+            });
+        // })
     }
 
     const states: Record<StateName, SetupBoardState | InitialState> = {
@@ -43,6 +52,7 @@ const useGameStateStore = defineStore("game-state", () => {
     }
 
     function setState(newState: StateName) {
+        console.log("[setState]", newState);
         states[currentState.value].teardown();
         currentState.value = newState;
         states[currentState.value].setup();
@@ -53,7 +63,7 @@ const useGameStateStore = defineStore("game-state", () => {
         saveGame(game.$state);
     }
 
-    return { currentState, pushEvent, loadHistory };
+    return { currentState, setInitial, pushEvent, loadHistory };
 });
 
 export { useGameStateStore };

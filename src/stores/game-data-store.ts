@@ -43,7 +43,6 @@ const useGameDataStore = defineStore("game-data", {
             if (token) {
                 token.tileIndex = tileIndex;
             }
-            saveGame(this.$state);
         },
     },
     getters: {

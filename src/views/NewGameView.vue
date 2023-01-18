@@ -67,6 +67,7 @@ const playerNameErrors = computed(() => {
 });
 
 
+
 onBeforeRouteLeave((to) => {
     if (to.name === "game") {
         if (gameName.value.length === 0) {

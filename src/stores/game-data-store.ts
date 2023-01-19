@@ -56,38 +56,30 @@ const useGameDataStore = defineStore("game-data", {
             }
             return graph;
         },
-        reserveTokenIds(state): PlayerTokenIds {
-            return Object.entries(state.tokens).reduce(
-                (accum: PlayerTokenIds, [tokenId, token]) => {
-                    if (token.tileIndex < 0) {
-                        if (!accum[token.player]) {
-                            accum[token.player] = [];
-                        }
-                        accum[token.player].push(tokenId);
-                    }
-                    return accum;
-                },
-                {}
-            );
+        playerTokenIds(state): PlayerTokenIds {
+            return Object.values(state.tokens).reduce((accum: PlayerTokenIds, token) => {
+                if (!accum[token.player]) {
+                    accum[token.player] = [];
+                }
+                accum[token.player].push(token.id);
+                return accum;
+            }, {});
+        },
+        reserveTokenIds(state): Token["id"][] {
+            return Object.keys(state.tokens).filter((tokenId) => state.tokens[tokenId].tileIndex === -1);
         },
         reserveTokens(state): ReserveTokens {
-            return Object.entries(this.reserveTokenIds).reduce(
-                (accum: ReserveTokens, [playerId, tokenIds]) => ({
-                    ...accum,
-                    [playerId]: tokenIds.reduce(
-                        (accum: Record<Token["value"], Token[]>, tokenId) => {
-                            const token = state.tokens[tokenId];
-                            if (!accum[token.value]) {
-                                accum[token.value] = [];
-                            }
-                            accum[token.value].push(token);
-                            return accum
-                        },
-                        {}
-                    ),
-                }),
-                {}
-            )
+            return this.reserveTokenIds.reduce((accum: ReserveTokens, tokenId) => {
+                const token = state.tokens[tokenId];
+                if (!accum[token.player]) {
+                    accum[token.player] = {};
+                }
+                if (!accum[token.player][token.value]) {
+                    accum[token.player][token.value] = [];
+                }
+                accum[token.player][token.value].push(token);
+                return accum;
+            }, {})
         },
         lastEvent(state) {
             return state.history[state.history.length - 1];

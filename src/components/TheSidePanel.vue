@@ -28,7 +28,7 @@ const viewedPlayer = computed(() => {
             <li v-for="player, i in gameData.players" :key="player.id" class="flex items-center space-x-2">
                 <span class="inline-block w-4 h-4 rounded-full" :class="PLAYER_COLOR_OPTIONS[player.color]"></span>
                 <button class="button button-dense" @click="viewedPlayerIndex = i">
-                    {{ player.name }} {{ gameData.reserveTokenIds[player.id].length }}
+                    {{ player.name }}
                 </button>
             </li>
         </ul>

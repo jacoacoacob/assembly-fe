@@ -18,8 +18,7 @@ function useCreateGame() {
         gameState.pushEvent("initial:finish");
         nextTick(() => {
             gameState.pushEvent(
-                "setup_board:set_staged_tokens",
-                createStagedTokenIds(gameData.reserveTokenIds)
+                "setup_board:set_staged_tokens", createStagedTokenIds(gameData.playerTokenIds)
             );
         });
     }

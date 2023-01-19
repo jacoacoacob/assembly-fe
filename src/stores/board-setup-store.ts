@@ -22,7 +22,8 @@ const useBoardSetupStore = defineStore("board-setup", () => {
     const unplaceableTokenIds = computed(() =>
         Object.values(gameData.tokens).reduce(
             (accum: Token["id"][], token) => {
-                if (!stagedTokens.value[token.player].includes(token.id)) {
+                if (stagedTokens.value[token.player] && !stagedTokens.value[token.player].includes(token.id)) {
+
                     accum.push(token.id)
                 }
                 return accum;

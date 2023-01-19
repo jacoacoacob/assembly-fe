@@ -2,14 +2,10 @@
 import { computed } from 'vue';
 
 import GameToken from './GameToken.vue';
-import { useGameDataStore } from '@/stores/game-data-store';
 import { useGameStateStore } from '@/stores/game-state-store';
-import { useBoardSetupStore } from '@/stores/board-setup-store';
 import { useTokenReserve } from '@/composables/use-token-reserve';
 
-const gameData = useGameDataStore();
 const gameState = useGameStateStore();
-const setupBoard = useBoardSetupStore();
 
 const data = useTokenReserve();
 
@@ -41,9 +37,15 @@ function onDrop(event: DragEvent) {
 </script>
 
 <template>
-    <div class="flex flex-col bg-slate-300" @drop="onDrop" @dragenter="onDragEnter" @dragover="onDragOver">
+    <div class="flex flex-col bg-slate-300 p-2 rounded" @drop="onDrop" @dragenter="onDragEnter" @dragover="onDragOver">
         <div v-for="segment, i in tokens" :key="i" class="flex">
-            <GameToken v-for="token in segment" :key="token.id" :data="token" class="mr-1 mb-1" />
+            <GameToken
+                v-for="token in segment"
+                :key="token.id"
+                :data="token"
+                class="mr-1 mb-1"
+                :isUnavailable="data.unplaceableTokensIds.value.includes(token.id)"
+            />
         </div>
     </div>
 </template>

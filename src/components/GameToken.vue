@@ -5,7 +5,7 @@ import { useGameDataStore } from '@/stores/game-data-store';
 import { PLAYER_COLOR_OPTIONS, type PlayerColor } from "@/stores/data-store-types";
 import type { Player, Token } from '@/stores/data-store-types';
 
-const props = defineProps<{ data: Token }>();
+const props = defineProps<{ data: Token; isUnavailable?: boolean }>();
 
 const gameData = useGameDataStore();
 
@@ -34,6 +34,7 @@ const player = computed(() => gameData.players.find(player => player.id === prop
 const className = computed(() => ({
     [PLAYER_COLOR_OPTIONS[player.value?.color as PlayerColor]]: true,
     "border-dashed border-slate-50": activeToken?.value === props.data.id,
+    "bg-transparent": props.isUnavailable
 }))
 
 </script>
@@ -44,7 +45,7 @@ const className = computed(() => ({
         class="w-8 h-8 rounded-full border border-slate-900 flex justify-center items-center text-white"
         :class="className"
         :style="style"
-        draggable="true"
+        :draggable="!isUnavailable"
         @dragstart="onDragStart"
     >
         {{ data.value }}

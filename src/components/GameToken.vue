@@ -32,7 +32,7 @@ const style = computed((): StyleValue => {
 const player = computed(() => gameData.players.find(player => player.id === props.data.player));
 
 const className = computed(() => ({
-    [PLAYER_COLOR_OPTIONS[player.value?.color as PlayerColor]]: true,
+    [PLAYER_COLOR_OPTIONS[player.value?.color as PlayerColor]]: !props.isUnavailable,
     "border-dashed border-slate-50": activeToken?.value === props.data.id,
     "bg-transparent text-slate-600": props.isUnavailable,
 }))

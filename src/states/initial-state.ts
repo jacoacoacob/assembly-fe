@@ -34,9 +34,9 @@ function createInitialState(setState: SetState) {
             },
             set_tiles(tiles) {
                 gameData.tiles = tiles;
-            }
-        }
-    })
+            },
+        },
+    });
 }
 
 type InitialState = ReturnType<typeof createInitialState>;

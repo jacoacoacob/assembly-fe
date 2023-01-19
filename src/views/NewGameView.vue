@@ -1,19 +1,15 @@
 <script setup lang="ts">
-import { computed, ref, watchEffect, nextTick } from "vue";
+import { computed, ref, watchEffect } from "vue";
 import { onBeforeRouteLeave } from "vue-router";
 
 import { PLAYER_COLOR_OPTIONS, type PlayerColor, type Player } from "@/stores/data-store-types";
 import { checkMaxLength, checkMinLength, checkSepecialChars  } from "@/utils/validators";
+import { randId } from "@/utils/rand";
 import AppInput from "@/components/AppInput.vue";
 import { listGames } from "@/api/game-api";
-import { useGameDataStore } from "@/stores/game-data-store";
-import { randId } from "@/utils/rand";
-import { useGameStateStore } from "@/stores/game-state-store";
-import { createGrid, createTiles, createTokens } from "@/states/initial-state-helpers";
-import { createStagedTokens } from "@/states/setup-board-state-helpers";
+import { useCreateGame } from "@/composables/use-create-game";
 
-const gameState = useGameStateStore();
-const gameData = useGameDataStore();
+const createGame = useCreateGame();
 
 function createInputValidator(name: string, minLength: number, maxLength: number) {
     return (value: string) => {
@@ -80,15 +76,7 @@ onBeforeRouteLeave((to) => {
             gameFormError.value = "Please fix any form errors.";
             return false;
         }
-        gameState.pushEvent({ type: "set_name", data: gameName.value });
-        gameState.pushEvent({ type: "set_players", data: gamePlayers.value });
-        gameState.pushEvent({ type: "set_tokens", data: createTokens(gamePlayers.value) });
-        gameState.pushEvent({ type: "set_grid", data: createGrid(6, 9, 90) });
-        gameState.pushEvent({ type: "set_tiles", data: createTiles(6, 9, [5, 15]) })
-        gameState.pushEvent({ type: "finish", data: null });
-        nextTick(() => {
-            gameState.pushEvent({ type: "set_staged_tokens", data: createStagedTokens(gameData.tokenReserves) });
-        })
+        createGame(gameName.value, gamePlayers.value);
     }
     return true;
 });

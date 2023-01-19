@@ -1,11 +1,12 @@
-import type { Event } from "./events"
+import type { NSEvent } from "./events"
 import { useGameStateStore, type SetState } from "../stores/game-state-store";
 
 import { useSetupBoardStore } from "../stores/setup-board-store";
 import { stateMachine } from "./state-machine";
-import { useGameDataStore, type GameDataStore } from "../stores/game-data-store";
-import type { Game, Player, PlayerTokens, Token } from "@/stores/data-store-types";
-import { randFromRange } from "@/utils/rand";
+import { useGameDataStore } from "../stores/game-data-store";
+import type { Player, Token } from "@/stores/data-store-types";
+
+type Event<Action extends string, Data> = NSEvent<"setup_board", Action, Data>;
 
 type SetupBoardStateEvent =
     Event<"set_staged_tokens", Record<Player["id"], Token["id"][]>> |
@@ -24,7 +25,7 @@ function createSetupBoardState(setState: SetState) {
         return gameData.players[0].id;
     }
 
-    return stateMachine<SetupBoardStateEvent>({
+    return stateMachine<"setup_board", SetupBoardStateEvent>({
         handlers: {
             move_token({ tokenId, tileIndex }) {
                 gameData.moveToken(tokenId, tileIndex);

@@ -1,21 +1,23 @@
-import type { Event, EventHandlers, Handler } from "./events";
 
-interface Params<E extends Event<string>> {
+import type { NSEvent, NSHandler, NSEventHandlers } from "./events";
+import type { StateName } from "@/stores/game-state-store";
+
+interface Params<S extends StateName, E extends NSEvent<S, string>> {
     setup?: () => void;
     teardown?: () => void;
-    handlers: EventHandlers<E>
+    handlers: NSEventHandlers<S, E>
 }
 
-interface StateMachine<E extends Event<string>> {
+interface StateMachine<S extends StateName, E extends NSEvent<S, string>> {
     setup: () => void;
     teardown: () => void;
     handleEvent: (event: E) => void;
 }
 
-function stateMachine<E extends Event<string>>(params: Params<E>): StateMachine<E> {
+function stateMachine<S extends StateName, E extends NSEvent<S, string>>(params: Params<S, E>): StateMachine<S, E> {
     return {
         handleEvent(event) {
-            const handler = params.handlers[event.type as E["type"]] as unknown as Handler<E>;
+            const handler = params.handlers[event.action as E["action"]] as unknown as NSHandler<S, E>;
             if (handler) {
                 return handler(event.data);
             }

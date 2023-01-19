@@ -4,7 +4,7 @@ import TheBoard from '@/components/TheBoard.vue';
 import TheSidePanel from '@/components/TheSidePanel.vue';
 import { useGameStateStore } from '@/stores/game-state-store';
 
-const gameStateStore = useGameStateStore();
+const gameState = useGameStateStore();
 
 const activeToken = ref<string>("");
 const hoveredTile = ref<number>(-1);
@@ -55,13 +55,7 @@ provide("tile:drop", (event: DragEvent) => {
     const tileIndex = findTileIndex(target) ;
     const tokenId = event.dataTransfer?.getData("text");
     if (typeof tileIndex === "number" && tokenId) {
-        gameStateStore.pushEvent({
-            type: "move_token",
-            data: {
-                tileIndex,
-                tokenId
-            }
-        });
+        gameState.pushEvent("setup_board:move_token", { tileIndex, tokenId });
     }
     activeToken.value = "";
     hoveredTile.value = -1;

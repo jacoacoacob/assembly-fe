@@ -35,13 +35,9 @@ function onDrop(event: DragEvent) {
     event.preventDefault();
     const tokenId = event.dataTransfer?.getData("text");
     if (tokenId) {
-
-        gameState.pushEvent({
-            type: "move_token",
-            data: {
-                tokenId,
-                tileIndex: -1
-            }
+        gameState.pushEvent("setup_board:move_token", {
+            tokenId,
+            tileIndex: -1,
         })
     }
 }

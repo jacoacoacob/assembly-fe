@@ -1,8 +1,10 @@
 import { stateMachine } from "./state-machine";
 import { useGameDataStore } from "../stores/game-data-store";
 import type { SetState } from "../stores/game-state-store";
-import type { Event } from "./events"
+import type { NSEvent } from "./events"
 import type { Game } from "../stores/data-store-types";
+
+type Event<Action extends string, Data = {}> = NSEvent<"initial", Action, Data>;
 
 type InitialStateEvent =
     Event<"set_players", Game["players"]> |
@@ -10,12 +12,12 @@ type InitialStateEvent =
     Event<"set_tokens", Game["tokens"]> |
     Event<"set_grid", Game["grid"]> |
     Event<"set_tiles", Game["tiles"]> |
-    Event<"finish", null>;
+    Event<"finish">;
 
 function createInitialState(setState: SetState) {
     const gameData = useGameDataStore();
 
-    return stateMachine<InitialStateEvent>({
+    return stateMachine<"initial", InitialStateEvent>({
         handlers: {
             finish() {
                 setState("setup_board");

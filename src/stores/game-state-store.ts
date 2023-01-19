@@ -1,13 +1,13 @@
 import { defineStore } from "pinia";
-import { ref, watchEffect } from "vue";
+import { ref } from "vue";
 
 import { saveGame } from "@/api/game-api";
 import { useGameDataStore } from "./game-data-store";
 import { createSetupBoardState, type SetupBoardState } from "../states/setup-board-state";
 import { createInitialState, type InitialState } from "../states/initial-state";
 import type { Game, GameEvent } from "./data-store-types";
-
 import type { StateMachine } from "../states/state-machine";
+import type { NSEvent } from "@/states/events";
 
 type StateName = 
     "initial" |
@@ -44,22 +44,21 @@ const useGameStateStore = defineStore("game-state", () => {
         game_play: createInitialState(setState),
     };
 
-    function handleEvent<E extends GameEvent>(event: E) {
+    function handleEvent<S extends StateName, E extends NSEvent<S, string>>(event: E) {
         const state = states[currentState.value];
-        (state.handleEvent as StateMachine<E>["handleEvent"])(event);
-        game.history.push(event);
+        (state.handleEvent as StateMachine<S, E>["handleEvent"])(event);
+        game.history.push(event as GameEvent);
     }
 
     function setState(newState: StateName) {
-        console.log("[setState]", newState);
         states[currentState.value].teardown();
         currentState.value = newState;
-        setTimeout(() => {
-            states[currentState.value].setup();
-        })
+        states[currentState.value].setup();
     }
 
-    function pushEvent<E extends GameEvent>(event: E) {
+    function pushEvent<E extends GameEvent>(type: E["type"], data: E["data"] = {}) {
+        const [namespace, action] = type.split(":");
+        const event = { type, data, action, namespace } as GameEvent;
         handleEvent(event);
         saveGame(game.$state);
     }

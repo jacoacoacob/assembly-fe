@@ -10,17 +10,17 @@ function useCreateGame() {
     const gameData = useGameDataStore();
 
     return (name: string, players: Player[]) => {
-        gameState.pushEvent({ type: "set_name", data: name });
-        gameState.pushEvent({ type: "set_players", data: players });
-        gameState.pushEvent({ type: "set_tokens", data: createTokens(players) });
-        gameState.pushEvent({ type: "set_grid", data: createGrid(6, 9, 90) });
-        gameState.pushEvent({ type: "set_tiles", data: createTiles(6, 9, [5, 15]) })
-        gameState.pushEvent({ type: "finish", data: null });
+        gameState.pushEvent("initial:set_name", name);
+        gameState.pushEvent("initial:set_players", players);
+        gameState.pushEvent("initial:set_tokens", createTokens(players));
+        gameState.pushEvent("initial:set_grid", createGrid(6, 9, 90));
+        gameState.pushEvent("initial:set_tiles", createTiles(6, 9, [5, 15]));
+        gameState.pushEvent("initial:finish");
         nextTick(() => {
-            gameState.pushEvent({
-                type: "set_staged_tokens",
-                data: createStagedTokens(gameData.tokenReserves)
-            });
+            gameState.pushEvent(
+                "setup_board:set_staged_tokens",
+                createStagedTokens(gameData.tokenReserves)
+            );
         });
     }
 }

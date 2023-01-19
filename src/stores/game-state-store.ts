@@ -33,7 +33,6 @@ const useGameStateStore = defineStore("game-state", () => {
         game.$reset();
         currentState.value = "initial";
         history.forEach(event => {
-            console.log(event)
             handleEvent(event);
         });
     }

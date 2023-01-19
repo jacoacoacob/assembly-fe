@@ -83,6 +83,9 @@ const useGameDataStore = defineStore("game-data", {
         },
         lastEvent(state) {
             return state.history[state.history.length - 1];
+        },
+        tileAdjacency(state) {
+            
         }
     }
 });

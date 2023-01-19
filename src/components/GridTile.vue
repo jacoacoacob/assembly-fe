@@ -1,32 +1,32 @@
 <script setup lang="ts">
-import { computed, inject, TransitionGroup } from 'vue';
+import { computed, inject } from 'vue';
 import type { Ref } from 'vue';
 
 import GameToken from './GameToken.vue';
 import { useGameDataStore } from '@/stores/game-data-store';
+import { useBoard } from '@/composables/use-board';
+import type { Tile } from '@/stores/data-store-types';
 
 const gameData = useGameDataStore();
+const board = useBoard();
 
 const props = defineProps<{
     tileIndex: number;
+    tile: Tile;
 }>();
 
+const isOpen = computed(() => board.openTileIndices.value.includes(props.tileIndex))
 
-const tile = computed(() => gameData.tiles[props.tileIndex]);
 const tileContents = computed(() =>
     gameData.board[props.tileIndex].map((tokenId) => gameData.tokens[tokenId]
 ));
-
-const style = computed(() => ({
-    width: `${gameData.grid.tileSize}px`,
-    height: `${gameData.grid.tileSize}px`,
-}));
 
 const hoveredTile = inject<Ref<number>>("board:hoveredTile");
 
 const className = computed(() => ({
     "bg-white shadow-lg z-50": hoveredTile?.value === props.tileIndex,
-    "bg-slate-100": hoveredTile?.value !== props.tileIndex
+    "bg-slate-100": hoveredTile?.value !== props.tileIndex,
+    "bg-slate-200 opacity-30": !isOpen.value,
 }))
 
 const onDragEnter = inject<(event: DragEvent) => void>("tile:dragenter");
@@ -38,7 +38,6 @@ const onDrop = inject<(event: DragEvent) => void>("tile:drop");
     <div
         class="relative flex justify-center items-center border border-slate-900 "
         :class="className"
-        :style="style"
         :data-tile-index="tileIndex"
         @dragenter="onDragEnter"
         @drop="onDrop"

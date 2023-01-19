@@ -69,4 +69,4 @@ function isGame(data: unknown): data is Game {
 }
 
 export { isGame, PLAYER_COLOR_OPTIONS }
-export type { Game, GameEvent, PlayerColor, Player, Token, PlayerTokenIds, PlayerTokens, ReserveTokens };
+export type { Game, GameEvent, PlayerColor, Player, Token, Tile, PlayerTokenIds, PlayerTokens, ReserveTokens };

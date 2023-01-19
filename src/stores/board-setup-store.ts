@@ -23,7 +23,6 @@ const useBoardSetupStore = defineStore("board-setup", () => {
         Object.values(gameData.tokens).reduce(
             (accum: Token["id"][], token) => {
                 if (stagedTokens.value[token.player] && !stagedTokens.value[token.player].includes(token.id)) {
-
                     accum.push(token.id)
                 }
                 return accum;
@@ -32,7 +31,14 @@ const useBoardSetupStore = defineStore("board-setup", () => {
         )
     );
 
-    return { stagedTokens, currentPlayer, unplaceableTokenIds };
+
+    const openTileIndices = computed(() => {
+        const initial = [10, 13, 16, 37, 40, 43];
+
+        return initial;
+    })
+
+    return { stagedTokens, currentPlayer, unplaceableTokenIds, openTileIndices };
 });
 
 export { useBoardSetupStore };

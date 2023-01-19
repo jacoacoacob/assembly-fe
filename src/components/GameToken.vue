@@ -34,7 +34,7 @@ const player = computed(() => gameData.players.find(player => player.id === prop
 const className = computed(() => ({
     [PLAYER_COLOR_OPTIONS[player.value?.color as PlayerColor]]: true,
     "border-dashed border-slate-50": activeToken?.value === props.data.id,
-    "bg-transparent": props.isUnavailable
+    "bg-transparent text-slate-600": props.isUnavailable,
 }))
 
 </script>
@@ -42,7 +42,7 @@ const className = computed(() => ({
 <template>
     <div
         :id="data.id"
-        class="w-8 h-8 rounded-full border border-slate-900 flex justify-center items-center text-white"
+        class="w-8 h-8 rounded-full border border-slate-600 flex justify-center items-center text-white"
         :class="className"
         :style="style"
         :draggable="!isUnavailable"

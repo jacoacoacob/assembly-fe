@@ -7,7 +7,7 @@ import type { ReserveTokens, Token } from "@/stores/data-store-types";
 
 interface TokenReserveData {
     tokens: ReserveTokens;
-    unplaceableTokensIds: Token["id"][];
+    unplaceableTokenIds: Token["id"][];
 }
 
 function useTokenReserve(): ToRefs<TokenReserveData> {
@@ -20,7 +20,7 @@ function useTokenReserve(): ToRefs<TokenReserveData> {
     if (gameState.currentState === "setup_board") {
         return {
             tokens,
-            unplaceableTokensIds: computed(() => boardSetup.unplaceableTokenIds),
+            unplaceableTokenIds: computed(() => boardSetup.unplaceableTokenIds),
         };
     }
 
@@ -30,13 +30,13 @@ function useTokenReserve(): ToRefs<TokenReserveData> {
             // during game_play, a token may be unplaceable if
             // there is no tile open on the board with sufficient
             // space to hold a token of a given value.
-            unplaceableTokensIds: ref([]),
+            unplaceableTokenIds: ref([]),
         }
     }
 
     return {
         tokens,
-        unplaceableTokensIds: ref([]),
+        unplaceableTokenIds: ref([]),
     };
 }
 

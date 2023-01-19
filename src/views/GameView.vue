@@ -3,8 +3,11 @@ import { provide, ref } from 'vue';
 import TheBoard from '@/components/TheBoard.vue';
 import TheSidePanel from '@/components/TheSidePanel.vue';
 import { useGameStateStore } from '@/stores/game-state-store';
+import { useBoard } from '@/composables/use-board';
 
 const gameState = useGameStateStore();
+
+const board = useBoard();
 
 const activeToken = ref<string>("");
 const hoveredTile = ref<number>(-1);
@@ -31,6 +34,10 @@ function findTileIndex(element: HTMLElement) {
     return null;
 }
 
+function isTileOpen(tileIndex: number) {
+    return board.openTileIndices.value.includes(tileIndex);
+}
+
 provide("board:dragleave", (event: DragEvent) => {
     event.preventDefault();
     hoveredTile.value = -1;
@@ -40,7 +47,7 @@ provide("tile:dragenter", (event: DragEvent) => {
     event.preventDefault();
     const target = (event.target as HTMLDivElement);
     const tileIndex = findTileIndex(target);
-    if (tileIndex) {
+    if (tileIndex && isTileOpen(tileIndex)) {
         hoveredTile.value = tileIndex;
     }
 });
@@ -52,9 +59,9 @@ provide("tile:dragover", (event: DragEvent) => {
 provide("tile:drop", (event: DragEvent) => {
     event.preventDefault();
     const target = (event.target as HTMLDivElement);
-    const tileIndex = findTileIndex(target) ;
+    const tileIndex = findTileIndex(target);
     const tokenId = event.dataTransfer?.getData("text");
-    if (typeof tileIndex === "number" && tokenId) {
+    if (typeof tileIndex === "number" && isTileOpen(tileIndex) && tokenId) {
         gameState.pushEvent("setup_board:move_token", { tileIndex, tokenId });
     }
     activeToken.value = "";

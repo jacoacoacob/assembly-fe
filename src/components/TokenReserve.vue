@@ -37,14 +37,14 @@ function onDrop(event: DragEvent) {
 </script>
 
 <template>
-    <div class="flex flex-col bg-slate-300 p-2 rounded" @drop="onDrop" @dragenter="onDragEnter" @dragover="onDragOver">
+    <div class="flex flex-col p-2 rounded" @drop="onDrop" @dragenter="onDragEnter" @dragover="onDragOver">
         <div v-for="segment, i in tokens" :key="i" class="flex">
             <GameToken
                 v-for="token in segment"
                 :key="token.id"
                 :data="token"
                 class="mr-1 mb-1"
-                :isUnavailable="data.unplaceableTokensIds.value.includes(token.id)"
+                :isUnavailable="data.unplaceableTokenIds.value.includes(token.id)"
             />
         </div>
     </div>

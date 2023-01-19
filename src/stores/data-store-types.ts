@@ -1,4 +1,4 @@
-import type { SetupBoardStateEvent } from "../states/setup-board-state";
+import type { SetupBoardStateEvent } from "../states/board-setup-state";
 import type { InitialStateEvent } from "../states/initial-state";
 
 const PLAYER_COLOR_OPTIONS = {
@@ -31,10 +31,13 @@ interface Token {
     tileIndex: number;
 }
 
-type PlayerTokens = Record<Player["id"], Token["id"][]>;
+type PlayerTokens = Record<Player["id"], Token[]>;
+type ReserveTokens = Record<Player["id"], Record<Token["value"], Token[]>>;
+type PlayerTokenIds = Record<Player["id"], Token["id"][]>;
+
 
 interface Tile {
-    threshold: number;
+    capacity: number;
     color?: [number, number, number] | [number, number, number, number];
 }
 
@@ -65,5 +68,5 @@ function isGame(data: unknown): data is Game {
     return false;
 }
 
-export { isGame, PLAYER_COLOR_OPTIONS };
-export type { Game, GameEvent, PlayerColor, Player, Token, PlayerTokens };
+export { isGame, PLAYER_COLOR_OPTIONS }
+export type { Game, GameEvent, PlayerColor, Player, Token, PlayerTokenIds, PlayerTokens, ReserveTokens };

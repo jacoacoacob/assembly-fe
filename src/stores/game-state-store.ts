@@ -3,7 +3,7 @@ import { ref } from "vue";
 
 import { saveGame } from "@/api/game-api";
 import { useGameDataStore } from "./game-data-store";
-import { createSetupBoardState, type SetupBoardState } from "../states/setup-board-state";
+import { createSetupBoardState, type SetupBoardState } from "../states/board-setup-state";
 import { createInitialState, type InitialState } from "../states/initial-state";
 import type { Game, GameEvent } from "./data-store-types";
 import type { StateMachine } from "../states/state-machine";

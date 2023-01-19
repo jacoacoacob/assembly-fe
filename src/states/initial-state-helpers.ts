@@ -30,10 +30,10 @@ function createGrid(rows: number, cols: number, tileSize: number): Game["grid"] 
     return { rows, cols, tileSize };
 }
 
-function createTiles(rows: number, cols: number, thresholdRange: [number, number]): Game["tiles"] {
-    const [low, high] = thresholdRange;
+function createTiles(rows: number, cols: number, capacityRange: [number, number]): Game["tiles"] {
+    const [low, high] = capacityRange;
     return Array.from(Array(rows * cols)).map(() => ({
-        threshold: randFromRange(low, high),
+        capacity: randFromRange(low, high),
     }));
 }
 

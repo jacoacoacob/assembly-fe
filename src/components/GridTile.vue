@@ -45,7 +45,7 @@ const onDrop = inject<(event: DragEvent) => void>("tile:drop");
         @dragover="onDragOver"
     >
         <div>
-            {{ tile.threshold }}
+            {{ tile.capacity }}
         </div>
         <div class="absolute top-0 left-0  w-full h-full">
             <GameToken

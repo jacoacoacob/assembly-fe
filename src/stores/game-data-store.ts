@@ -1,8 +1,7 @@
 import { defineStore } from "pinia";
 
 import { randFromRange, randId } from "@/utils/rand";
-import type { Game, GameEvent, Player, PlayerColor, Token } from "./data-store-types";
-import { saveGame } from "@/api/game-api";
+import type { Game, Player, PlayerColor, PlayerTokenIds, PlayerTokens, ReserveTokens, Token } from "./data-store-types";
 
 function createInitialGameState(rows: number, cols: number, tileSize: number): Game {
     return {
@@ -12,7 +11,7 @@ function createInitialGameState(rows: number, cols: number, tileSize: number): G
         grid: { rows, cols, tileSize },
         tokens: {},
         tiles: Array.from(Array(rows * cols)).map(() => ({
-            threshold: randFromRange(5, 15),
+            capacity: randFromRange(5, 15),
         })),
         ts_updated: new Date().toISOString(),
     }
@@ -57,9 +56,9 @@ const useGameDataStore = defineStore("game-data", {
             }
             return graph;
         },
-        tokenReserves(state): Record<Player["id"], Token["id"][]> {
+        reserveTokenIds(state): PlayerTokenIds {
             return Object.entries(state.tokens).reduce(
-                (accum: Record<Player["id"], Token["id"][]>, [tokenId, token]) => {
+                (accum: PlayerTokenIds, [tokenId, token]) => {
                     if (token.tileIndex < 0) {
                         if (!accum[token.player]) {
                             accum[token.player] = [];
@@ -70,6 +69,25 @@ const useGameDataStore = defineStore("game-data", {
                 },
                 {}
             );
+        },
+        reserveTokens(state): ReserveTokens {
+            return Object.entries(this.reserveTokenIds).reduce(
+                (accum: ReserveTokens, [playerId, tokenIds]) => ({
+                    ...accum,
+                    [playerId]: tokenIds.reduce(
+                        (accum: Record<Token["value"], Token[]>, tokenId) => {
+                            const token = state.tokens[tokenId];
+                            if (!accum[token.value]) {
+                                accum[token.value] = [];
+                            }
+                            accum[token.value].push(token);
+                            return accum
+                        },
+                        {}
+                    ),
+                }),
+                {}
+            )
         },
         lastEvent(state) {
             return state.history[state.history.length - 1];

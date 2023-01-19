@@ -1,7 +1,7 @@
 import type { NSEvent } from "./events"
 import { useGameStateStore, type SetState } from "../stores/game-state-store";
 
-import { useSetupBoardStore } from "../stores/setup-board-store";
+import { useBoardSetupStore } from "../stores/board-setup-store";
 import { stateMachine } from "./state-machine";
 import { useGameDataStore } from "../stores/game-data-store";
 import type { Player, Token } from "@/stores/data-store-types";
@@ -13,12 +13,12 @@ type SetupBoardStateEvent =
     Event<"move_token", { tokenId: string; tileIndex: number; }>;
 
 function createSetupBoardState(setState: SetState) {
-    const setupBoardData = useSetupBoardStore();
+    const boardSetup = useBoardSetupStore();
     const gameData = useGameDataStore();
     const gameState = useGameStateStore();
 
     function getNextPlayer() {
-        const playerIndex = gameData.players.findIndex((player) => player.id === setupBoardData.currentPlayer);
+        const playerIndex = gameData.players.findIndex((player) => player.id === boardSetup.currentPlayer);
         if (playerIndex < gameData.players.length - 1) {
             return gameData.players[playerIndex + 1].id;
         }
@@ -29,10 +29,10 @@ function createSetupBoardState(setState: SetState) {
         handlers: {
             move_token({ tokenId, tileIndex }) {
                 gameData.moveToken(tokenId, tileIndex);
-                setupBoardData.currentPlayer = getNextPlayer();
+                boardSetup.currentPlayer = getNextPlayer();
             },
             set_staged_tokens(stagedTokens) {
-                setupBoardData.stagedTokens = stagedTokens;
+                boardSetup.stagedTokens = stagedTokens;
             }
         },
     })

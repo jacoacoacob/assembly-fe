@@ -16,8 +16,6 @@ const useBoardSetupStore = defineStore("board-setup", () => {
 
     const activePlayerIndex = ref(0);
 
-    // const currentPlayer = gameData.players[activePlayerIndex.value];
-
     function endTurn() {
         activePlayerIndex.value = activePlayerIndex.value + 1 >= gameData.players.length
             ? 0
@@ -48,10 +46,10 @@ const useBoardSetupStore = defineStore("board-setup", () => {
      */
     const openTileIndices = computed(() => {
         const initial = [10, 13, 16, 37, 40, 43];
-        return initial;
+        return initial.filter((tileIndex) => gameData.openTileIndices.includes(tileIndex));
     })
 
-    // function re
+    
 
     return {
         stagedTokens,

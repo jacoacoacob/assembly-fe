@@ -11,9 +11,11 @@ const usePlayerStore = defineStore("players", () => {
 
     const viewedPlayerIndex = ref(0);
 
-    onMounted(() => {
-        viewedPlayerIndex.value = 0
-    });
+    const viewedPlayer = computed(() => gameData.players[viewedPlayerIndex.value]);
+
+    function setViewedPlayer(index: number) {
+        viewedPlayerIndex.value = index;
+    }
 
     const activePlayerIndex = computed(() => {
         if (gameState.currentState === "setup_board") {
@@ -27,11 +29,9 @@ const usePlayerStore = defineStore("players", () => {
 
     const activePlayer = computed(() => gameData.players[activePlayerIndex.value]);
 
-    const viewedPlayer = computed(() => gameData.players[viewedPlayerIndex.value]);
-
-    function setViewedPlayer(index: number) {
-        viewedPlayerIndex.value = index;
-    }
+    onMounted(() => {
+        setViewedPlayer(activePlayerIndex.value);
+    });
 
     return {
         activePlayer,

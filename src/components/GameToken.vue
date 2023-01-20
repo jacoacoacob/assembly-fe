@@ -4,10 +4,12 @@ import { computed, inject, type StyleValue, type Ref } from "vue";
 import { useGameDataStore } from '@/stores/game-data-store';
 import { PLAYER_COLOR_OPTIONS, type PlayerColor } from "@/stores/game-data-store-types";
 import type { Player, Token } from '@/stores/game-data-store-types';
+import { usePlayerStore } from "@/stores/player-store";
 
 const props = defineProps<{ data: Token; isUnavailable?: boolean }>();
 
 const gameData = useGameDataStore();
+const playerStore = usePlayerStore();
 
 const activeToken = inject<Ref<string>>("board:activeToken")
 const onDragStart = inject<(event: DragEvent) => void>("token:dragstart");
@@ -45,7 +47,7 @@ const className = computed(() => ({
         class="w-8 h-8 rounded-full border border-slate-600 flex justify-center items-center text-white"
         :class="className"
         :style="style"
-        :draggable="!isUnavailable"
+        :draggable="!isUnavailable && data.player === playerStore.activePlayer.id"
         @dragstart="onDragStart"
     >
         {{ data.value }}

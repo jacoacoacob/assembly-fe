@@ -16,7 +16,7 @@ const playerStore = usePlayerStore();
             <li v-for="player, i in playerStore.players" :key="player.id">
                 <button
                     class="button button-dense button-outline mb-1 flex items-center space-x-1 w-full"
-                    :class="{ 'ring ring-slate-800': i === playerStore.activePlayerIndex }"
+                    :class="{ 'ring ring-slate-800 font-bold': i === playerStore.activePlayerIndex }"
                     @click="() => playerStore.setViewedPlayer(i)"
                 >
                     <span

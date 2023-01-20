@@ -7,6 +7,7 @@ import { usePlayerStore } from '@/stores/player-store';
 import { computed } from 'vue';
 
 const gameData = useGameDataStore();
+const gameState = useGameStateStore();
 const playerStore = usePlayerStore();
 
 </script>
@@ -28,6 +29,5 @@ const playerStore = usePlayerStore();
                 <TokenReserve :playerId="playerStore.viewedPlayer.id" />
             </div>
         </div>
-        
     </div>
 </template>

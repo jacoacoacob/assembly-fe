@@ -2,10 +2,12 @@
 import { computed } from 'vue';
 
 import GameToken from './GameToken.vue';
-import { useGameStateStore } from '@/stores/game-state-store';
+import { useGameStateStore, type StateName } from '@/stores/game-state-store';
 import { useTokenReserve } from '@/composables/use-token-reserve';
+import { usePlayerStore } from '@/stores/player-store';
 
 const gameState = useGameStateStore();
+const playerStore = usePlayerStore();
 
 const data = useTokenReserve();
 
@@ -27,10 +29,12 @@ function onDrop(event: DragEvent) {
     event.preventDefault();
     const tokenId = event.dataTransfer?.getData("text");
     if (tokenId) {
-        gameState.pushEvent("setup_board:move_token", {
-            tokenId,
-            tileIndex: -1,
-        });
+        if (gameState.currentState === "setup_board") {
+            gameState.pushEvent("setup_board:move_token", { tokenId, tileIndex: -1 });
+        }
+        if (gameState.currentState === "play_game") {
+            // gameState.pushEvent("")
+        }
     }
 }
 
@@ -44,6 +48,7 @@ function onDrop(event: DragEvent) {
                 :key="token.id"
                 :data="token"
                 class="mr-1 mb-1"
+                :class="{ 'opacity-60': token.player !== playerStore.activePlayer.id }"
                 :isUnavailable="data.unplaceableTokenIds.value.includes(token.id)"
             />
         </div>

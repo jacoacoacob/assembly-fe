@@ -1,6 +1,7 @@
 import { defineStore } from "pinia";
 
 import { randFromRange, randId } from "@/utils/rand";
+import { sum } from "@/utils/sum";
 import type { Game, Player, PlayerColor, PlayerTokenIds, PlayerTokens, ReserveTokens, Token } from "./game-data-store-types";
 
 function createInitialGameState(rows: number, cols: number, tileSize: number): Game {
@@ -85,7 +86,16 @@ const useGameDataStore = defineStore("game-data", {
             return state.history[state.history.length - 1];
         },
         tileAdjacency(state) {
-            
+            // adjacency list representation of all tiles on board
+        },
+        openTileIndices(state): number[] {
+            return state.tiles.reduce((accum: number[], tile, tileIndex) => {
+                const tileTokenValues = this.board[tileIndex].map((tokenId) => state.tokens[tokenId].value);
+                if (tileTokenValues.length < 4 && sum(tileTokenValues) < tile.capacity) {
+                    accum.push(tileIndex);
+                }
+                return accum;
+            }, []);
         }
     }
 });

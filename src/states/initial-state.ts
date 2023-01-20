@@ -1,8 +1,8 @@
-import { stateMachine } from "./state-machine";
+import { stateMachine } from "../utils/state-machine";
 import { useGameDataStore } from "../stores/game-data-store";
 import type { SetState } from "../stores/game-state-store";
-import type { NSEvent } from "./events"
-import type { Game } from "../stores/data-store-types";
+import type { NSEvent } from "../utils/state-events"
+import type { Game } from "../stores/game-data-store-types";
 
 type Event<Action extends string, Data = {}> = NSEvent<"initial", Action, Data>;
 

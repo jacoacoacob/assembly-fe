@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { PLAYER_COLOR_OPTIONS } from '@/stores/data-store-types';
+import { PLAYER_COLOR_OPTIONS } from '@/stores/game-data-store-types';
 
 import { usePlayerStore } from "@/stores/player-store";
 
@@ -9,11 +9,14 @@ const playerStore = usePlayerStore();
 
 <template>
     <div class="flex justify-between items-center">
-        <h1>Hi</h1>
+        <button class="button button-dense" title="help">
+            ?
+        </button>
         <ul class="flex space-x-4">
             <li v-for="player, i in playerStore.players" :key="player.id">
                 <button
                     class="button button-dense button-outline mb-1 flex items-center space-x-1 w-full"
+                    :class="{ 'ring ring-slate-800': i === playerStore.activePlayerIndex }"
                     @click="() => playerStore.setViewedPlayer(i)"
                 >
                     <span

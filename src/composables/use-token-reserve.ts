@@ -3,7 +3,7 @@ import { computed, ref, type ToRefs } from "vue";
 import { useGameDataStore } from "@/stores/game-data-store";
 import { useGameStateStore } from "@/stores/game-state-store";
 import { useBoardSetupStore } from "@/stores/board-setup-store";
-import type { ReserveTokens, Token } from "@/stores/data-store-types";
+import type { ReserveTokens, Token } from "@/stores/game-data-store-types";
 
 interface TokenReserveData {
     tokens: ReserveTokens;

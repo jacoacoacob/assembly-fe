@@ -2,8 +2,8 @@
 import { computed, inject, type StyleValue, type Ref } from "vue";
 
 import { useGameDataStore } from '@/stores/game-data-store';
-import { PLAYER_COLOR_OPTIONS, type PlayerColor } from "@/stores/data-store-types";
-import type { Player, Token } from '@/stores/data-store-types';
+import { PLAYER_COLOR_OPTIONS, type PlayerColor } from "@/stores/game-data-store-types";
+import type { Player, Token } from '@/stores/game-data-store-types';
 
 const props = defineProps<{ data: Token; isUnavailable?: boolean }>();
 

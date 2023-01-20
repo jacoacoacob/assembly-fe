@@ -1,4 +1,4 @@
-import type { Player, Token, Game} from "@/stores/data-store-types";
+import type { Player, Token, Game} from "@/stores/game-data-store-types";
 import { randFromRange, randId } from "@/utils/rand";
 
 function createTokens(players: Player[]): Game["tokens"] {

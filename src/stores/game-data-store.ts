@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 
 import { randFromRange, randId } from "@/utils/rand";
-import type { Game, Player, PlayerColor, PlayerTokenIds, PlayerTokens, ReserveTokens, Token } from "./data-store-types";
+import type { Game, Player, PlayerColor, PlayerTokenIds, PlayerTokens, ReserveTokens, Token } from "./game-data-store-types";
 
 function createInitialGameState(rows: number, cols: number, tileSize: number): Game {
     return {

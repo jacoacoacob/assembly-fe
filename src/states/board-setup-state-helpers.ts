@@ -1,5 +1,5 @@
 import { randFromRange } from "@/utils/rand";
-import type { PlayerTokenIds } from "@/stores/data-store-types";
+import type { PlayerTokenIds } from "@/stores/game-data-store-types";
 
 function createStagedTokenIds(playerTokensIds: PlayerTokenIds): PlayerTokenIds {
     return Object.entries(playerTokensIds).reduce((accum: PlayerTokenIds, [playerId, playerTokenIds]) => {

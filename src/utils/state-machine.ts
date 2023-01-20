@@ -1,5 +1,5 @@
 
-import type { NSEvent, NSHandler, NSEventHandlers } from "./events";
+import type { NSEvent, NSHandler, NSEventHandlers } from "./state-events";
 import type { StateName } from "@/stores/game-state-store";
 
 interface Params<S extends StateName, E extends NSEvent<S, string>> {

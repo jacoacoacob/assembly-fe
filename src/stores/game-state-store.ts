@@ -5,9 +5,9 @@ import { saveGame } from "@/api/game-api";
 import { useGameDataStore } from "./game-data-store";
 import { createSetupBoardState, type SetupBoardState } from "../states/board-setup-state";
 import { createInitialState, type InitialState } from "../states/initial-state";
-import type { Game, GameEvent } from "./data-store-types";
-import type { StateMachine } from "../states/state-machine";
-import type { NSEvent } from "@/states/events";
+import type { Game, GameEvent } from "./game-data-store-types";
+import type { StateMachine } from "../utils/state-machine";
+import type { NSEvent } from "@/utils/state-events";
 
 type StateName = 
     "initial" |

@@ -5,7 +5,7 @@ import type { Ref } from 'vue';
 import GameToken from './GameToken.vue';
 import { useGameDataStore } from '@/stores/game-data-store';
 import { useBoard } from '@/composables/use-board';
-import type { Tile } from '@/stores/data-store-types';
+import type { Tile } from '@/stores/game-data-store-types';
 
 const gameData = useGameDataStore();
 const board = useBoard();

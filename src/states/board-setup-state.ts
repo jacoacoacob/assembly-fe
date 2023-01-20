@@ -1,10 +1,10 @@
-import type { NSEvent } from "./events"
+import type { NSEvent } from "../utils/state-events"
 import { useGameStateStore, type SetState } from "../stores/game-state-store";
 
 import { useBoardSetupStore } from "../stores/board-setup-store";
-import { stateMachine } from "./state-machine";
+import { stateMachine } from "../utils/state-machine";
 import { useGameDataStore } from "../stores/game-data-store";
-import type { Player, Token } from "@/stores/data-store-types";
+import type { Player, Token } from "@/stores/game-data-store-types";
 
 type Event<Action extends string, Data = {}> = NSEvent<"setup_board", Action, Data>;
 

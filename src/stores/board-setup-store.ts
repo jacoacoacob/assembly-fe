@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import { computed, ref } from "vue";
-import type { PlayerTokenIds, Token } from "./data-store-types";
+import type { PlayerTokenIds, Token } from "./game-data-store-types";
 import { useGameDataStore } from "./game-data-store";
 
 const useBoardSetupStore = defineStore("board-setup", () => {

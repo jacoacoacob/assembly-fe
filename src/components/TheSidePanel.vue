@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useGameDataStore } from '@/stores/game-data-store';
 import { useGameStateStore } from '@/stores/game-state-store';
-import { PLAYER_COLOR_OPTIONS } from '@/stores/data-store-types';
+import { PLAYER_COLOR_OPTIONS } from '@/stores/game-data-store-types';
 import TokenReserve from './TokenReserve.vue';
 import { usePlayerStore } from '@/stores/player-store';
 import { computed } from 'vue';

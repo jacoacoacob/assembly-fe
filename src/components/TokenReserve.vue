@@ -37,7 +37,7 @@ function onDrop(event: DragEvent) {
 </script>
 
 <template>
-    <div class="flex flex-col p-2 rounded" @drop="onDrop" @dragenter="onDragEnter" @dragover="onDragOver">
+    <div class="flex flex-col select-none" @drop="onDrop" @dragenter="onDragEnter" @dragover="onDragOver">
         <div v-for="segment, i in tokens" :key="i" class="flex">
             <GameToken
                 v-for="token in segment"

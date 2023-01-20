@@ -4,7 +4,7 @@ import type { ToRefs, Ref } from "vue";
 import { useGameDataStore } from "@/stores/game-data-store";
 import { useGameStateStore } from "@/stores/game-state-store";
 import { useBoardSetupStore } from "@/stores/board-setup-store";
-import type { Game, Tile } from "@/stores/data-store-types";
+import type { Game, Tile } from "@/stores/game-data-store-types";
 
 interface BoardData {
     openTileIndices: Ref<number[]>;

@@ -10,6 +10,7 @@ type Event<Action extends string, Data = {}> = NSEvent<"setup_board", Action, Da
 
 type SetupBoardStateEvent =
     Event<"set_staged_tokens", Record<Player["id"], Token["id"][]>> |
+    Event<"add_open_tile", { tileIndex: number }> |
     Event<"end_turn"> |
     Event<"move_token", { tokenId: string; tileIndex: number; }>;
 
@@ -28,6 +29,11 @@ function createSetupBoardState(setState: SetState) {
             },
             set_staged_tokens(stagedTokens) {
                 boardSetup.stagedTokens = stagedTokens;
+            },
+            add_open_tile({ tileIndex }) {
+                if (!boardSetup.openTileIndices.includes(tileIndex)) {
+                    boardSetup.openTileIndices.push(tileIndex);
+                }
             }
         },
     })

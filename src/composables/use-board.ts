@@ -32,7 +32,7 @@ function useBoard(): BoardData {
         return {
             openTileIndices: computed(() => boardSetup.openTileIndices),
             isTileOpen(tileIndex, tokenId) {
-                return _isTileOpen(boardSetup.openTileIndices, tileIndex, tokenId);
+                return _isTileOpen(boardSetup.filteredOpenTileIndices, tileIndex, tokenId);
             }
         };
     }

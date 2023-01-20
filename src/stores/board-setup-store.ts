@@ -34,6 +34,8 @@ const useBoardSetupStore = defineStore("board-setup", () => {
         )
     );
 
+    const openTileIndices = ref([10, 13, 16, 37, 40, 43]);
+
     /**
      * A game starts with six tiles open for token placement.
      * 
@@ -44,18 +46,16 @@ const useBoardSetupStore = defineStore("board-setup", () => {
      * as many times as is required for all staged tokens to be placed on
      * the board.
      */
-    const openTileIndices = computed(() => {
-        const initial = [10, 13, 16, 37, 40, 43];
-        return initial.filter((tileIndex) => gameData.openTileIndices.includes(tileIndex));
+    const filteredOpenTileIndices = computed(() => {
+        return openTileIndices.value.filter((tileIndex) => gameData.openTileIndices.includes(tileIndex));
     })
-
-    
 
     return {
         stagedTokens,
         activePlayerIndex,
         unplaceableTokenIds,
         openTileIndices,
+        filteredOpenTileIndices,
         endTurn,
     };
 });

@@ -6,7 +6,13 @@ import { useGameStateStore } from '@/stores/game-state-store';
 import { useBoard } from '@/composables/use-board';
 import TopBar from '@/components/TopBar.vue';
 import { usePlayerStore } from '@/stores/player-store';
+import { useGameDataStore } from "@/stores/game-data-store";
+import { useBoardSetupStore } from '@/stores/board-setup-store';
+import { randFromRange } from '@/utils/rand';
 
+
+const boardSetup = useBoardSetupStore();
+const gameData = useGameDataStore()
 const gameState = useGameStateStore();
 const playerStore = usePlayerStore();
 
@@ -59,6 +65,8 @@ provide("tile:dragover", (event: DragEvent) => {
     event.preventDefault();
 });
 
+
+
 provide("tile:drop", (event: DragEvent) => {
     event.preventDefault();
     const target = (event.target as HTMLDivElement);
@@ -66,9 +74,35 @@ provide("tile:drop", (event: DragEvent) => {
     const tokenId = event.dataTransfer?.getData("text");
     if (typeof tileIndex === "number" && tokenId && board.isTileOpen(tileIndex, tokenId)) {
         if (gameState.currentState === "setup_board") {
+
+            function playerHasMove() {
+                const playerTokens = boardSetup.stagedTokens[playerStore.activePlayer.id]
+                    .map((tokenId) => gameData.tokens[tokenId])
+                    .filter((token) => token.tileIndex === -1);
+
+                return playerTokens.some(
+                    (token) => board.openTileIndices.value.some(
+                        (tileIndex) => board.isTileOpen(tileIndex, token.id)
+                    )
+                );
+            }
+
             gameState.pushEvent("setup_board:move_token", { tileIndex, tokenId });
             gameState.pushEvent("setup_board:end_turn");
             playerStore.setViewedPlayer(playerStore.activePlayerIndex);
+            // if new active player has no open tiles available, open up a random one
+            if (!playerHasMove()) {
+                const indices = gameData.tiles
+                    .map((_, i) => i)
+                    .filter((i) => !boardSetup.openTileIndices.includes(i));
+                gameState.pushEvent(
+                    "setup_board:add_open_tile",
+                    {
+                        tileIndex: indices[randFromRange(0, indices.length)]
+                    }
+                )
+
+            }
         }
     }
     activeToken.value = "";

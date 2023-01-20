@@ -45,7 +45,7 @@ const gameNameErrors = computed(() => {
 
 const gameFormError = ref<string>("");
 
-const maxPlayers = 4;
+const maxPlayers = 5;
 
 const editingPlayerIndex = ref(-1);
 
@@ -69,7 +69,7 @@ onBeforeRouteLeave((to) => {
             return false;
         }
         if (gamePlayers.value.length < 2) {
-            gameFormError.value = "You need between 2 and 4 players to start.";
+            gameFormError.value = "You need between 2 and 5 players to start.";
             return false;
         }
         if (gameNameErrors.value.length || playerNameErrors.value.length) {
@@ -116,7 +116,7 @@ function savePlayer() {
             <h1 class="font-bold text-2xl">Start a new game</h1>
             <div class="space-y-12">
                 <div class="space-y-4">
-                    <h2 class="text-lg font-bold" id="game-name-heading">Name</h2>
+                    <h2 class="text-lg font-bold" id="game-name-heading">Title</h2>
                     <AppInput
                         :errors="gameNameErrors"
                         v-model="gameName"
@@ -174,7 +174,7 @@ function savePlayer() {
                             </div>
                         </li>
                     </ul>
-                    <button :disabled="gamePlayers.length > 3" @click="addPlayer" class="button w-full">
+                    <button :disabled="gamePlayers.length >= maxPlayers" @click="addPlayer" class="button w-full">
                         <span v-if="gamePlayers.length >= maxPlayers">
                             No more players
                         </span>

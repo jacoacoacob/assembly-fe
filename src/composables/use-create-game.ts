@@ -14,7 +14,7 @@ function useCreateGame() {
         gameState.pushEvent("initial:set_players", players);
         gameState.pushEvent("initial:set_tokens", createTokens(players));
         gameState.pushEvent("initial:set_grid", createGrid(6, 9, 90));
-        gameState.pushEvent("initial:set_tiles", createTiles(6, 9, [5, 15]));
+        gameState.pushEvent("initial:set_tiles", createTiles(6, 9, [5, 10]));
         gameState.pushEvent("initial:finish");
         nextTick(() => {
             gameState.pushEvent(

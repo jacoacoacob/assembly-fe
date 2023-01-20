@@ -12,11 +12,11 @@ import type { NSEvent } from "@/states/events";
 type StateName = 
     "initial" |
     "setup_board" |
-    "game_play";
+    "play_game";
 
 type SetState = (newState: StateName) => void;
 
-// type State = SetupBoardState | InitialState;
+type State = SetupBoardState | InitialState;
 
 const useGameStateStore = defineStore("game-state", () => {
 
@@ -40,7 +40,7 @@ const useGameStateStore = defineStore("game-state", () => {
     const states: Record<StateName, SetupBoardState | InitialState> = {
         initial: createInitialState(setState),
         setup_board: createSetupBoardState(setState),
-        game_play: createInitialState(setState),
+        play_game: createInitialState(setState),
     };
 
     function handleEvent<S extends StateName, E extends NSEvent<S, string>>(event: E) {

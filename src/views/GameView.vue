@@ -4,6 +4,7 @@ import TheBoard from '@/components/TheBoard.vue';
 import TheSidePanel from '@/components/TheSidePanel.vue';
 import { useGameStateStore } from '@/stores/game-state-store';
 import { useBoard } from '@/composables/use-board';
+import TopBar from '@/components/TopBar.vue';
 
 const gameState = useGameStateStore();
 
@@ -70,8 +71,11 @@ provide("tile:drop", (event: DragEvent) => {
 </script>
 
 <template>
-    <div class="flex space-x-8 w-full px-8">
-        <TheBoard />
-        <TheSidePanel class="flex-1 w-full" />
+    <div class="px-8 w-full space-y-4">
+        <TopBar />
+        <div class="flex space-x-8">
+            <TheBoard />
+            <TheSidePanel class="flex-1 w-full" />
+        </div>
     </div>
 </template>

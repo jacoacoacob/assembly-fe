@@ -26,7 +26,7 @@ function useBoard(): BoardData {
         };
     }
 
-    if (gameState.currentState === "game_play") {
+    if (gameState.currentState === "play_game") {
         return {
             openTileIndices: ref([]),
             isTileOpen(tileIndex) {

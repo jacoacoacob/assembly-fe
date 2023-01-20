@@ -24,10 +24,10 @@ function useTokenReserve(): ToRefs<TokenReserveData> {
         };
     }
 
-    if (gameState.currentState === "game_play") {
+    if (gameState.currentState === "play_game") {
         return {
             tokens,
-            // during game_play, a token may be unplaceable if
+            // during play_game, a token may be unplaceable if
             // there is no tile open on the board with sufficient
             // space to hold a token of a given value.
             unplaceableTokenIds: ref([]),

@@ -6,6 +6,7 @@ const PLAYER_COLOR_OPTIONS = {
     blue: "bg-blue-400",
     orange: "bg-orange-400",
     red: "bg-red-400",
+    violet: "bg-violet-500"
 };
 
 type PlayerColor = keyof typeof PLAYER_COLOR_OPTIONS;

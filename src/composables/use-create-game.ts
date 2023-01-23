@@ -3,7 +3,7 @@ import { useGameStateStore } from "@/stores/game-state-store";
 import type { Player } from "@/stores/game-data-store-types";
 import { useGameDataStore } from "@/stores/game-data-store";
 import { createTokens, createGrid, createTiles } from "@/states/initial-state-helpers";
-import { createStagedTokenIds } from "@/states/board-setup-state-helpers";
+import { createStagedTokenIds } from "@/states/place-tokens-state-helpers";
 
 function useCreateGame() {
     const gameState = useGameStateStore();
@@ -18,7 +18,7 @@ function useCreateGame() {
         gameState.pushEvent("initial:finish");
         nextTick(() => {
             gameState.pushEvent(
-                "setup_board:set_staged_tokens", createStagedTokenIds(gameData.playerTokenIds)
+                "place_tokens:set_staged_tokens", createStagedTokenIds(gameData.playerTokenIds)
             );
         });
     }

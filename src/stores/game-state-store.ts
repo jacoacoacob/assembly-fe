@@ -3,7 +3,7 @@ import { ref } from "vue";
 
 import { saveGame } from "@/api/game-api";
 import { useGameDataStore } from "./game-data-store";
-import { createSetupBoardState, type SetupBoardState } from "../states/board-setup-state";
+import { createPlaceTokensState, type PlaceTokensState } from "../states/place-tokens-state";
 import { createInitialState, type InitialState } from "../states/initial-state";
 import type { Game, GameEvent } from "./game-data-store-types";
 import type { StateMachine } from "../utils/state-machine";
@@ -11,12 +11,12 @@ import type { NSEvent } from "@/utils/state-events";
 
 type StateName = 
     "initial" |
-    "setup_board" |
+    "place_tokens" |
     "play_game";
 
 type SetState = (newState: StateName) => void;
 
-type State = SetupBoardState | InitialState;
+type State = PlaceTokensState | InitialState;
 
 const useGameStateStore = defineStore("game-state", () => {
 
@@ -37,9 +37,9 @@ const useGameStateStore = defineStore("game-state", () => {
         });
     }
 
-    const states: Record<StateName, SetupBoardState | InitialState> = {
+    const states: Record<StateName, PlaceTokensState | InitialState> = {
         initial: createInitialState(setState),
-        setup_board: createSetupBoardState(setState),
+        place_tokens: createPlaceTokensState(setState),
         play_game: createInitialState(setState),
     };
 

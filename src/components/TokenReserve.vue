@@ -29,8 +29,8 @@ function onDrop(event: DragEvent) {
     event.preventDefault();
     const tokenId = event.dataTransfer?.getData("text");
     if (tokenId) {
-        if (gameState.currentState === "setup_board") {
-            gameState.pushEvent("setup_board:move_token", { tokenId, tileIndex: -1 });
+        if (gameState.currentState === "place_tokens") {
+            gameState.pushEvent("place_tokens:move_token", { tokenId, tileIndex: -1 });
         }
         if (gameState.currentState === "play_game") {
             // gameState.pushEvent("")

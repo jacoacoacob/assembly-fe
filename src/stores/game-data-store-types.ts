@@ -1,4 +1,4 @@
-import type { SetupBoardStateEvent } from "../states/board-setup-state";
+import type { PlaceTokensEvent } from "../states/place-tokens-state";
 import type { InitialStateEvent } from "../states/initial-state";
 
 const PLAYER_COLOR_OPTIONS = {
@@ -17,7 +17,7 @@ interface Player {
     color: PlayerColor,
 }
 
-type GameEvent = SetupBoardStateEvent | InitialStateEvent;
+type GameEvent = PlaceTokensEvent | InitialStateEvent;
 
 interface Grid {
     rows: number;

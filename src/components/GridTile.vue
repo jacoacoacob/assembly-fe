@@ -4,21 +4,22 @@ import type { Ref } from 'vue';
 
 import GameToken from './GameToken.vue';
 import { useGameDataStore } from '@/stores/game-data-store';
-import { useBoard } from '@/composables/use-board';
+import { useTileDataStore } from "@/stores/tile-data-store";
 import type { Tile } from '@/stores/game-data-store-types';
 
-const gameData = useGameDataStore();
-const board = useBoard();
+
+const game = useGameDataStore();
+const board = useTileDataStore();
 
 const props = defineProps<{
     tileIndex: number;
     tile: Tile;
 }>();
 
-const isOpen = computed(() => board.openTileIndices.value.includes(props.tileIndex))
+const isOpen = computed(() => board.openTiles.includes)
 
 const tileContents = computed(() =>
-    gameData.board[props.tileIndex].map((tokenId) => gameData.tokens[tokenId]
+    game.board[props.tileIndex].map((tokenId) => game.tokens[tokenId]
 ));
 
 const hoveredTile = inject<Ref<number>>("board:hoveredTile");

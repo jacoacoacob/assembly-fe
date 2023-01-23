@@ -3,7 +3,7 @@ import { computed, ref } from "vue";
 import type { PlayerTokenIds, Token } from "./game-data-store-types";
 import { useGameDataStore } from "./game-data-store";
 
-const useBoardSetupStore = defineStore("board-setup", () => {
+const usePlaceTokensStore = defineStore("place-tokens", () => {
 
     const gameData = useGameDataStore();
 
@@ -34,7 +34,7 @@ const useBoardSetupStore = defineStore("board-setup", () => {
         )
     );
 
-    const openTileIndices = ref([10, 13, 16, 37, 40, 43]);
+    const inPlayTiles = ref([10, 13, 16, 37, 40, 43]);
 
     /**
      * A game starts with six tiles open for token placement.
@@ -46,19 +46,20 @@ const useBoardSetupStore = defineStore("board-setup", () => {
      * as many times as is required for all staged tokens to be placed on
      * the board.
      */
-    const filteredOpenTileIndices = computed(() => {
-        return openTileIndices.value.filter((tileIndex) => gameData.openTileIndices.includes(tileIndex));
-    })
+    const openTiles = computed(() => {
+        return inPlayTiles.value.filter((tileIndex) => gameData.openTiles.includes(tileIndex));
+    });
+
 
     return {
         stagedTokens,
         activePlayerIndex,
         unplaceableTokenIds,
-        openTileIndices,
-        filteredOpenTileIndices,
+        inPlayTiles,
+        openTiles,
         endTurn,
     };
 });
 
 
-export { useBoardSetupStore };
+export { usePlaceTokensStore };

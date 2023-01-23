@@ -20,7 +20,7 @@ function createInitialState(setState: SetState) {
     return stateMachine<"initial", InitialStateEvent>({
         handlers: {
             finish() {
-                setState("setup_board");
+                setState("place_tokens");
             },
             set_name(name) {
                 gameData.name = name;

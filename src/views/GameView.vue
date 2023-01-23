@@ -3,20 +3,21 @@ import { provide, ref } from 'vue';
 import TheBoard from '@/components/TheBoard.vue';
 import TheSidePanel from '@/components/TheSidePanel.vue';
 import { useGameStateStore } from '@/stores/game-state-store';
-import { useBoard } from '@/composables/use-board';
+// import { useBoard } from '@/composables/use-board';
 import TopBar from '@/components/TopBar.vue';
 import { usePlayerStore } from '@/stores/player-store';
+import { useTileDataStore } from '@/stores/tile-data-store';
 import { useGameDataStore } from "@/stores/game-data-store";
-import { useBoardSetupStore } from '@/stores/board-setup-store';
+import { usePlaceTokensStore } from '@/stores/place-tokens-store';
 import { randFromRange } from '@/utils/rand';
 
 
-const boardSetup = useBoardSetupStore();
+const placeTokensStore = usePlaceTokensStore();
 const gameData = useGameDataStore()
 const gameState = useGameStateStore();
 const playerStore = usePlayerStore();
 
-const board = useBoard();
+const tiles = useTileDataStore();
 
 const activeToken = ref<string>("");
 const hoveredTile = ref<number>(-1);
@@ -44,7 +45,7 @@ function findTileIndex(element: HTMLElement) {
 }
 
 // function isTileDroppable(tileIndex: number) {
-//     return board.openTileIndices.value.includes(tileIndex);
+//     return board.openTiles.value.includes(tileIndex);
 // }
 
 provide("board:dragleave", (event: DragEvent) => {
@@ -56,7 +57,7 @@ provide("tile:dragenter", (event: DragEvent) => {
     event.preventDefault();
     const target = (event.target as HTMLDivElement);
     const tileIndex = findTileIndex(target);
-    if (tileIndex && board.isTileOpen(tileIndex, activeToken.value)) {
+    if (tileIndex && tiles.isValidMove(tileIndex, activeToken.value)) {
         hoveredTile.value = tileIndex;
     }
 });
@@ -72,31 +73,33 @@ provide("tile:drop", (event: DragEvent) => {
     const target = (event.target as HTMLDivElement);
     const tileIndex = findTileIndex(target);
     const tokenId = event.dataTransfer?.getData("text");
-    if (typeof tileIndex === "number" && tokenId && board.isTileOpen(tileIndex, tokenId)) {
-        if (gameState.currentState === "setup_board") {
+    if (typeof tileIndex === "number" && tokenId && tiles.isValidMove(tileIndex, tokenId)) {
+        if (gameState.currentState === "place_tokens") {
 
             function playerHasMove() {
-                const playerTokens = boardSetup.stagedTokens[playerStore.activePlayer.id]
+                const playerTokens = placeTokensStore.stagedTokens[playerStore.activePlayer.id]
                     .map((tokenId) => gameData.tokens[tokenId])
                     .filter((token) => token.tileIndex === -1);
 
                 return playerTokens.some(
-                    (token) => board.openTileIndices.value.some(
-                        (tileIndex) => board.isTileOpen(tileIndex, token.id)
+                    (token) => tiles.openTiles.some(
+                        (tileIndex) => tiles.isValidMove(tileIndex, token.id)
                     )
                 );
             }
 
-            gameState.pushEvent("setup_board:move_token", { tileIndex, tokenId });
-            gameState.pushEvent("setup_board:end_turn");
+            gameState.pushEvent("place_tokens:move_token", { tileIndex, tokenId });
+            gameState.pushEvent("place_tokens:end_turn");
             playerStore.setViewedPlayer(playerStore.activePlayerIndex);
             // if new active player has no open tiles available, open up a random one
             if (!playerHasMove()) {
+                
                 const indices = gameData.tiles
                     .map((_, i) => i)
-                    .filter((i) => !boardSetup.openTileIndices.includes(i));
+                    .filter((i) => !placeTokensStore.openTiles.includes(i));
+                
                 gameState.pushEvent(
-                    "setup_board:add_open_tile",
+                    "place_tokens:add_in_play_tile",
                     {
                         tileIndex: indices[randFromRange(0, indices.length)]
                     }
@@ -108,6 +111,16 @@ provide("tile:drop", (event: DragEvent) => {
     activeToken.value = "";
     hoveredTile.value = -1;
 });
+
+function onDrop(event: DragEvent) {
+    event.preventDefault();
+    const target = event.target as HTMLDivElement;
+    const tileIndex = findTileIndex(target);
+    if (typeof tileIndex === "number" && tiles.isValidMove(tileIndex, activeToken.value)) {
+
+    }
+}
+
 </script>
 
 <template>

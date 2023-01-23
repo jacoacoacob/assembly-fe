@@ -2,12 +2,12 @@ import { computed, onMounted, ref } from "vue";
 import { defineStore } from "pinia";
 import { useGameDataStore } from "@/stores/game-data-store";
 import { useGameStateStore } from "./game-state-store";
-import { useBoardSetupStore } from "./board-setup-store";
+import { usePlaceTokensStore } from "./place-tokens-store";
 
 const usePlayerStore = defineStore("players", () => {
     const gameData = useGameDataStore();
     const gameState = useGameStateStore();
-    const boardSetup = useBoardSetupStore();
+    const placeTokensStore = usePlaceTokensStore();
 
     const viewedPlayerIndex = ref(0);
 
@@ -18,8 +18,8 @@ const usePlayerStore = defineStore("players", () => {
     }
 
     const activePlayerIndex = computed(() => {
-        if (gameState.currentState === "setup_board") {
-            return boardSetup.activePlayerIndex;
+        if (gameState.currentState === "place_tokens") {
+            return placeTokensStore.activePlayerIndex;
         }
         if (gameState.currentState === "play_game") {
             return 0;

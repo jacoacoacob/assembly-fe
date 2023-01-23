@@ -2,7 +2,7 @@ import { computed, ref, type ToRefs } from "vue";
 
 import { useGameDataStore } from "@/stores/game-data-store";
 import { useGameStateStore } from "@/stores/game-state-store";
-import { useBoardSetupStore } from "@/stores/board-setup-store";
+import { usePlaceTokensStore } from "@/stores/place-tokens-store";
 import type { ReserveTokens, Token } from "@/stores/game-data-store-types";
 
 interface TokenReserveData {
@@ -13,14 +13,14 @@ interface TokenReserveData {
 function useTokenReserve(): ToRefs<TokenReserveData> {
     const gameState = useGameStateStore();
     const gameData = useGameDataStore();
-    const boardSetup = useBoardSetupStore();
+    const placeTokensStore = usePlaceTokensStore();
 
     const tokens = computed(() => gameData.reserveTokens);
 
-    if (gameState.currentState === "setup_board") {
+    if (gameState.currentState === "place_tokens") {
         return {
             tokens,
-            unplaceableTokenIds: computed(() => boardSetup.unplaceableTokenIds),
+            unplaceableTokenIds: computed(() => placeTokensStore.unplaceableTokenIds),
         };
     }
 

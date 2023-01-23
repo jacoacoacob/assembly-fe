@@ -88,7 +88,7 @@ const useGameDataStore = defineStore("game-data", {
         tileAdjacency(state) {
             // adjacency list representation of all tiles on board
         },
-        openTileIndices(state): number[] {
+        openTiles(state): number[] {
             return state.tiles.reduce((accum: number[], tile, tileIndex) => {
                 const tileTokenValues = this.board[tileIndex].map((tokenId) => state.tokens[tokenId].value);
                 if (tileTokenValues.length < 4 && sum(tileTokenValues) < tile.capacity) {

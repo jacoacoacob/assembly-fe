@@ -9,10 +9,18 @@ const usePlaceTokensStore = defineStore("place-tokens", () => {
 
     /**
      * Before normal game play starts, each player must place `x` tokens, randomly
-     * selected from their reserve, onto the board. `stagedTokens` conatins  
+     * selected from their reserve, onto the board. `inPlayTokens` conatins  
      * token IDs indexed by player ID.
      */
-    const stagedTokens = ref<PlayerTokenIds>({});
+    const inPlayTokens = ref<PlayerTokenIds>({});
+
+    const reserveTokens = computed(() => Object.entries(inPlayTokens.value).reduce(
+        (accum: PlayerTokenIds, [playerId, tokenIds]) => {
+            accum[playerId] = tokenIds.filter((tokenId) => gameData.tokens[tokenId].tileIndex === -1);
+            return accum;
+        },
+        {}
+    ))
 
     const activePlayerIndex = ref(0);
 
@@ -20,12 +28,13 @@ const usePlaceTokensStore = defineStore("place-tokens", () => {
         activePlayerIndex.value = activePlayerIndex.value + 1 >= gameData.players.length
             ? 0
             : activePlayerIndex.value + 1;
+        candidateToken.value = "";
     }
 
     const unplaceableTokenIds = computed(() =>
         Object.values(gameData.tokens).reduce(
             (accum: Token["id"][], token) => {
-                if (stagedTokens.value[token.player] && !stagedTokens.value[token.player].includes(token.id)) {
+                if (inPlayTokens.value[token.player] && !inPlayTokens.value[token.player].includes(token.id)) {
                     accum.push(token.id)
                 }
                 return accum;
@@ -50,12 +59,15 @@ const usePlaceTokensStore = defineStore("place-tokens", () => {
         return inPlayTiles.value.filter((tileIndex) => gameData.openTiles.includes(tileIndex));
     });
 
+    const candidateToken = ref("");
 
     return {
-        stagedTokens,
+        inPlayTokens,
+        reserveTokens,
         activePlayerIndex,
         unplaceableTokenIds,
         inPlayTiles,
+        candidateToken,
         openTiles,
         endTurn,
     };

@@ -14,11 +14,11 @@ function useCreateGame() {
         gameState.pushEvent("initial:set_players", players);
         gameState.pushEvent("initial:set_tokens", createTokens(players));
         gameState.pushEvent("initial:set_grid", createGrid(6, 9, 90));
-        gameState.pushEvent("initial:set_tiles", createTiles(6, 9, [5, 10]));
+        gameState.pushEvent("initial:set_tiles", createTiles(6, 9, players.length < 4 ? [4, 8] : [5, 10]));
         gameState.pushEvent("initial:finish");
         nextTick(() => {
             gameState.pushEvent(
-                "place_tokens:set_staged_tokens", createStagedTokenIds(gameData.playerTokenIds)
+                "place_tokens:set_in_play_tokens", createStagedTokenIds(gameData.playerTokenIds)
             );
         });
     }

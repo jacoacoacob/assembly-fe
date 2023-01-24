@@ -4,10 +4,10 @@ import { computed } from 'vue';
 import GameToken from './GameToken.vue';
 import { useGameStateStore, type StateName } from '@/stores/game-state-store';
 import { useTokenReserve } from '@/composables/use-token-reserve';
-import { usePlayerStore } from '@/stores/player-store';
+import { usePlayerDataStore } from '@/stores/player-data-store';
 
 const gameState = useGameStateStore();
-const playerStore = usePlayerStore();
+const playerData = usePlayerDataStore();
 
 const data = useTokenReserve();
 
@@ -46,9 +46,9 @@ function onDrop(event: DragEvent) {
             <GameToken
                 v-for="token in segment"
                 :key="token.id"
-                :data="token"
+                :token="token"
                 class="mr-1 mb-1"
-                :class="{ 'opacity-60': token.player !== playerStore.activePlayer.id }"
+                :class="{ 'opacity-60': token.player !== playerData.activePlayer.id }"
                 :isUnavailable="data.unplaceableTokenIds.value.includes(token.id)"
             />
         </div>

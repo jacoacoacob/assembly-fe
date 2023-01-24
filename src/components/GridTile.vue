@@ -4,32 +4,34 @@ import type { Ref } from 'vue';
 
 import GameToken from './GameToken.vue';
 import { useGameDataStore } from '@/stores/game-data-store';
-import { useTileDataStore } from "@/stores/tile-data-store";
+import { useBoardDataStore } from "@/stores/board-data-store";
 import type { Tile } from '@/stores/game-data-store-types';
+import { useGameStateStore } from '@/stores/game-state-store';
 
-
-const game = useGameDataStore();
-const board = useTileDataStore();
+const gameState = useGameStateStore();
+const gameData = useGameDataStore();
+const boardData = useBoardDataStore();
 
 const props = defineProps<{
     tileIndex: number;
     tile: Tile;
 }>();
 
-const isOpen = computed(() => board.openTiles.includes)
+const isInPlay = computed(() => boardData.inPlayTiles.includes(props.tileIndex));
+const isOpen = computed(() => boardData.openTiles.includes(props.tileIndex))
 
 const tileContents = computed(() =>
-    game.board[props.tileIndex].map((tokenId) => game.tokens[tokenId]
+    gameData.board[props.tileIndex].map((tokenId) => gameData.tokens[tokenId]
 ));
 
-const hoveredTile = inject<Ref<number>>("board:hoveredTile");
-
 const className = computed(() => ({
-    "bg-white shadow-lg z-50": hoveredTile?.value === props.tileIndex,
-    "bg-slate-100": hoveredTile?.value !== props.tileIndex,
-    "bg-slate-200 opacity-30": !isOpen.value,
-}))
+    "bg-white": boardData.hoveredTile === props.tileIndex && isOpen.value,
+    "bg-slate-100": boardData.hoveredTile !== props.tileIndex && isOpen.value,
+    "invisible": !isInPlay.value,
+    "opacity-60 border-slate-400 text-slate-600": !isOpen.value,
+}));
 
+const onDragExit = inject<(event: DragEvent) => void>("tile:dragexit");
 const onDragEnter = inject<(event: DragEvent) => void>("tile:dragenter");
 const onDragOver = inject<(event: DragEvent) => void>("tile:dragover");
 const onDrop = inject<(event: DragEvent) => void>("tile:drop");
@@ -37,9 +39,10 @@ const onDrop = inject<(event: DragEvent) => void>("tile:drop");
 
 <template>
     <div
-        class="relative flex justify-center items-center border border-slate-900 "
+        class="relative flex justify-center items-center border border-slate-500"
         :class="className"
         :data-tile-index="tileIndex"
+        @dragexit="onDragExit"
         @dragenter="onDragEnter"
         @drop="onDrop"
         @dragover="onDragOver"
@@ -51,7 +54,7 @@ const onDrop = inject<(event: DragEvent) => void>("tile:drop");
             <GameToken
                 v-for="token in tileContents"
                 :key="token.id"
-                :data="token"
+                :token="token"
             />
         </div>
     </div>

@@ -9,13 +9,13 @@ import type { Player, Token } from "@/stores/game-data-store-types";
 type Event<Action extends string, Data = {}> = NSEvent<"place_tokens", Action, Data>;
 
 type PlaceTokensEvent =
-    Event<"set_staged_tokens", Record<Player["id"], Token["id"][]>> |
-    Event<"add_in_play_tile", { tileIndex: number }> |
+    Event<"set_in_play_tokens", Record<Player["id"], Token["id"][]>> |
+    Event<"add_in_play_tiles", number[]> |
     Event<"end_turn"> |
     Event<"move_token", { tokenId: string; tileIndex: number; }>;
 
 function createPlaceTokensState(setState: SetState) {
-    const placeTokensStore = usePlaceTokensStore();
+    const placeTokens = usePlaceTokensStore();
     const gameData = useGameDataStore();
     const gameState = useGameStateStore();
 
@@ -23,17 +23,22 @@ function createPlaceTokensState(setState: SetState) {
         handlers: {
             move_token({ tokenId, tileIndex }) {
                 gameData.moveToken(tokenId, tileIndex);
+                if (tileIndex === -1) {
+                    placeTokens.candidateToken = "";
+                }
             },
             end_turn() {
-                placeTokensStore.endTurn();
+                placeTokens.endTurn();
             },
-            set_staged_tokens(stagedTokens) {
-                placeTokensStore.stagedTokens = stagedTokens;
+            set_in_play_tokens(inPlayTokens) {
+                placeTokens.inPlayTokens = inPlayTokens;
             },
-            add_in_play_tile({ tileIndex }) {
-                if (!placeTokensStore.inPlayTiles.includes(tileIndex)) {
-                    placeTokensStore.inPlayTiles.push(tileIndex);
-                }
+            add_in_play_tiles(tileIndeces) {
+                tileIndeces.forEach((tileIndex) => {
+                    if (!placeTokens.inPlayTiles.includes(tileIndex)) {
+                        placeTokens.inPlayTiles.push(tileIndex);
+                    }
+                })
             }
         },
     })

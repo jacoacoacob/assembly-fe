@@ -15,7 +15,7 @@ function createTokens(players: Player[]): Game["tokens"] {
     }
 
     players.forEach((player) => {
-        for (let i = 0; i < 4; i++) {
+        for (let i = 0; i < 5; i++) {
             tokenValues.forEach(tokenValue => {
                 const token = generateToken(player.id, tokenValue, -1);
                 tokens[token.id] = token;

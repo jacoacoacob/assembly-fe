@@ -13,4 +13,18 @@ function randId(len: number) {
     return rv;
 }
 
-export { randFromRange, randId };
+function selectRandomFrom<Data>(list: Data[], count: number) {
+    const rv: Data[] = [];
+    let i = 0;
+    while (i < count) {
+        const value = list[randFromRange(0, list.length)];
+        if (rv.includes(value)) {
+            continue;
+        }
+        rv.push(value);
+        i += 1;
+    }
+    return rv;
+}
+
+export { randFromRange, randId, selectRandomFrom };

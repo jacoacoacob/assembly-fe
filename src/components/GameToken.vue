@@ -4,22 +4,26 @@ import { computed, inject, type StyleValue, type Ref } from "vue";
 import { useGameDataStore } from '@/stores/game-data-store';
 import { PLAYER_COLOR_OPTIONS, type PlayerColor } from "@/stores/game-data-store-types";
 import type { Player, Token } from '@/stores/game-data-store-types';
-import { usePlayerStore } from "@/stores/player-store";
+import { usePlayerDataStore } from "@/stores/player-data-store";
+import { useBoardDataStore } from "@/stores/board-data-store";
+import { usePlaceTokensStore } from "@/stores/place-tokens-store";
 
-const props = defineProps<{ data: Token; isUnavailable?: boolean }>();
+const props = defineProps<{ token: Token; isUnavailable?: boolean }>();
 
+const placeTokens = usePlaceTokensStore();
 const gameData = useGameDataStore();
-const playerStore = usePlayerStore();
+const playerData = usePlayerDataStore();
+const boardData = useBoardDataStore();
 
-const activeToken = inject<Ref<string>>("board:activeToken")
 const onDragStart = inject<(event: DragEvent) => void>("token:dragstart");
+const onDragEnd = inject<(event: DragEvent) => void>("token:dragend");
 
 const style = computed((): StyleValue => {
     const { tileSize } = gameData.grid;
-    const { tileIndex } = props.data;
+    const { tileIndex } = props.token;
     if (tileIndex > -1) {
         const tileContents = gameData.board[tileIndex];
-        const tileTokenIndex = tileContents.indexOf(props.data.id);
+        const tileTokenIndex = tileContents.indexOf(props.token.id);
         const left = tileSize / 4 * (tileTokenIndex % 2 === 0 ? 1 : 3) - ((tileSize / 4 - 5));
         const top = tileSize / 4 * (tileTokenIndex < 2 ? 1 : 3) - (tileSize / 4 - 5);
         return {
@@ -31,25 +35,40 @@ const style = computed((): StyleValue => {
     return {}
 });
 
-const player = computed(() => gameData.players.find(player => player.id === props.data.player));
+const player = computed(() => gameData.players.find(player => player.id === props.token.player));
 
 const className = computed(() => ({
     [PLAYER_COLOR_OPTIONS[player.value?.color as PlayerColor]]: !props.isUnavailable,
-    "border-dashed border-slate-50": activeToken?.value === props.data.id,
+    "border-dashed border-slate-50": boardData.activeToken === props.token.id,
     "bg-transparent text-slate-600": props.isUnavailable,
 }))
+
+const isDraggable = computed(() => {
+    const isAvailable = !props.isUnavailable;
+    const isActivePlayerToken = props.token.player === playerData.activePlayer.id;
+    const candidateToken = gameData.tokens[placeTokens.candidateToken];
+    if (candidateToken && candidateToken.tileIndex > -1) {
+        return (
+            isAvailable &&
+            isActivePlayerToken &&
+            candidateToken.id === props.token.id
+        )
+    }
+    return isAvailable && isActivePlayerToken;
+});
 
 </script>
 
 <template>
     <div
-        :id="data.id"
+        :id="token.id"
         class="w-8 h-8 rounded-full border border-slate-600 flex justify-center items-center text-white"
         :class="className"
         :style="style"
-        :draggable="!isUnavailable && data.player === playerStore.activePlayer.id"
+        :draggable="isDraggable"
+        @dragend="onDragEnd"
         @dragstart="onDragStart"
     >
-        {{ data.value }}
+        {{ token.value }}
     </div>
 </template>

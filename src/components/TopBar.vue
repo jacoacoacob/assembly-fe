@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { PLAYER_COLOR_OPTIONS } from '@/stores/game-data-store-types';
 
-import { usePlayerStore } from "@/stores/player-store";
+import { usePlayerDataStore } from "@/stores/player-data-store";
 
-const playerStore = usePlayerStore();
+const playerData = usePlayerDataStore();
 
 </script>
 
@@ -13,11 +13,11 @@ const playerStore = usePlayerStore();
             ?
         </button>
         <ul class="flex space-x-4">
-            <li v-for="player, i in playerStore.players" :key="player.id">
+            <li v-for="player, i in playerData.players" :key="player.id">
                 <button
                     class="button button-dense button-outline mb-1 flex items-center space-x-1 w-full"
-                    :class="{ 'ring ring-slate-800 font-bold': i === playerStore.activePlayerIndex }"
-                    @click="() => playerStore.setViewedPlayer(i)"
+                    :class="{ 'ring ring-slate-800 font-bold': i === playerData.activePlayerIndex }"
+                    @click="() => playerData.setViewedPlayer(i)"
                 >
                     <span
                         class="w-4 h-4 rounded-full"
@@ -28,7 +28,7 @@ const playerStore = usePlayerStore();
                     </span>
                 </button>
                 <div
-                    v-if="player.id === playerStore.viewedPlayer.id"
+                    v-if="player.id === playerData.viewedPlayer.id"
                     class="border-2 rounded-full border-slate-900 "
                 ></div>
             </li>

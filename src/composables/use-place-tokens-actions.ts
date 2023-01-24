@@ -2,14 +2,15 @@ import { useBoardDataStore } from "@/stores/board-data-store";
 import { useGameDataStore } from "@/stores/game-data-store";
 import { useGameStateStore } from "@/stores/game-state-store";
 import { usePlaceTokensStore } from "@/stores/place-tokens-store";
-import { usePlayerDataStore } from "@/stores/player-data-store";
+import { usePlayersDataStore } from "@/stores/players-data-store";
 import { selectRandomFrom } from "@/utils/rand";
+import { nextTick } from "vue";
 
 function usePlaceTokensActions() {
     const gameState = useGameStateStore();
     const gameData = useGameDataStore();
     const boardData = useBoardDataStore();
-    const playerData = usePlayerDataStore();
+    const playersData = usePlayersDataStore();
     const placeTokens = usePlaceTokensStore();
 
     function _isPlacementComplete() {
@@ -19,20 +20,21 @@ function usePlaceTokensActions() {
     function endTurn() {
         gameState.pushEvent("place_tokens:next_player");
         gameState.pushEvent("place_tokens:set_candidate_token", { tokenId: "" });
-        playerData.setViewedPlayer(playerData.activePlayerIndex);
+        playersData.setViewedPlayer(playersData.activePlayerIndex);
         if (_isPlacementComplete()) {
             gameState.pushEvent("place_tokens:finish");
-        } else if (!boardData.playerHasMove(playerData.activePlayer.id)) {
-            gameState.pushEvent(
-                "place_tokens:add_in_play_tiles",
-                selectRandomFrom(
-                    gameData.tiles
-                        .map((_, i) => i)
-                        .filter((i) => !placeTokens.openTiles.includes(i)),
-                    2
-                )
-            );
-        }
+        } else if (!boardData.playerHasMove(playersData.activePlayer.id)) {
+                gameState.pushEvent(
+                    "place_tokens:add_in_play_tiles",
+                    selectRandomFrom(
+                        gameData.tiles
+                            .map((_, i) => i)
+                            .filter((i) => !placeTokens.openTiles.includes(i)),
+                        2
+                    )
+                );
+            }
+
     }
 
     return { endTurn };

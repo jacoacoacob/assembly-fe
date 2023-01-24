@@ -2,22 +2,22 @@
 import { computed } from 'vue';
 
 import GameToken from './GameToken.vue';
-import { useGameStateStore, type StateName } from '@/stores/game-state-store';
-import { useTokenReserve } from '@/composables/use-token-reserve';
-import { usePlayerDataStore } from '@/stores/player-data-store';
+import { useGameStateStore } from '@/stores/game-state-store';
+import { usePlayersDataStore } from '@/stores/players-data-store';
 import { useGameDataStore } from '@/stores/game-data-store';
+import { useTokensDataStore } from '@/stores/tokens-data-store';
 
 const gameState = useGameStateStore();
 const gameData = useGameDataStore();
-const playerData = usePlayerDataStore();
+const playersData = usePlayersDataStore();
 
-const data = useTokenReserve();
+const tokensData = useTokensDataStore();
 
 const props = defineProps<{
     playerId: string;
 }>();
 
-const tokens = computed(() => data.tokens.value[props.playerId]);
+const tokens = computed(() => tokensData.reserveTokens[props.playerId]);
 
 function onDragEnter(event: DragEvent) {
     event.preventDefault();
@@ -55,8 +55,8 @@ function onDrop(event: DragEvent) {
                 :key="token.id"
                 :token="token"
                 class="mr-1 mb-1"
-                :class="{ 'opacity-60': token.player !== playerData.activePlayer.id }"
-                :isUnavailable="data.unplaceableTokenIds.value.includes(token.id)"
+                :class="{ 'opacity-60': token.player !== playersData.activePlayer.id }"
+                :isUnavailable="tokensData.unplaceableTokenIds.includes(token.id)"
             />
         </div>
     </div>

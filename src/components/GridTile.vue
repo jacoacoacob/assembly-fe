@@ -24,12 +24,19 @@ const tileContents = computed(() =>
     gameData.board[props.tileIndex].map((tokenId) => gameData.tokens[tokenId]
 ));
 
-const className = computed(() => ({
-    "bg-white": boardData.hoveredTile === props.tileIndex && isOpen.value,
-    "bg-slate-100": boardData.hoveredTile !== props.tileIndex && isOpen.value,
-    "invisible": !isInPlay.value,
-    "opacity-60 border-slate-400 text-slate-600": !isOpen.value,
-}));
+const className = computed(() => {
+    if (gameState.currentState === "place_tokens") {
+        return {
+            "bg-white": boardData.hoveredTile === props.tileIndex && isOpen.value,
+            "bg-slate-100": boardData.hoveredTile !== props.tileIndex && isOpen.value,
+            "invisible": !isInPlay.value,
+            "opacity-60 border-slate-400 text-slate-600": !isOpen.value,
+        }
+    }
+    return {
+        "bg-white": boardData.hoveredTile === props.tileIndex && isOpen.value,
+    }
+});
 
 const onDragExit = inject<(event: DragEvent) => void>("tile:dragexit");
 const onDragEnter = inject<(event: DragEvent) => void>("tile:dragenter");

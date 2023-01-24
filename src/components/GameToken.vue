@@ -4,7 +4,7 @@ import { computed, inject, type StyleValue, type Ref } from "vue";
 import { useGameDataStore } from '@/stores/game-data-store';
 import { PLAYER_COLOR_OPTIONS, type PlayerColor } from "@/stores/game-data-store-types";
 import type { Player, Token } from '@/stores/game-data-store-types';
-import { usePlayerDataStore } from "@/stores/player-data-store";
+import { usePlayersDataStore } from "@/stores/players-data-store";
 import { useBoardDataStore } from "@/stores/board-data-store";
 import { usePlaceTokensStore } from "@/stores/place-tokens-store";
 import { useGameStateStore } from "@/stores/game-state-store";
@@ -14,7 +14,7 @@ const props = defineProps<{ token: Token; isUnavailable?: boolean }>();
 const gameState = useGameStateStore();
 const placeTokens = usePlaceTokensStore();
 const gameData = useGameDataStore();
-const playerData = usePlayerDataStore();
+const playerData = usePlayersDataStore();
 const boardData = useBoardDataStore();
 
 const onDragStart = inject<(event: DragEvent) => void>("token:dragstart");
@@ -51,17 +51,20 @@ const className = computed(() => {
 })
 
 const isDraggable = computed(() => {
-    const isAvailable = !props.isUnavailable;
-    const isActivePlayerToken = props.token.player === playerData.activePlayer.id;
-    const candidateToken = gameData.tokens[placeTokens.candidateToken];
-    if (candidateToken && candidateToken.tileIndex > -1) {
-        return (
-            isAvailable &&
-            isActivePlayerToken &&
-            candidateToken.id === props.token.id
-        );
+    if (gameState.currentState === "place_tokens") {
+        const isAvailable = !props.isUnavailable;
+        const isActivePlayerToken = props.token.player === playerData.activePlayer.id;
+        const candidateToken = gameData.tokens[placeTokens.candidateToken];
+        if (candidateToken && candidateToken.tileIndex > -1) {
+            return (
+                isAvailable &&
+                isActivePlayerToken &&
+                candidateToken.id === props.token.id
+            );
+        }
+        return isAvailable && isActivePlayerToken && props.token.tileIndex === -1;
     }
-    return isAvailable && isActivePlayerToken;
+    return true;
 });
 
 </script>

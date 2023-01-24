@@ -4,7 +4,7 @@ import { useGameDataStore } from "@/stores/game-data-store";
 import { useGameStateStore } from "./game-state-store";
 import { usePlaceTokensStore } from "./place-tokens-store";
 
-const usePlayerDataStore = defineStore("player-data", () => {
+const usePlayersDataStore = defineStore("player-data", () => {
     const gameData = useGameDataStore();
     const gameState = useGameStateStore();
     const placeTokensStore = usePlaceTokensStore();
@@ -42,4 +42,4 @@ const usePlayerDataStore = defineStore("player-data", () => {
     };
 });
 
-export { usePlayerDataStore };
+export { usePlayersDataStore };

@@ -6,16 +6,17 @@ import { useGameDataStore } from "@/stores/game-data-store";
 import { useGameStateStore } from "@/stores/game-state-store";
 import { sum } from "@/utils/sum";
 import type { PlayerTokenIds } from "./game-data-store-types";
-import { usePlayerDataStore } from "./player-data-store";
+import { usePlayersDataStore } from "./players-data-store";
 
 const useBoardDataStore = defineStore("board-data", () => {
     const placeTokensStore = usePlaceTokensStore();
     const gameData = useGameDataStore();
     const gameState = useGameStateStore();
-    const playerData = usePlayerDataStore();
+    const playersData = usePlayersDataStore();
 
     const hoveredTile = ref(-1);
     const activeToken = ref("");
+    // const candidateToken = ref("");
 
     const _reservePlayerTokenIds = computed((): PlayerTokenIds => {
         switch (gameState.currentState) {
@@ -60,7 +61,7 @@ const useBoardDataStore = defineStore("board-data", () => {
     const inPlayTiles = computed(() => {
         switch (gameState.currentState) {
             case "initial": return [];
-            case "play_game": return [];
+            case "play_game": return gameData.tiles.map((_, i) => i);
             case "place_tokens": return placeTokensStore.inPlayTiles
         }
     });
@@ -76,6 +77,7 @@ const useBoardDataStore = defineStore("board-data", () => {
     return {
         activeToken,
         availableReservePlayerTokenIds,
+        // candidateToken,
         hoveredTile,
         inPlayTiles,
         isValidMove,

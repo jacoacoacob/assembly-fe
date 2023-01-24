@@ -24,7 +24,7 @@ const className = computed(() => ({
 
 <template>
     <div
-        class="flex flex-wrap box-content bg-slate-200 border border-slate-500 select-none"
+        class="flex flex-wrap box-content bg-slate-100 border border-slate-500 select-none"
         :class="className"
         :style="boardStyle"
     >

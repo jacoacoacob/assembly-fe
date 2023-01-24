@@ -5,7 +5,7 @@ import TheSidePanel from '@/components/TheSidePanel.vue';
 import { useGameStateStore } from '@/stores/game-state-store';
 // import { useBoard } from '@/composables/use-board';
 import TopBar from '@/components/TopBar.vue';
-import { usePlayerDataStore } from '@/stores/player-data-store';
+import { usePlayersDataStore } from '@/stores/players-data-store';
 import { useBoardDataStore } from '@/stores/board-data-store';
 import { useGameDataStore } from "@/stores/game-data-store";
 import { usePlaceTokensStore } from '@/stores/place-tokens-store';
@@ -17,7 +17,7 @@ const placeTokens = usePlaceTokensStore();
 const placeTokensActions = usePlaceTokensActions();
 // const gameData = useGameDataStore()
 const gameState = useGameStateStore();
-const playerData = usePlayerDataStore();
+const playersData = usePlayersDataStore();
 
 const boardData = useBoardDataStore();
 
@@ -27,7 +27,6 @@ provide("token:dragstart", (event: DragEvent) => {
         event.dataTransfer.setData("text", tokenId);
         boardData.activeToken = tokenId;
         gameState.pushEvent("place_tokens:set_candidate_token", { tokenId });
-        // placeTokensStore.candidateToken = tokenId;
     }
 });
 
@@ -99,7 +98,7 @@ function onWindowKeydown(event: KeyboardEvent) {
 }
 
 onMounted(() => {
-    playerData.setViewedPlayer(playerData.activePlayerIndex);
+    playersData.setViewedPlayer(playersData.activePlayerIndex);
     window.addEventListener("keydown", onWindowKeydown);
     return () => {
         window.removeEventListener("keydown", onWindowKeydown);
@@ -115,5 +114,8 @@ onMounted(() => {
             <TheBoard />
             <TheSidePanel class="flex-1 w-full" />
         </div>
+        <p class="flex-1">
+            <!-- Move a token from your reserve to an open tile on the board. -->
+        </p>
     </div>
 </template>

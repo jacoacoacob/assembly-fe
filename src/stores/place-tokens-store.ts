@@ -2,10 +2,12 @@ import { defineStore } from "pinia";
 import { computed, ref } from "vue";
 import type { PlayerTokenIds, Token } from "./game-data-store-types";
 import { useGameDataStore } from "./game-data-store";
+import { usePlayerDataStore } from "./player-data-store";
 
 const usePlaceTokensStore = defineStore("place-tokens", () => {
 
     const gameData = useGameDataStore();
+    const playerData = usePlayerDataStore();
 
     /**
      * Before normal game play starts, each player must place `x` tokens, randomly
@@ -24,11 +26,10 @@ const usePlaceTokensStore = defineStore("place-tokens", () => {
 
     const activePlayerIndex = ref(0);
 
-    function endTurn() {
+    function nextPlayer() {
         activePlayerIndex.value = activePlayerIndex.value + 1 >= gameData.players.length
             ? 0
             : activePlayerIndex.value + 1;
-        candidateToken.value = "";
     }
 
     const unplaceableTokenIds = computed(() =>
@@ -61,15 +62,26 @@ const usePlaceTokensStore = defineStore("place-tokens", () => {
 
     const candidateToken = ref("");
 
+    const isTurnEndable = computed((): boolean => {
+        const candidate = gameData.tokens[candidateToken.value];
+        return (
+            Boolean(candidate) &&
+            candidate.player === playerData.activePlayer.id &&
+            candidate.tileIndex > -1
+        );
+    });
+    
+
     return {
         inPlayTokens,
         reserveTokens,
         activePlayerIndex,
         unplaceableTokenIds,
         inPlayTiles,
+        isTurnEndable,
         candidateToken,
         openTiles,
-        endTurn,
+        nextPlayer,
     };
 });
 

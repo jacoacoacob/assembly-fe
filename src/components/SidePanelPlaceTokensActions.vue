@@ -6,9 +6,11 @@ import { useGameStateStore } from '@/stores/game-state-store';
 import { usePlayerDataStore } from '@/stores/player-data-store';
 import { selectRandomFrom } from '@/utils/rand';
 import { usePlaceTokensStore } from '@/stores/place-tokens-store';
+import { usePlaceTokensActions } from '@/composables/use-place-tokens-actions';
 
 const gameState = useGameStateStore();
 const placeTokens = usePlaceTokensStore();
+const actions = usePlaceTokensActions();
 const gameData = useGameDataStore();
 const boardData = useBoardDataStore();
 const playerData = usePlayerDataStore();
@@ -22,25 +24,26 @@ const isTurnEndable = computed(() => {
     );
 });
 
-function endTurn() {
-    gameState.pushEvent("place_tokens:end_turn");
-    playerData.setViewedPlayer(playerData.activePlayerIndex);
-            if (!boardData.playerHasMove(playerData.activePlayer.id)) {
-                gameState.pushEvent(
-                    "place_tokens:add_in_play_tiles",
-                    selectRandomFrom(
-                        gameData.tiles
-                            .map((_, i) => i)
-                            .filter((i) => !placeTokens.openTiles.includes(i)),
-                        2
-                    )
-                );
-            }
-}
+// function endTurn() {
+//     gameState.pushEvent("place_tokens:next_player");
+//     gameState.pushEvent("place_tokens:set_candidate_token", { tokenId: "" });
+//     playerData.setViewedPlayer(playerData.activePlayerIndex);
+//     if (!boardData.playerHasMove(playerData.activePlayer.id)) {
+//         gameState.pushEvent(
+//             "place_tokens:add_in_play_tiles",
+//             selectRandomFrom(
+//                 gameData.tiles
+//                     .map((_, i) => i)
+//                     .filter((i) => !placeTokens.openTiles.includes(i)),
+//                 2
+//             )
+//         );
+//     }
+// }
 </script>
 
 <template>
-    <button class="button button-dense" @click="endTurn" :disabled="!isTurnEndable">
+    <button class="button button-dense" @click="actions.endTurn" :disabled="!isTurnEndable">
         End Turn
     </button>
 </template>

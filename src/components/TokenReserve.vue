@@ -5,8 +5,10 @@ import GameToken from './GameToken.vue';
 import { useGameStateStore, type StateName } from '@/stores/game-state-store';
 import { useTokenReserve } from '@/composables/use-token-reserve';
 import { usePlayerDataStore } from '@/stores/player-data-store';
+import { useGameDataStore } from '@/stores/game-data-store';
 
 const gameState = useGameStateStore();
+const gameData = useGameDataStore();
 const playerData = usePlayerDataStore();
 
 const data = useTokenReserve();
@@ -28,9 +30,14 @@ function onDragOver(event: DragEvent) {
 function onDrop(event: DragEvent) {
     event.preventDefault();
     const tokenId = event.dataTransfer?.getData("text");
-    if (tokenId) {
+    const token = gameData.tokens[tokenId ?? ""];
+    if (token) {
         if (gameState.currentState === "place_tokens") {
-            gameState.pushEvent("place_tokens:move_token", { tokenId, tileIndex: -1 });
+            if (token.tileIndex > -1) {
+                gameState.pushEvent("place_tokens:move_token", { tokenId, tileIndex: -1 });
+            } else {
+                gameState.pushEvent("place_tokens:set_candidate_token", { tokenId: "" });
+            }
         }
         if (gameState.currentState === "play_game") {
             // gameState.pushEvent("")

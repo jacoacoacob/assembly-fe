@@ -14,7 +14,7 @@ const playerData = usePlayerDataStore();
 </script>
 
 <template>
-    <div class="bg-slate-100 border-2 border-slate-500 p-4 space-y-8 flex flex-col">
+    <div class="bg-slate-100 border-2 border-slate-500 p-4 space-y-8 flex flex-col" v-if="playerData.viewedPlayer">
         <div>
             <h1 class="font-bold text-xl">
                 <span

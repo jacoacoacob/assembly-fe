@@ -29,9 +29,9 @@ const usePlayerDataStore = defineStore("player-data", () => {
 
     const activePlayer = computed(() => gameData.players[activePlayerIndex.value]);
 
-    onMounted(() => {
-        setViewedPlayer(activePlayerIndex.value);
-    });
+    // onMounted(() => {
+    //     setViewedPlayer(activePlayerIndex.value);
+    // });
 
     return {
         activePlayer,

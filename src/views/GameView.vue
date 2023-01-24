@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { provide, nextTick } from 'vue';
+import { provide, nextTick, onMounted } from 'vue';
 import TheBoard from '@/components/TheBoard.vue';
 import TheSidePanel from '@/components/TheSidePanel.vue';
 import { useGameStateStore } from '@/stores/game-state-store';
@@ -9,11 +9,13 @@ import { usePlayerDataStore } from '@/stores/player-data-store';
 import { useBoardDataStore } from '@/stores/board-data-store';
 import { useGameDataStore } from "@/stores/game-data-store";
 import { usePlaceTokensStore } from '@/stores/place-tokens-store';
+import { usePlaceTokensActions } from "@/composables/use-place-tokens-actions";
 import { randFromRange, selectRandomFrom } from '@/utils/rand';
 
 
-const placeTokensStore = usePlaceTokensStore();
-const gameData = useGameDataStore()
+const placeTokens = usePlaceTokensStore();
+const placeTokensActions = usePlaceTokensActions();
+// const gameData = useGameDataStore()
 const gameState = useGameStateStore();
 const playerData = usePlayerDataStore();
 
@@ -24,7 +26,8 @@ provide("token:dragstart", (event: DragEvent) => {
     if (event.dataTransfer) {
         event.dataTransfer.setData("text", tokenId);
         boardData.activeToken = tokenId;
-        placeTokensStore.candidateToken = tokenId;
+        gameState.pushEvent("place_tokens:set_candidate_token", { tokenId });
+        // placeTokensStore.candidateToken = tokenId;
     }
 });
 
@@ -70,21 +73,6 @@ provide("tile:drop", (event: DragEvent) => {
     if (typeof tileIndex === "number" && tokenId && boardData.isValidMove(tileIndex, tokenId)) {
         if (gameState.currentState === "place_tokens") {
             gameState.pushEvent("place_tokens:move_token", { tileIndex, tokenId });
-            // if 
-            // gameState.pushEvent("place_tokens:end_turn");
-            // playerData.setViewedPlayer(playerData.activePlayerIndex);
-            // if (!boardData.playerHasMove(playerData.activePlayer.id)) {
-            //     gameState.pushEvent(
-            //         "place_tokens:add_in_play_tiles",
-            //         selectRandomFrom(
-            //             gameData.tiles
-            //                 .map((_, i) => i)
-            //                 .filter((i) => !placeTokensStore.openTiles.includes(i)),
-            //             2
-            //         )
-            //     );
-            // }
-
         }
     }
     boardData.activeToken = "";
@@ -99,6 +87,24 @@ function onDrop(event: DragEvent) {
 
     }
 }
+
+function onWindowKeydown(event: KeyboardEvent) {
+    if (event.code === "Space") {
+        if (gameState.currentState === "place_tokens") {
+            if (placeTokens.isTurnEndable) {
+                placeTokensActions.endTurn();
+            }
+        }
+    }   
+}
+
+onMounted(() => {
+    playerData.setViewedPlayer(playerData.activePlayerIndex);
+    window.addEventListener("keydown", onWindowKeydown);
+    return () => {
+        window.removeEventListener("keydown", onWindowKeydown);
+    }
+});
 
 </script>
 

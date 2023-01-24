@@ -7,9 +7,11 @@ import type { Player, Token } from '@/stores/game-data-store-types';
 import { usePlayerDataStore } from "@/stores/player-data-store";
 import { useBoardDataStore } from "@/stores/board-data-store";
 import { usePlaceTokensStore } from "@/stores/place-tokens-store";
+import { useGameStateStore } from "@/stores/game-state-store";
 
 const props = defineProps<{ token: Token; isUnavailable?: boolean }>();
 
+const gameState = useGameStateStore();
 const placeTokens = usePlaceTokensStore();
 const gameData = useGameDataStore();
 const playerData = usePlayerDataStore();
@@ -37,11 +39,16 @@ const style = computed((): StyleValue => {
 
 const player = computed(() => gameData.players.find(player => player.id === props.token.player));
 
-const className = computed(() => ({
-    [PLAYER_COLOR_OPTIONS[player.value?.color as PlayerColor]]: !props.isUnavailable,
-    "border-dashed border-slate-50": boardData.activeToken === props.token.id,
-    "bg-transparent text-slate-600": props.isUnavailable,
-}))
+const className = computed(() => {
+    const cn: Record<string, boolean> = {};
+    if (gameState.currentState === "place_tokens") {
+        cn["border-dashed border-2 shadow-xl"] = placeTokens.candidateToken === props.token.id
+    }
+    cn["bg-transparent text-slate-600"] = props.isUnavailable ?? false;
+    cn["border-dashed border-slate-50"] = boardData.activeToken === props.token.id;
+    cn[PLAYER_COLOR_OPTIONS[player.value?.color as PlayerColor]] = !props.isUnavailable;
+    return cn;
+})
 
 const isDraggable = computed(() => {
     const isAvailable = !props.isUnavailable;
@@ -52,7 +59,7 @@ const isDraggable = computed(() => {
             isAvailable &&
             isActivePlayerToken &&
             candidateToken.id === props.token.id
-        )
+        );
     }
     return isAvailable && isActivePlayerToken;
 });

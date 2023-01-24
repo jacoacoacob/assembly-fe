@@ -9,9 +9,11 @@ import type { Player, Token } from "@/stores/game-data-store-types";
 type Event<Action extends string, Data = {}> = NSEvent<"place_tokens", Action, Data>;
 
 type PlaceTokensEvent =
+    Event<"finish"> |
     Event<"set_in_play_tokens", Record<Player["id"], Token["id"][]>> |
+    Event<"set_candidate_token", { tokenId: string }> |
     Event<"add_in_play_tiles", number[]> |
-    Event<"end_turn"> |
+    Event<"next_player"> |
     Event<"move_token", { tokenId: string; tileIndex: number; }>;
 
 function createPlaceTokensState(setState: SetState) {
@@ -21,17 +23,23 @@ function createPlaceTokensState(setState: SetState) {
 
     return stateMachine<"place_tokens", PlaceTokensEvent>({
         handlers: {
+            finish() {
+                setState("play_game");
+            },
             move_token({ tokenId, tileIndex }) {
                 gameData.moveToken(tokenId, tileIndex);
                 if (tileIndex === -1) {
                     placeTokens.candidateToken = "";
                 }
             },
-            end_turn() {
-                placeTokens.endTurn();
+            next_player() {
+                placeTokens.nextPlayer();
             },
             set_in_play_tokens(inPlayTokens) {
                 placeTokens.inPlayTokens = inPlayTokens;
+            },
+            set_candidate_token({ tokenId }) {
+                placeTokens.candidateToken = tokenId;
             },
             add_in_play_tiles(tileIndeces) {
                 tileIndeces.forEach((tileIndex) => {

@@ -19,7 +19,18 @@ function useTokenReserve(): ToRefs<TokenReserveData> {
 
     if (gameState.currentState === "place_tokens") {
         return {
-            tokens,
+            tokens: computed(() => Object.entries(tokens.value).reduce((accum: ReserveTokens, [playerId, tokens]) => {
+                accum[playerId] = Object.entries(tokens).reduce(
+                    (accum: ReserveTokens[string], [tokenValue, tokens]) => {
+                        accum[Number.parseInt(tokenValue)] = tokens.sort(
+                            (a, _b) => placeTokensStore.unplaceableTokenIds.includes(a.id) ? -1 : 1
+                        );
+                        return accum;
+                    },
+                    {}
+                );
+                return accum;
+            }, {})),
             unplaceableTokenIds: computed(() => placeTokensStore.unplaceableTokenIds),
         };
     }

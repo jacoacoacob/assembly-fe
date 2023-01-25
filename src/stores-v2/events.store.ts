@@ -28,20 +28,42 @@ const useEventsStore = defineStore("events", () => {
         history.forEach(handleEvent);
     }
 
-    function send<E extends GameEvent>(...args: [E["type"], E["data"]]): void;
-    function send<E extends GameEvent>(...args: [E["type"], E["data"]][]): void;
-    function send<E extends GameEvent>(...args: [E["type"], E["data"]][] | [E["type"], E["data"]]) {
-        if (typeof args[0] === "string") {
-            const [type, data = {}] = args;
-            const [domain, name] = type.split(":");
-            const event = { type, data, domain, name } as GameEvent;
-            handleEvent(event);
+
+    type EventArgs<E extends GameEvent> = [E["type"], E["data"]] | [boolean, E["type"], E["data"]];
+
+    function send<E extends GameEvent>(...eventArgs: EventArgs<E>): void;
+    function send<E extends GameEvent>(...eventArgs: EventArgs<E>[]): void;
+    function send<E extends GameEvent>(...eventArgs: EventArgs<E> | EventArgs<E>[]) {
+
+        function buildGameEvent(args: EventArgs<E> | EventArgs<E>[]): GameEvent | null {
+            if (typeof args[0] === "boolean") {
+                if (args[0] === true) {
+                    const [, type, data = {}] = args;
+                    const [domain, name] = (type as string).split(":");
+                    return { domain, name, type, data } as GameEvent;
+                }
+                return null;
+            } else {
+                const [type, data = {}] = args;
+                const [domain, name] = (type as string).split(":");
+                return { domain, name, type, data } as GameEvent;
+            }
+        }
+
+        if (Array.isArray(eventArgs[0])) {
+            const events = (eventArgs as EventArgs<E>[]).reduce((accum: GameEvent[], args) => {
+                const event = buildGameEvent(args);
+                if (event) {
+                    accum.push(event);
+                }
+                return accum;
+            }, []);
+            events.forEach(handleEvent);
         } else {
-            (args as [E["type"], E["data"]][]).forEach(([type, data = {}]) => {
-                const [domain, name] = type.split(":");
-                const event = { type, data, domain, name } as GameEvent;
+            const event = buildGameEvent(eventArgs);
+            if (event) {
                 handleEvent(event);
-            });
+            }
         }
         saveGameHistory(gameData.$state);
     }

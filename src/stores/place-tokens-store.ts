@@ -7,7 +7,7 @@ import { usePlayersDataStore } from "./players-data-store";
 const usePlaceTokensStore = defineStore("place-tokens", () => {
 
     const gameData = useGameDataStore();
-    const playersData = usePlayersDataStore();
+    const players = usePlayersDataStore();
 
     /**
      * Before normal game play starts, each player must place `x` tokens, randomly
@@ -22,15 +22,7 @@ const usePlaceTokensStore = defineStore("place-tokens", () => {
             return accum;
         },
         {}
-    ))
-
-    const activePlayerIndex = ref(0);
-
-    function nextPlayer() {
-        activePlayerIndex.value = activePlayerIndex.value + 1 >= gameData.players.length
-            ? 0
-            : activePlayerIndex.value + 1;
-    }
+    ));
 
     const unplaceableTokenIds = computed(() =>
         Object.values(gameData.tokens).reduce(
@@ -66,7 +58,7 @@ const usePlaceTokensStore = defineStore("place-tokens", () => {
         const candidate = gameData.tokens[candidateToken.value];
         return (
             Boolean(candidate) &&
-            candidate.player === playersData.activePlayer.id &&
+            candidate.player === players.activePlayer.id &&
             candidate.tileIndex > -1
         );
     });
@@ -75,13 +67,13 @@ const usePlaceTokensStore = defineStore("place-tokens", () => {
     return {
         inPlayTokens,
         reserveTokens,
-        activePlayerIndex,
+        // activePlayerIndex,
         unplaceableTokenIds,
         inPlayTiles,
         isTurnEndable,
         candidateToken,
         openTiles,
-        nextPlayer,
+        // nextPlayer,
     };
 });
 

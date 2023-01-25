@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { usePlaceTokensActions } from '@/composables/use-place-tokens-actions';
+import { useGameDataStore } from '@/stores/game-data-store';
 import { PLAYER_COLOR_OPTIONS } from '@/stores/game-data-store-types';
 import { useGameStateStore } from '@/stores/game-state-store';
 import { usePlaceTokensStore } from '@/stores/place-tokens-store';
@@ -8,6 +9,7 @@ import { usePlayersDataStore } from "@/stores/players-data-store";
 import { computed } from 'vue';
 
 const gameState = useGameStateStore();
+const gameData = useGameDataStore();
 const playersData = usePlayersDataStore();
 
 const placeTokens = usePlaceTokensStore();
@@ -29,7 +31,6 @@ function endTurn() {
     }
 }
 
-
 </script>
 
 <template>
@@ -40,7 +41,7 @@ function endTurn() {
             </button>
         </div>
         <ul class="flex space-x-4">
-            <li v-for="player, i in playersData.players" :key="player.id">
+            <li v-for="player, i in gameData.players" :key="player.id">
                 <button
                     class="button button-dense button-outline mb-1 flex items-center space-x-1 w-full"
                     :class="{ 'ring ring-slate-800 font-bold': i === playersData.activePlayerIndex }"

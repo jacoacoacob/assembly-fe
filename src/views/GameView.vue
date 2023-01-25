@@ -98,7 +98,7 @@ function onWindowKeydown(event: KeyboardEvent) {
 }
 
 onMounted(() => {
-    playersData.setViewedPlayer(playersData.activePlayerIndex);
+    playersData.viewActivePlayer();
     window.addEventListener("keydown", onWindowKeydown);
     return () => {
         window.removeEventListener("keydown", onWindowKeydown);

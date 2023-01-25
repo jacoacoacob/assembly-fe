@@ -16,6 +16,9 @@ const useTokensDataStore = defineStore("tokens-data", () => {
     const gameData = useGameDataStore();
     const placeTokensStore = usePlaceTokensStore();
 
+    const moveCandidate = ref("");
+    // const 
+
     const reserveTokens = computed(() => gameData.reserveTokens);
 
     if (gameState.currentState === "place_tokens") {

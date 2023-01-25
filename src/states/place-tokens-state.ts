@@ -5,6 +5,7 @@ import { usePlaceTokensStore } from "../stores/place-tokens-store";
 import { stateMachine } from "../utils/state-machine";
 import { useGameDataStore } from "../stores/game-data-store";
 import type { Player, Token } from "@/stores/game-data-store-types";
+import { usePlayersDataStore } from "@/stores/players-data-store";
 
 type Event<Action extends string, Data = {}> = NSEvent<"place_tokens", Action, Data>;
 
@@ -20,6 +21,7 @@ function createPlaceTokensState(setState: SetState) {
     const placeTokens = usePlaceTokensStore();
     const gameData = useGameDataStore();
     const gameState = useGameStateStore();
+    const players = usePlayersDataStore();
 
     return stateMachine<"place_tokens", PlaceTokensEvent>({
         handlers: {
@@ -33,7 +35,7 @@ function createPlaceTokensState(setState: SetState) {
                 }
             },
             next_player() {
-                placeTokens.nextPlayer();
+                players.nextPlayer();
             },
             set_in_play_tokens(inPlayTokens) {
                 placeTokens.inPlayTokens = inPlayTokens;

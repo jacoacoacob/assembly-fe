@@ -23,7 +23,7 @@ const useTokensStore = defineStore("tokens", () => {
 
     const playerReserves = computed(() => {
 
-        if (gameState.currentState === "setup") {
+        if (gameState.currentState === "place_tokens") {
 
         }
     });

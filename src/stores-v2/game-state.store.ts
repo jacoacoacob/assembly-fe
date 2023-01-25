@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
 
-type GameState = "new_game" | "setup" | "play" | "final"; 
+type GameState = "new_game" | "place_tokens" | "play" | "final"; 
 
 const useGameStateStore = defineStore("game-state", () => {
     

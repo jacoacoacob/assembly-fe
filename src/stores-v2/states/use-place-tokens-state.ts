@@ -1,12 +1,18 @@
+import { defineStore } from "pinia";
 import { useEventsStore } from "../events.store";
 import { useGameDataStore } from "../game-data.store";
 import { useGameStateStore } from "../game-state.store";
+import { usePlayersStore } from "../players.store";
 import { useTokensStore } from "../tokens.store";
 
-function usePlayerActions() {
-    const events = useEventsStore();
+/**
+ * Functions and data to be used in components when gameState.currentState === "place_tokens"
+ */
+const usePlaceTokensState = defineStore("place-tokens-state", () => {
     const gameData = useGameDataStore();
+    const events = useEventsStore();
     const tokens = useTokensStore();
+    const players = usePlayersStore();
 
     function startMove(tokenId: string) {
         if (tokenId !== tokens.candidateId) {
@@ -28,10 +34,14 @@ function usePlayerActions() {
     }
 
     function endTurn() {
-
+        events.sendMany(
+            ["players:next"],
+            ["tokens:set_candidate_id", ""]
+        );
+        players.viewActivePlayer();
     }
 
-    return { startMove, endMove };
-}
+    return { startMove, endMove, endTurn };
+})
 
-export { usePlayerActions };
+export { usePlaceTokensState };

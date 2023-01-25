@@ -6,8 +6,9 @@ import { newGameEventHandlers, type NewGameEventHandlers } from "./handlers/new-
 import { tokensEventHandlers, type TokensEventHandlers } from "./handlers/tokens.handlers";
 import { saveGameHistory } from "@/api/game-api";
 import { useGameDataStore } from "./game-data.store";
+import { playersEventHandlers, type PlayersEventHandlers } from "./handlers/players.handlers";
 
-type StoreEventHandler = NewGameEventHandlers | TokensEventHandlers;
+type StoreEventHandler = NewGameEventHandlers | TokensEventHandlers | PlayersEventHandlers;
 
 const useEventsStore = defineStore("events", () => {
 
@@ -16,6 +17,7 @@ const useEventsStore = defineStore("events", () => {
     const handlers: Record<EventDomain, StoreEventHandler> = {
         new_game: newGameEventHandlers(),
         tokens: tokensEventHandlers(),
+        players: playersEventHandlers(),
     };
     
     function handleEvent<Domain extends EventDomain, E extends Event<Domain, string>>(event: GameEvent) {
@@ -28,47 +30,23 @@ const useEventsStore = defineStore("events", () => {
         history.forEach(handleEvent);
     }
 
-
-    type EventArgs<E extends GameEvent> = [E["type"], E["data"]] | [boolean, E["type"], E["data"]];
-
-    function send<E extends GameEvent>(...eventArgs: EventArgs<E>): void;
-    function send<E extends GameEvent>(...eventArgs: EventArgs<E>[]): void;
-    function send<E extends GameEvent>(...eventArgs: EventArgs<E> | EventArgs<E>[]) {
-
-        function buildGameEvent(args: EventArgs<E> | EventArgs<E>[]): GameEvent | null {
-            if (typeof args[0] === "boolean") {
-                if (args[0] === true) {
-                    const [, type, data = {}] = args;
-                    const [domain, name] = (type as string).split(":");
-                    return { domain, name, type, data } as GameEvent;
-                }
-                return null;
-            } else {
-                const [type, data = {}] = args;
-                const [domain, name] = (type as string).split(":");
-                return { domain, name, type, data } as GameEvent;
-            }
-        }
-
-        if (Array.isArray(eventArgs[0])) {
-            const events = (eventArgs as EventArgs<E>[]).reduce((accum: GameEvent[], args) => {
-                const event = buildGameEvent(args);
-                if (event) {
-                    accum.push(event);
-                }
-                return accum;
-            }, []);
-            events.forEach(handleEvent);
-        } else {
-            const event = buildGameEvent(eventArgs);
-            if (event) {
-                handleEvent(event);
-            }
-        }
+    function send<E extends GameEvent>(type: E["type"], data?: E["data"]) {
+        const [domain, name] = type.split(":");
+        const event = { domain, name, type, data } as GameEvent;
+        handleEvent(event);
         saveGameHistory(gameData.$state);
     }
 
-    return { send, loadHistory };
+    function sendMany<Event extends GameEvent>(...args: ([Event["type"], Event["data"]] | [Event["type"]])[]) {
+        const events = args.map(([type, data]) => {
+            const [domain, name] = type.split(":");
+            return { domain, name, type, data } as GameEvent;
+        });
+        events.forEach(handleEvent);
+        saveGameHistory(gameData.$state);
+    }
+
+    return { send, sendMany, loadHistory };
 });
 
 export { useEventsStore };

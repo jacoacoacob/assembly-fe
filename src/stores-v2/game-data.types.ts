@@ -1,4 +1,5 @@
 import type { NewGameEvent } from "./handlers/new-game.handlers";
+import type { TokensEvent } from "./handlers/tokens.handlers";
 
 type PlayerColor = "green" | "blue" | "orange" | "red" | "violet";
 
@@ -26,7 +27,7 @@ interface Tile {
     color?: [number, number, number] | [number, number, number, number];
 }
 
-type GameEvent = NewGameEvent;
+type GameEvent = NewGameEvent | TokensEvent;
 
 interface Game {
     name: string;

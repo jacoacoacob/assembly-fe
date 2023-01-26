@@ -33,12 +33,22 @@ const usePlaceTokensState = defineStore("place-tokens-state", () => {
         }
     }
 
+    function _isPlacementComplete() {
+        const inPlayReserveTokens = tokens.inPlayTokenIds.filter(
+            (tokenId) => tokens.reserveTokenIds.includes(tokenId)
+        );
+        return inPlayReserveTokens.length === 0;
+    }
+
     function endTurn() {
         events.sendMany(
             ["players:next"],
             ["tokens:set_candidate_id", ""]
         );
         players.viewActivePlayer();
+        if (_isPlacementComplete()) {
+            // events.send("") // "state:set_state", "play"
+        }
     }
 
     return { startMove, endMove, endTurn };

@@ -7,8 +7,9 @@ import { tokensEventHandlers, type TokensEventHandlers } from "./handlers/tokens
 import { saveGameHistory } from "@/api/game-api";
 import { useGameDataStore } from "./game-data.store";
 import { playersEventHandlers, type PlayersEventHandlers } from "./handlers/players.handlers";
+import { gameStateEventHandlers, type GameStateEventHandlers } from "./handlers/game-state.handlers";
 
-type StoreEventHandler = NewGameEventHandlers | TokensEventHandlers | PlayersEventHandlers;
+type StoreEventHandler = NewGameEventHandlers | TokensEventHandlers | PlayersEventHandlers | GameStateEventHandlers;
 
 const useEventsStore = defineStore("events", () => {
 
@@ -18,6 +19,7 @@ const useEventsStore = defineStore("events", () => {
         new_game: newGameEventHandlers(),
         tokens: tokensEventHandlers(),
         players: playersEventHandlers(),
+        game_state: gameStateEventHandlers(),
     };
     
     function handleEvent<Domain extends EventDomain, E extends Event<Domain, string>>(event: GameEvent) {

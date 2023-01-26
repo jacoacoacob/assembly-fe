@@ -10,6 +10,7 @@ type NewGameEvent =
     E<"set_tokens", Game["tokens"]> |
     E<"set_grid", Game["grid"]> |
     E<"set_tiles", Game["tiles"]> |
+    E<"set_players", Game["players"]> |
     E<"finish">;
 
 function newGameEventHandlers() {
@@ -27,6 +28,9 @@ function newGameEventHandlers() {
         },
         set_tiles(tiles) {
             gameData.tiles = tiles;
+        },
+        set_players(players) {
+            gameData.players = players;
         },
         finish() {
             

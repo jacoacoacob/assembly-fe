@@ -7,7 +7,7 @@ type E<Name extends string, Data = {}> = Event<"tokens", Name, Data>;
 
 type TokensEvent =
     E<"move_token", { tokenId: string, tileIndex: number }> |
-    E<"set_unplaceable_token_ids", string[]> |
+    E<"set_in_play_token_ids", string[]> |
     E<"set_candidate_id", string>;
 
 function tokensEventHandlers() {
@@ -18,8 +18,8 @@ function tokensEventHandlers() {
         move_token({ tokenId, tileIndex }) {
             gameData.moveToken(tokenId, tileIndex);
         },
-        set_unplaceable_token_ids(tokenIds) {
-            tokens.unplaceableTokenIds = tokenIds;
+        set_in_play_token_ids(tokenIds) {
+            tokens.inPlayTokenIds = tokenIds;
         },
         set_candidate_id(candidateId) {
             tokens.candidateId = candidateId;

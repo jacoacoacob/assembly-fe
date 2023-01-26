@@ -1,5 +1,6 @@
 import type { NewGameEvent } from "./handlers/new-game.handlers";
 import type { PlayersEvent } from "./handlers/players.handlers";
+import type { GameStateEvent } from "./handlers/game-state.handlers";
 import type { TokensEvent } from "./handlers/tokens.handlers";
 
 type PlayerColor = "green" | "blue" | "orange" | "red" | "violet";
@@ -10,12 +11,6 @@ interface Player {
     color: PlayerColor,
 }
 
-interface Grid {
-    rows: number;
-    cols: number;
-    tileSize: number;
-}
-
 interface Token {
     id: string;
     value: number;
@@ -23,12 +18,19 @@ interface Token {
     tileIndex: number;
 }
 
+interface Grid {
+    rows: number;
+    cols: number;
+    tileSize: number;
+}
+
+
 interface Tile {
     capacity: number;
     color?: [number, number, number] | [number, number, number, number];
 }
 
-type GameEvent = NewGameEvent | TokensEvent | PlayersEvent;
+type GameEvent = NewGameEvent | TokensEvent | PlayersEvent | GameStateEvent;
 
 interface Game {
     name: string;

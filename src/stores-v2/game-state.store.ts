@@ -7,11 +7,13 @@ const useGameStateStore = defineStore("game-state", () => {
     
     const currentState = ref<GameState>("new_game");
 
-    function setState(newState: GameState) {
-        currentState.value = newState;
-    }
+    return { currentState };
+    // function setState(newState: GameState) {
+    //     currentState.value = newState;
+    // }
 
-    return { currentState, setState };
+    // return { currentState, setState };
 });
 
 export { useGameStateStore };
+export type { GameState };

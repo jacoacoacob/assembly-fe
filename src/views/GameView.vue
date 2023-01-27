@@ -45,8 +45,7 @@ provide("token:dragstart", (event: DragEvent) => {
 });
 
 provide("token:dragend", (event: DragEvent) => {
-    // placeTokens.end
-    // events.send("tokens:set_candidate_id", { tokenId: "" });
+    // ...i forget what i as doing here
 });
 
 function findTileIndex(element: HTMLElement) {

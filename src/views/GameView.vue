@@ -2,36 +2,51 @@
 import { provide, nextTick, onMounted } from 'vue';
 import TheBoard from '@/components/TheBoard.vue';
 import TheSidePanel from '@/components/TheSidePanel.vue';
-import { useGameStateStore } from '@/stores/game-state-store';
+// import { useGameStateStore } from '@/stores/game-state-store';
 // import { useBoard } from '@/composables/use-board';
 import TopBar from '@/components/TopBar.vue';
-import { usePlayersDataStore } from '@/stores/players-data-store';
-import { useBoardDataStore } from '@/stores/board-data-store';
-import { useGameDataStore } from "@/stores/game-data-store";
-import { usePlaceTokensStore } from '@/stores/place-tokens-store';
-import { usePlaceTokensActions } from "@/composables/use-place-tokens-actions";
-import { randFromRange, selectRandomFrom } from '@/utils/rand';
+// import { usePlayersDataStore } from '@/stores/players-data-store';
+// import { useBoardDataStore } from '@/stores/board-data-store';
+// import { useGameDataStore } from "@/stores/game-data-store";
+// import { usePlaceTokensStore } from '@/stores/place-tokens-store';
+// import { usePlaceTokensActions } from "@/composables/use-place-tokens-actions";
+// import { randFromRange, selectRandomFrom } from '@/utils/rand';
+import { usePlaceTokensState } from '@/stores-v2/states/use-place-tokens-state';
+import { useTokensStore } from '@/stores-v2/tokens.store';
+import { useEventsStore } from '@/stores-v2/events.store';
+import { useTilesStore } from '@/stores-v2/tiles.store';
+import { useGameStateStore } from '@/stores-v2/game-state.store';
+import { usePlayersStore } from '@/stores-v2/players.store';
 
 
-const placeTokens = usePlaceTokensStore();
-const placeTokensActions = usePlaceTokensActions();
-// const gameData = useGameDataStore()
+// const placeTokens = usePlaceTokensStore();
+// const placeTokensActions = usePlaceTokensActions();
+// const gameState = useGameStateStore();
+// const playersData = usePlayersDataStore();
+// const boardData = useBoardDataStore();
+
+const placeTokens = usePlaceTokensState();
 const gameState = useGameStateStore();
-const playersData = usePlayersDataStore();
+const events = useEventsStore();
+const tokens = useTokensStore();
+const tiles = useTilesStore();
+const players = usePlayersStore();
 
-const boardData = useBoardDataStore();
 
 provide("token:dragstart", (event: DragEvent) => {
     const tokenId = (event.target as HTMLDivElement).id;
     if (event.dataTransfer) {
         event.dataTransfer.setData("text", tokenId);
-        boardData.activeToken = tokenId;
-        gameState.pushEvent("place_tokens:set_candidate_token", { tokenId });
+        if (gameState.currentState === "place_tokens") {
+            placeTokens.startMove(tokenId);
+        }
+        // events.send("tokens:set_candidate_id", { tokenId });
     }
 });
 
 provide("token:dragend", (event: DragEvent) => {
-    boardData.activeToken = "";
+    // placeTokens.end
+    // events.send("tokens:set_candidate_id", { tokenId: "" });
 });
 
 function findTileIndex(element: HTMLElement) {
@@ -48,7 +63,7 @@ function findTileIndex(element: HTMLElement) {
 
 provide("tile:dragexit", (event: DragEvent) => {
     event.preventDefault();
-    boardData.hoveredTile = -1;
+    tiles.candidateTileIndex = -1;
 });
 
 provide("tile:dragenter", (event: DragEvent) => {
@@ -56,7 +71,7 @@ provide("tile:dragenter", (event: DragEvent) => {
     const target = (event.target as HTMLDivElement);
     const tileIndex = findTileIndex(target);
     if (tileIndex) {
-        boardData.hoveredTile = tileIndex;
+        tiles.candidateTileIndex = tileIndex;
     }
 });
 
@@ -69,36 +84,37 @@ provide("tile:drop", (event: DragEvent) => {
     const target = (event.target as HTMLDivElement);
     const tileIndex = findTileIndex(target);
     const tokenId = event.dataTransfer?.getData("text");
-    if (typeof tileIndex === "number" && tokenId && boardData.isValidMove(tileIndex, tokenId)) {
+    if (typeof tileIndex === "number" && tokenId && tiles.isValidMove(tileIndex, tokenId)) {
         if (gameState.currentState === "place_tokens") {
-            gameState.pushEvent("place_tokens:move_token", { tileIndex, tokenId });
+            placeTokens.endMove(tokenId, tileIndex);
+            // events.send("tokens:move_token", { tileIndex, tokenId });
         }
     }
-    boardData.activeToken = "";
-    boardData.hoveredTile = -1;
+    // boardData.activeToken = "";
+    tiles.candidateTileIndex = -1;
 });
 
-function onDrop(event: DragEvent) {
-    event.preventDefault();
-    const target = event.target as HTMLDivElement;
-    const tileIndex = findTileIndex(target);
-    if (typeof tileIndex === "number" && boardData.isValidMove(tileIndex, boardData.activeToken)) {
+// function onDrop(event: DragEvent) {
+//     event.preventDefault();
+//     const target = event.target as HTMLDivElement;
+//     const tileIndex = findTileIndex(target);
+//     if (typeof tileIndex === "number" && tiles.isValidMove(tileIndex, tokens.candidateTokenId)) {
 
-    }
-}
+//     }
+// }
 
 function onWindowKeydown(event: KeyboardEvent) {
     if (event.code === "Space") {
         if (gameState.currentState === "place_tokens") {
             if (placeTokens.isTurnEndable) {
-                placeTokensActions.endTurn();
+                placeTokens.endTurn();
             }
         }
     }   
 }
 
 onMounted(() => {
-    playersData.viewActivePlayer();
+    players.viewActivePlayer();
     window.addEventListener("keydown", onWindowKeydown);
     return () => {
         window.removeEventListener("keydown", onWindowKeydown);

@@ -7,9 +7,12 @@ import { checkMaxLength, checkMinLength, checkSepecialChars  } from "@/utils/val
 import { randId } from "@/utils/rand";
 import AppInput from "@/components/AppInput.vue";
 import { listGames } from "@/api/game-api";
-import { useCreateGame } from "@/composables/use-create-game";
+// import { useCreateGame } from "@/composables/use-create-game";
+import { useNewGameState } from "@/stores-v2/states/use-new-game-state";
 
-const createGame = useCreateGame();
+// const createGame = useCreateGame();
+
+const { createGame } = useNewGameState();
 
 function createInputValidator(name: string, minLength: number, maxLength: number) {
     return (value: string) => {

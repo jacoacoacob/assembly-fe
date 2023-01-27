@@ -43,4 +43,4 @@ interface Game {
     tiles: Tile[];
 }
 
-export type { Game, GameEvent, Player, PlayerColor, Grid, Token };
+export type { Game, GameEvent, Player, PlayerColor, Grid, Token, Tile };

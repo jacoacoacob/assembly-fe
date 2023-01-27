@@ -5,6 +5,7 @@ import type {  Game, Player, Token } from "../game-data.types";
 import type { PlayerTokenIds } from "../tokens.types";
 import { useEventsStore } from "../events.store";
 import { useTokensStore } from "../tokens.store";
+import { nextTick } from "vue";
 
 function getStagedTokenIds(playerTokensIds: PlayerTokenIds): Token["id"][] {
     return Object.entries(playerTokensIds).reduce((accum: Token["id"][], [playerId, playerTokenIds]) => {
@@ -14,7 +15,7 @@ function getStagedTokenIds(playerTokensIds: PlayerTokenIds): Token["id"][] {
             if (playerTokens.includes(tokenId)) {
                 continue;
             }
-            playerTokenIds.push(tokenId);
+            playerTokens.push(tokenId);
         } 
         return accum.concat(playerTokens);
     }, []);
@@ -67,9 +68,12 @@ const useNewGameState = defineStore("new-game-state", () => {
             ["new_game:set_tokens", createTokens(players)],
             ["new_game:set_grid", createGrid(6, 9, 90)],
             ["new_game:set_tiles", createTiles(6, 9, players.length < 4 ? [4, 8] : [5, 10])],
-            ["tokens:set_in_play_token_ids", getStagedTokenIds(tokens.playerTokenIds)],
+            ["tiles:set_in_play_tiles", [10, 13, 16, 37, 40, 43]],
             ["game_state:set_state", "place_tokens"]
-        )
+        );
+        nextTick(() => {
+            events.send("tokens:set_in_play_token_ids", getStagedTokenIds(tokens.playerTokenIds));
+        });
     }
 
     return { createGame };

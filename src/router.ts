@@ -1,11 +1,12 @@
-import { createRouter, createWebHistory, useRoute, type RouteParams, type RouterLinkProps } from "vue-router";
+ import { createRouter, createWebHistory, type RouteParams, type RouterLinkProps } from "vue-router";
 
 import SavedGamesView from "@/views/SavedGamesView.vue";
 import NewGameView from "@/views/NewGameView.vue";
 import WelcomeView from "@/views/WelcomeView.vue";
 import GameView from "@/views/GameView.vue";
-import { loadGame } from "./api/game-api";
+import { loadGame, loadGameHistory } from "./api/game-api";
 import { useGameStateStore } from "./stores/game-state-store";
+import { useEventsStore } from "./stores-v2/events.store";
 
 interface Breadcrumb {
     name: string | ((params: RouteParams) => string);
@@ -74,11 +75,17 @@ const router = createRouter({
             name: "game",
             component: GameView,
             beforeEnter(to) {
-                const gameState = useGameStateStore();
-                const data = loadGame(to.params.name as string);
-                if (data) {
-                    gameState.loadHistory(data.history);
+                const events = useEventsStore();
+                const gameHistory = loadGameHistory(to.params.name as string);
+                if (gameHistory) {
+                    console.log("gameHistory", gameHistory)
+                    events.loadHistory(gameHistory);
                 }
+                // const gameState = useGameStateStore();
+                // const data = loadGame(to.params.name as string);
+                // if (data) {
+                //     gameState.loadHistory(data.history);
+                // }
             },
             meta: {
                 breadcrumbs: [

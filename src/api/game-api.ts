@@ -7,17 +7,7 @@ import type { Game as GameV2 } from "@/stores-v2/game-data.types";
 type GameList = Pick<Game, "name" | "players" | "ts_updated">[];
 
 function listGames() {
-    return listKeys().reduce((accum: GameList, key) => {
-        const game = load<Game>(key);
-        if (game) {
-            accum.push({
-                name: game.name,
-                players: game.players,
-                ts_updated: game.ts_updated,
-            });
-        }
-        return accum
-    }, []);
+    return listKeys();
 }
 
 function loadGame(name: string) {
@@ -34,7 +24,7 @@ function saveGameHistory(game: GameV2) {
 }
 
 function loadGameHistory(name: string) {
-    return load<GameV2>(name)?.history ?? [];
+    return load<GameV2["history"]>(name);
 }
 
 function deleteGame(name: string) {

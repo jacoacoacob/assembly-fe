@@ -1,33 +1,42 @@
 <script setup lang="ts">
-import { usePlaceTokensActions } from '@/composables/use-place-tokens-actions';
-import { useGameDataStore } from '@/stores/game-data-store';
+// import { usePlaceTokensActions } from '@/composables/use-place-tokens-actions';
+import { useGameDataStore } from '@/stores-v2/game-data.store';
+import { useGameStateStore } from '@/stores-v2/game-state.store';
+import { usePlayersStore } from '@/stores-v2/players.store';
+import { usePlaceTokensState } from '@/stores-v2/states/use-place-tokens-state';
+// import { useGameDataStore } from '@/stores/game-data-store';
 import { PLAYER_COLOR_OPTIONS } from '@/stores/game-data-store-types';
-import { useGameStateStore } from '@/stores/game-state-store';
-import { usePlaceTokensStore } from '@/stores/place-tokens-store';
+// import { useGameStateStore } from '@/stores/game-state-store';
+// import { usePlaceTokensStore } from '@/stores/place-tokens-store';
 
-import { usePlayersDataStore } from "@/stores/players-data-store";
+// import { usePlayersDataStore } from "@/stores/players-data-store";
 import { computed } from 'vue';
 
-const gameState = useGameStateStore();
-const gameData = useGameDataStore();
-const playersData = usePlayersDataStore();
+// const gameState = useGameStateStore();
+// const gameData = useGameDataStore();
+// const playersData = usePlayersDataStore();
 
-const placeTokens = usePlaceTokensStore();
-const placeTokensActions = usePlaceTokensActions();
+// const placeTokens = usePlaceTokensStore();
+// const placeTokensActions = usePlaceTokensActions();
+
+const gameData = useGameDataStore();
+const gameState = useGameStateStore();
+const players = usePlayersStore();
+const placeTokens = usePlaceTokensState();
 
 const isTurnEndable = computed(() => {
     switch (gameState.currentState) {
-        case "initial": return true;
+        case "new_game": return true;
+        case "play": return true;
         case "place_tokens": return placeTokens.isTurnEndable;
-        case "play_game": return true;
     }
 });
 
 function endTurn() {
     switch (gameState.currentState) {
-        case "initial": return;
-        case "play_game": return;
-        case "place_tokens": return placeTokensActions.endTurn();
+        case "new_game": return;
+        case "place_tokens": return placeTokens.endTurn();
+        case "play": return;
     }
 }
 
@@ -44,8 +53,8 @@ function endTurn() {
             <li v-for="player, i in gameData.players" :key="player.id">
                 <button
                     class="button button-dense button-outline mb-1 flex items-center space-x-1 w-full"
-                    :class="{ 'ring ring-slate-800 font-bold': i === playersData.activePlayerIndex }"
-                    @click="() => playersData.setViewedPlayer(i)"
+                    :class="{ 'ring ring-slate-800 font-bold': i === players.activePlayerIndex }"
+                    @click="() => players.setViewedPlayer(i)"
                 >
                     <span
                         class="w-4 h-4 rounded-full"
@@ -56,7 +65,7 @@ function endTurn() {
                     </span>
                 </button>
                 <div
-                    v-if="player.id === playersData.viewedPlayer.id"
+                    v-if="player.id === players.viewedPlayer.id"
                     class="border-2 rounded-full border-slate-900 "
                 ></div>
             </li>

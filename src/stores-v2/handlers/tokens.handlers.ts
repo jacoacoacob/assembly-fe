@@ -8,7 +8,7 @@ type E<Name extends string, Data = {}> = Event<"tokens", Name, Data>;
 type TokensEvent =
     E<"move_token", { tokenId: string, tileIndex: number }> |
     E<"set_in_play_token_ids", string[]> |
-    E<"set_candidate_id", string>;
+    E<"set_candidate_token_id", string>;
 
 function tokensEventHandlers() {
     const gameData = useGameDataStore();
@@ -21,8 +21,8 @@ function tokensEventHandlers() {
         set_in_play_token_ids(tokenIds) {
             tokens.inPlayTokenIds = tokenIds;
         },
-        set_candidate_id(candidateId) {
-            tokens.candidateId = candidateId;
+        set_candidate_token_id(candidateId) {
+            tokens.candidateTokenId = candidateId;
         },
     });
 }

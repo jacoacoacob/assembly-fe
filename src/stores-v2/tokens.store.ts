@@ -9,7 +9,7 @@ const useTokensStore = defineStore("tokens", () => {
     const gameData = useGameDataStore();
     const tiles = useTilesStore();
 
-    const candidateId = ref("");
+    const candidateTokenId = ref("");
 
     const inPlayTokenIds = ref<Token["id"][]>([]);
 
@@ -28,7 +28,7 @@ const useTokensStore = defineStore("tokens", () => {
         Object.keys(gameData.tokens).filter((tokenId) => gameData.tokens[tokenId].tileIndex === -1)
     );
 
-    const reservePlayerTokenIds = computed(() =>
+    const reservePlayerTokenIds = computed((): PlayerTokenIds =>
         Object.entries(playerTokenIds.value).reduce(
             (accum: PlayerTokenIds, [playerId, tokenIds]) => {
                 accum[playerId] = tokenIds.filter(
@@ -67,13 +67,17 @@ const useTokensStore = defineStore("tokens", () => {
             if (!accum[token.playerId][token.value]) {
                 accum[token.playerId][token.value] = [];
             }
-            accum[token.playerId][token.value].push(token.id);
+            if (inPlayTokenIds.value.includes(token.id)) {
+                accum[token.playerId][token.value].push(token.id);
+            } else {
+                accum[token.playerId][token.value].unshift(token.id);
+            }
             return accum;
         }, {})
     );
 
     return {
-        candidateId,
+        candidateTokenId,
         inPlayTokenIds,
         playerTokenIds,
         availableReservePlayerTokenIds,

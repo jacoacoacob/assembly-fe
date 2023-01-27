@@ -8,9 +8,11 @@ import { sum } from "@/utils/sum";
 const useTilesStore = defineStore("tiles", () => {
     const gameData = useGameDataStore();
 
+    const candidateTileIndex = ref<number>(-1);
+
     const inPlayTiles = ref<number[]>([]);
 
-    const _tileTokenGraph = computed(() => {
+    const tileTokenGraph = computed(() => {
         const graph: Token["id"][][] = gameData.tiles.map(() => []);
         const tokenValues = Object.values(gameData.tokens);
         for (let i = 0; i < tokenValues.length; i++) {
@@ -24,7 +26,7 @@ const useTilesStore = defineStore("tiles", () => {
 
     const openTiles = computed(() =>
         gameData.tiles.reduce((accum: number[], tile, tileIndex) => {
-            const tileTokenValues = _tileTokenGraph.value[tileIndex].map(
+            const tileTokenValues = tileTokenGraph.value[tileIndex].map(
                 (tokenId) => gameData.tokens[tokenId].value
             );
             if (tileTokenValues.length < 4 && sum(tileTokenValues) < tile.capacity) {
@@ -38,7 +40,7 @@ const useTilesStore = defineStore("tiles", () => {
         if (openTiles.value.includes(tileIndex)) {
             const tile = gameData.tiles[tileIndex];
             const token = gameData.tokens[tokenId];
-            const tileTokenValues = _tileTokenGraph.value[tileIndex].map((tokenId) => gameData.tokens[tokenId].value);
+            const tileTokenValues = tileTokenGraph.value[tileIndex].map((tokenId) => gameData.tokens[tokenId].value);
             return sum(tileTokenValues) + token.value <= tile.capacity;
         }
         return false;
@@ -48,7 +50,7 @@ const useTilesStore = defineStore("tiles", () => {
         inPlayTiles.value.filter((tileIndex) => openTiles.value.includes(tileIndex))
     );
 
-    return { openTiles, inPlayTiles, openInPlayTiles, isValidMove };
+    return { openTiles, inPlayTiles, openInPlayTiles, isValidMove, tileTokenGraph, candidateTileIndex };
 });
 
 export { useTilesStore };

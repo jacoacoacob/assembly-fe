@@ -1,18 +1,20 @@
+import { selectRandomFrom } from "@/utils/rand";
 import { defineStore } from "pinia";
 import { useEventsStore } from "../events.store";
 import { useGameDataStore } from "../game-data.store";
-import { useGameStateStore } from "../game-state.store";
 import { usePlayersStore } from "../players.store";
+import { useTilesStore } from "../tiles.store";
 import { useTokensStore } from "../tokens.store";
 
 /**
- * Functions and data to be used in components when gameState.currentState === "place_tokens"
+ * Methods and data to be used in components when gameState.currentState === "place_tokens"
  */
 const usePlaceTokensState = defineStore("place-tokens-state", () => {
     const gameData = useGameDataStore();
     const events = useEventsStore();
     const tokens = useTokensStore();
     const players = usePlayersStore();
+    const tiles = useTilesStore();
 
     function startMove(tokenId: string) {
         if (tokenId !== tokens.candidateId) {
@@ -41,13 +43,24 @@ const usePlaceTokensState = defineStore("place-tokens-state", () => {
     }
 
     function endTurn() {
-        events.sendMany(
-            ["players:next"],
-            ["tokens:set_candidate_id", ""]
-        );
+        events.sendMany(["players:next"], ["tokens:set_candidate_id", ""]);
         players.viewActivePlayer();
+        const playerHasMove =
+            tokens.availableReservePlayerTokenIds[players.activePlayer.id].length > 0;
         if (_isPlacementComplete()) {
-            // events.send("") // "state:set_state", "play"
+            events.send("game_state:set_state", "play");
+        } else if (!playerHasMove) {
+            events.send(
+                "tiles:set_in_play_tiles",
+                tiles.inPlayTiles.concat(
+                    selectRandomFrom(
+                        tiles.openTiles.filter(
+                            (tileIndex) => !tiles.openInPlayTiles.includes(tileIndex)
+                        ),
+                        2
+                    )
+                )
+            )
         }
     }
 

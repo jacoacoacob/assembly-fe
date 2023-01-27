@@ -2,10 +2,12 @@ import { defineStore } from "pinia";
 import { computed, ref } from "vue";
 import { useGameDataStore } from "./game-data.store";
 import type { Token } from "./game-data.types";
+import { useTilesStore } from "./tiles.store";
 import type { PlayerTokenIds, PlayerTokenIdsByTokenValue } from "./tokens.types";
 
 const useTokensStore = defineStore("tokens", () => {
     const gameData = useGameDataStore();
+    const tiles = useTilesStore();
 
     const candidateId = ref("");
 
@@ -38,6 +40,24 @@ const useTokensStore = defineStore("tokens", () => {
         )
     );
 
+    /**
+     * tokenId lists indexed by playerId containing tokenIds of tokens
+     * that could be placed on at least one in-play tile.
+     */
+    const availableReservePlayerTokenIds = computed(() => 
+        Object.entries(reservePlayerTokenIds.value).reduce(
+            (accum: PlayerTokenIds, [playerId, reserveTokenIds]) => {
+                accum[playerId] = reserveTokenIds.filter(
+                    (tokenId) => tiles.openInPlayTiles.some(
+                        (tileIndex) => tiles.isValidMove(tileIndex, tokenId)
+                    )
+                );
+                return accum;
+            },
+            {}
+        )
+    );
+
     const reservePlayerTokenIdsByTokenValue = computed(() =>
         reserveTokenIds.value.reduce((accum: PlayerTokenIdsByTokenValue, tokenId) => {
             const token = gameData.tokens[tokenId];
@@ -56,6 +76,7 @@ const useTokensStore = defineStore("tokens", () => {
         candidateId,
         inPlayTokenIds,
         playerTokenIds,
+        availableReservePlayerTokenIds,
         reserveTokenIds,
         reservePlayerTokenIds,
         reservePlayerTokenIdsByTokenValue,

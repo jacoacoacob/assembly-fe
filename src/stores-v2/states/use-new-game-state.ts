@@ -68,7 +68,7 @@ const useNewGameState = defineStore("new-game-state", () => {
             ["new_game:set_grid", createGrid(6, 9, 90)],
             ["new_game:set_tiles", createTiles(6, 9, players.length < 4 ? [4, 8] : [5, 10])],
             ["tokens:set_in_play_token_ids", getStagedTokenIds(tokens.playerTokenIds)],
-            // ["state:set_state", "place_tokens"]
+            ["game_state:set_state", "place_tokens"]
         )
     }
 

@@ -2,6 +2,7 @@ import type { NewGameEvent } from "./handlers/new-game.handlers";
 import type { PlayersEvent } from "./handlers/players.handlers";
 import type { GameStateEvent } from "./handlers/game-state.handlers";
 import type { TokensEvent } from "./handlers/tokens.handlers";
+import type { TilesEvent } from "./handlers/tiles.handlers";
 
 type PlayerColor = "green" | "blue" | "orange" | "red" | "violet";
 
@@ -30,7 +31,7 @@ interface Tile {
     color?: [number, number, number] | [number, number, number, number];
 }
 
-type GameEvent = NewGameEvent | TokensEvent | PlayersEvent | GameStateEvent;
+type GameEvent = NewGameEvent | TokensEvent | PlayersEvent | GameStateEvent | TilesEvent;
 
 interface Game {
     name: string;

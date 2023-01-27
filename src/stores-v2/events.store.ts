@@ -8,8 +8,14 @@ import { saveGameHistory } from "@/api/game-api";
 import { useGameDataStore } from "./game-data.store";
 import { playersEventHandlers, type PlayersEventHandlers } from "./handlers/players.handlers";
 import { gameStateEventHandlers, type GameStateEventHandlers } from "./handlers/game-state.handlers";
+import { tilesEventHandlers, type TilesEventHandlers } from "./handlers/tiles.handlers";
 
-type StoreEventHandler = NewGameEventHandlers | TokensEventHandlers | PlayersEventHandlers | GameStateEventHandlers;
+type StoreEventHandler =
+    NewGameEventHandlers |
+    TokensEventHandlers |
+    PlayersEventHandlers |
+    GameStateEventHandlers |
+    TilesEventHandlers;
 
 const useEventsStore = defineStore("events", () => {
 
@@ -19,6 +25,7 @@ const useEventsStore = defineStore("events", () => {
         new_game: newGameEventHandlers(),
         tokens: tokensEventHandlers(),
         players: playersEventHandlers(),
+        tiles: tilesEventHandlers(),
         game_state: gameStateEventHandlers(),
     };
     

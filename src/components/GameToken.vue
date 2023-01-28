@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import { computed, inject, type StyleValue, type Ref } from "vue";
+import { computed, inject, type StyleValue } from "vue";
 
-// import { useGameDataStore } from '@/stores/game-data-store';
 import { PLAYER_COLOR_OPTIONS, type PlayerColor } from "@/stores/game-data-store-types";
-// import type { Player, Token } from '@/stores/game-data-store-types';
+
 import type { Token } from "@/stores-v2/game-data.types";
 import { useGameStateStore } from "@/stores-v2/game-state.store";
 import { useGameDataStore } from "@/stores-v2/game-data.store";
@@ -11,20 +10,8 @@ import { usePlayersStore } from "@/stores-v2/players.store";
 import { useTilesStore } from "@/stores-v2/tiles.store";
 import { usePlaceTokensState } from "@/stores-v2/states/use-place-tokens-state";
 import { useTokensStore } from "@/stores-v2/tokens.store";
-// import { usePlayersDataStore } from "@/stores/players-data-store";
-// import { useBoardDataStore } from "@/stores/board-data-store";
-// import { usePlaceTokensStore } from "@/stores/place-tokens-store";
-// import { useGameStateStore } from "@/stores/game-state-store";
 
-// const props = defineProps<{ token: Token; isUnavailable?: boolean }>();
 const props = defineProps<{ tokenId: Token["id"]; }>();
-
-
-// const gameState = useGameStateStore();
-// const placeTokens = usePlaceTokensStore();
-// const gameData = useGameDataStore();
-// const playerData = usePlayersDataStore();
-// const boardData = useBoardDataStore();
 
 const gameState = useGameStateStore();
 const gameData = useGameDataStore();

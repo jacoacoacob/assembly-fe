@@ -4,9 +4,11 @@ import { computed, ref } from "vue";
 import type { Token } from "./game-data.types";
 import { useGameDataStore } from "./game-data.store";
 import { sum } from "@/utils/sum";
+import { useTokensStore } from "./tokens.store";
 
 const useTilesStore = defineStore("tiles", () => {
     const gameData = useGameDataStore();
+    const tokens = useTokensStore();
 
     const candidateTileIndex = ref<number>(-1);
 
@@ -29,8 +31,16 @@ const useTilesStore = defineStore("tiles", () => {
             const tileTokenValues = tileTokenGraph.value[tileIndex].map(
                 (tokenId) => gameData.tokens[tokenId].value
             );
-            if (tileTokenValues.length < 4 && sum(tileTokenValues) < tile.capacity) {
-                accum.push(tileIndex);
+            if (tileTokenValues.length < 4) {
+                const tileTokenValuesSum = sum(tileTokenValues)
+                const draggedToken = gameData.tokens[tokens.draggedTokenId];
+                if (draggedToken && draggedToken.tileIndex !== tileIndex) {
+                    if (tileTokenValuesSum + draggedToken.value <= tile.capacity) {
+                        accum.push(tileIndex);
+                    }
+                } else if (tileTokenValuesSum < tile.capacity) {
+                    accum.push(tileIndex);
+                }
             }
             return accum;
         }, [])

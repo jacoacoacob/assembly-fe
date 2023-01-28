@@ -10,6 +10,7 @@ const useTokensStore = defineStore("tokens", () => {
     const tiles = useTilesStore();
 
     const candidateTokenId = ref("");
+    const draggedTokenId = ref("");
 
     const inPlayTokenIds = ref<Token["id"][]>([]);
 
@@ -78,6 +79,7 @@ const useTokensStore = defineStore("tokens", () => {
 
     return {
         candidateTokenId,
+        draggedTokenId,
         inPlayTokenIds,
         playerTokenIds,
         availableReservePlayerTokenIds,

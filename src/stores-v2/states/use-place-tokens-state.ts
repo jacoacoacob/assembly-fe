@@ -17,6 +17,7 @@ const usePlaceTokensState = defineStore("place-tokens-state", () => {
     const players = usePlayersStore();
     const tiles = useTilesStore();
 
+
     const isTurnEndable = computed(() => {
         const candidateToken = gameData.tokens[tokens.candidateTokenId];
         return (
@@ -43,6 +44,7 @@ const usePlaceTokensState = defineStore("place-tokens-state", () => {
                 events.send("tokens:set_candidate_token_id", "");
             }
         }
+        tokens.draggedTokenId = "";
     }
 
     function _isPlacementComplete() {
@@ -57,11 +59,19 @@ const usePlaceTokensState = defineStore("place-tokens-state", () => {
         return availableReserveTokens.length > 0;
     }
 
+    function _startPlayState() {
+        events.sendMany(
+            ["game_state:set_state", "play"],
+            ["tiles:set_in_play_tiles", gameData.tiles.map((_, i) => i)],
+            ["tokens:set_in_play_token_ids", Object.keys(gameData.tokens)]
+        );
+    }
+
     function endTurn() {
         events.sendMany(["players:next"], ["tokens:set_candidate_token_id", ""]);
         players.viewActivePlayer();
         if (_isPlacementComplete()) {
-            events.send("game_state:set_state", "play");
+            _startPlayState();
         } else if (!_playerHasMove(players.activePlayer.id)) {
             events.send(
                 "tiles:set_in_play_tiles",

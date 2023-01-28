@@ -17,6 +17,7 @@ import { useEventsStore } from '@/stores-v2/events.store';
 import { useTilesStore } from '@/stores-v2/tiles.store';
 import { useGameStateStore } from '@/stores-v2/game-state.store';
 import { usePlayersStore } from '@/stores-v2/players.store';
+import { useGameDataStore } from '@/stores-v2/game-data.store';
 
 
 // const placeTokens = usePlaceTokensStore();
@@ -25,6 +26,7 @@ import { usePlayersStore } from '@/stores-v2/players.store';
 // const playersData = usePlayersDataStore();
 // const boardData = useBoardDataStore();
 
+const gameData = useGameDataStore();
 const placeTokens = usePlaceTokensState();
 const gameState = useGameStateStore();
 const events = useEventsStore();
@@ -39,13 +41,22 @@ provide("token:dragstart", (event: DragEvent) => {
         event.dataTransfer.setData("text", tokenId);
         if (gameState.currentState === "place_tokens") {
             placeTokens.startMove(tokenId);
+            tokens.draggedTokenId = tokenId;
         }
-        // events.send("tokens:set_candidate_id", { tokenId });
     }
 });
 
 provide("token:dragend", (event: DragEvent) => {
-    // ...i forget what i as doing here
+    const tokenId = event.dataTransfer?.getData("text");
+    const token = gameData.tokens[tokenId ?? ""];
+    if (
+        token &&
+        token.tileIndex === -1 &&
+        tokens.candidateTokenId === token.id
+    ) {
+        events.send("tokens:set_candidate_token_id", "");
+    }
+    tokens.draggedTokenId = "";
 });
 
 function findTileIndex(element: HTMLElement) {
@@ -86,21 +97,10 @@ provide("tile:drop", (event: DragEvent) => {
     if (typeof tileIndex === "number" && tokenId && tiles.isValidMove(tileIndex, tokenId)) {
         if (gameState.currentState === "place_tokens") {
             placeTokens.endMove(tokenId, tileIndex);
-            // events.send("tokens:move_token", { tileIndex, tokenId });
         }
     }
-    // boardData.activeToken = "";
     tiles.candidateTileIndex = -1;
 });
-
-// function onDrop(event: DragEvent) {
-//     event.preventDefault();
-//     const target = event.target as HTMLDivElement;
-//     const tileIndex = findTileIndex(target);
-//     if (typeof tileIndex === "number" && tiles.isValidMove(tileIndex, tokens.candidateTokenId)) {
-
-//     }
-// }
 
 function onWindowKeydown(event: KeyboardEvent) {
     if (event.code === "Space") {

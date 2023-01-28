@@ -1,41 +1,29 @@
 <script setup lang="ts">
-// import { usePlaceTokensActions } from '@/composables/use-place-tokens-actions';
+import { computed } from 'vue';
+
 import { useGameDataStore } from '@/stores-v2/game-data.store';
 import { useGameStateStore } from '@/stores-v2/game-state.store';
 import { usePlayersStore } from '@/stores-v2/players.store';
 import { usePlaceTokensState } from '@/stores-v2/states/use-place-tokens-state';
-// import { useGameDataStore } from '@/stores/game-data-store';
 import { PLAYER_COLOR_OPTIONS } from '@/stores/game-data-store-types';
-// import { useGameStateStore } from '@/stores/game-state-store';
-// import { usePlaceTokensStore } from '@/stores/place-tokens-store';
-
-// import { usePlayersDataStore } from "@/stores/players-data-store";
-import { computed } from 'vue';
-
-// const gameState = useGameStateStore();
-// const gameData = useGameDataStore();
-// const playersData = usePlayersDataStore();
-
-// const placeTokens = usePlaceTokensStore();
-// const placeTokensActions = usePlaceTokensActions();
 
 const gameData = useGameDataStore();
 const gameState = useGameStateStore();
 const players = usePlayersStore();
-const placeTokens = usePlaceTokensState();
+const placeTokensState = usePlaceTokensState();
 
 const isTurnEndable = computed(() => {
     switch (gameState.currentState) {
         case "new_game": return true;
         case "play": return true;
-        case "place_tokens": return placeTokens.isTurnEndable;
+        case "place_tokens": return placeTokensState.isTurnEndable;
     }
 });
 
 function endTurn() {
     switch (gameState.currentState) {
         case "new_game": return;
-        case "place_tokens": return placeTokens.endTurn();
+        case "place_tokens": return placeTokensState.endTurn();
         case "play": return;
     }
 }

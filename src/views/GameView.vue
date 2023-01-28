@@ -1,16 +1,10 @@
 <script setup lang="ts">
-import { provide, nextTick, onMounted } from 'vue';
+import { provide, onMounted } from 'vue';
+
 import TheBoard from '@/components/TheBoard.vue';
 import TheSidePanel from '@/components/TheSidePanel.vue';
-// import { useGameStateStore } from '@/stores/game-state-store';
-// import { useBoard } from '@/composables/use-board';
 import TopBar from '@/components/TopBar.vue';
-// import { usePlayersDataStore } from '@/stores/players-data-store';
-// import { useBoardDataStore } from '@/stores/board-data-store';
-// import { useGameDataStore } from "@/stores/game-data-store";
-// import { usePlaceTokensStore } from '@/stores/place-tokens-store';
-// import { usePlaceTokensActions } from "@/composables/use-place-tokens-actions";
-// import { randFromRange, selectRandomFrom } from '@/utils/rand';
+
 import { usePlaceTokensState } from '@/stores-v2/states/use-place-tokens-state';
 import { useTokensStore } from '@/stores-v2/tokens.store';
 import { useEventsStore } from '@/stores-v2/events.store';
@@ -18,16 +12,11 @@ import { useTilesStore } from '@/stores-v2/tiles.store';
 import { useGameStateStore } from '@/stores-v2/game-state.store';
 import { usePlayersStore } from '@/stores-v2/players.store';
 import { useGameDataStore } from '@/stores-v2/game-data.store';
-
-
-// const placeTokens = usePlaceTokensStore();
-// const placeTokensActions = usePlaceTokensActions();
-// const gameState = useGameStateStore();
-// const playersData = usePlayersDataStore();
-// const boardData = useBoardDataStore();
+import { usePlayState } from '@/stores-v2/states/use-play-state';
 
 const gameData = useGameDataStore();
-const placeTokens = usePlaceTokensState();
+const placeTokensState = usePlaceTokensState();
+const playState = usePlayState();
 const gameState = useGameStateStore();
 const events = useEventsStore();
 const tokens = useTokensStore();
@@ -40,9 +29,12 @@ provide("token:dragstart", (event: DragEvent) => {
     if (event.dataTransfer) {
         event.dataTransfer.setData("text", tokenId);
         if (gameState.currentState === "place_tokens") {
-            placeTokens.startMove(tokenId);
-            tokens.draggedTokenId = tokenId;
+            placeTokensState.startMove(tokenId);
         }
+        if (gameState.currentState === "play") {
+            
+        }
+        tokens.draggedTokenId = tokenId;
     }
 });
 
@@ -96,7 +88,7 @@ provide("tile:drop", (event: DragEvent) => {
     const tokenId = event.dataTransfer?.getData("text");
     if (typeof tileIndex === "number" && tokenId && tiles.isValidMove(tileIndex, tokenId)) {
         if (gameState.currentState === "place_tokens") {
-            placeTokens.endMove(tokenId, tileIndex);
+            placeTokensState.endMove(tokenId, tileIndex);
         }
     }
     tiles.candidateTileIndex = -1;
@@ -105,8 +97,8 @@ provide("tile:drop", (event: DragEvent) => {
 function onWindowKeydown(event: KeyboardEvent) {
     if (event.code === "Space") {
         if (gameState.currentState === "place_tokens") {
-            if (placeTokens.isTurnEndable) {
-                placeTokens.endTurn();
+            if (placeTokensState.isTurnEndable) {
+                placeTokensState.endTurn();
             }
         }
     }   

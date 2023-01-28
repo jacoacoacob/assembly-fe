@@ -8,7 +8,6 @@ import { useGameStateStore } from "@/stores-v2/game-state.store";
 import { useGameDataStore } from "@/stores-v2/game-data.store";
 import { usePlayersStore } from "@/stores-v2/players.store";
 import { useTilesStore } from "@/stores-v2/tiles.store";
-import { usePlaceTokensState } from "@/stores-v2/states/use-place-tokens-state";
 import { useTokensStore } from "@/stores-v2/tokens.store";
 
 const props = defineProps<{ tokenId: Token["id"]; }>();
@@ -18,7 +17,6 @@ const gameData = useGameDataStore();
 const players = usePlayersStore();
 const tiles = useTilesStore();
 const tokens = useTokensStore();
-const placeTokens = usePlaceTokensState();
 
 const token = computed(() => gameData.tokens[props.tokenId]);
 const isInPlay = computed(() => tokens.inPlayTokenIds.includes(props.tokenId));
@@ -47,11 +45,8 @@ const player = computed(() => gameData.players.find(player => player.id === toke
 
 const className = computed(() => {
     const cn: Record<string, boolean> = {};
-    // if (gameState.currentState === "place_tokens") {
     cn["border-dashed border-2 shadow-xl"] = tokens.candidateTokenId === token.value.id
-    // }
     cn["bg-transparent text-slate-600"] = !isInPlay;
-    // cn["border-dashed border-slate-50"] = boardData.activeToken === props.token.id;
     cn[PLAYER_COLOR_OPTIONS[player.value?.color as PlayerColor]] = isInPlay.value;
     return cn;
 })

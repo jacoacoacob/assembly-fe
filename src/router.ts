@@ -4,9 +4,10 @@ import SavedGamesView from "@/views/SavedGamesView.vue";
 import NewGameView from "@/views/NewGameView.vue";
 import WelcomeView from "@/views/WelcomeView.vue";
 import GameView from "@/views/GameView.vue";
-import { loadGame, loadGameHistory } from "./api/game-api";
-import { useGameStateStore } from "./stores/game-state-store";
+import { loadGameHistory } from "./api/game-api";
 import { useEventsStore } from "./stores-v2/events.store";
+import { useGameDataStore } from "./stores-v2/game-data.store";
+import { useGameStateStore } from "./stores-v2/game-state.store";
 
 interface Breadcrumb {
     name: string | ((params: RouteParams) => string);
@@ -39,8 +40,10 @@ const router = createRouter({
             name: "new-game",
             component: NewGameView,
             beforeEnter() {
+                const gameData = useGameDataStore();
                 const gameState = useGameStateStore();
-                gameState.resetState();
+                gameData.$reset();
+                gameState.currentState = "new_game";
             },
             meta: {
                 breadcrumbs: [

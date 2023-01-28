@@ -32,7 +32,7 @@ function newGameEventHandlers() {
         },
         set_players(players) {
             gameData.players = players;
-            scores.initEarnedPoints();
+            scores.initPoints();
         },
     });
 }

@@ -10,16 +10,16 @@ function listKeys() {
     }, []);
 }
 
-function load<Data>(key: string): Data | null {
-    const data = localStorage.getItem(NAMESPACE + key);
+function load<Data>(key: string, namespace?: string): Data | null {
+    const data = localStorage.getItem((namespace ?? NAMESPACE) + key);
     if (data) {
         return JSON.parse(data);
     }
     return null;
 }
 
-function save(key: string, obj: object) {
-    localStorage.setItem(NAMESPACE + key, JSON.stringify(obj));
+function save(key: string, obj: object, namespace?: string) {
+    localStorage.setItem((namespace ?? NAMESPACE) + key, JSON.stringify(obj));
 }
 
 function remove(key: string) {

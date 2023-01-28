@@ -15,25 +15,25 @@ const useScoresStore = defineStore("scores", () => {
     const tokens = useTokensStore();
     const players = usePlayersStore();
 
-    const earnedPoints = ref<PlayerPoints>({});
+    const points = ref<PlayerPoints>({});
 
-    function initEarnedPoints() {
-        earnedPoints.value = Object.fromEntries(
+    function initPoints() {
+        points.value = Object.fromEntries(
             gameData.players.map((player) => [player.id, 0])
         );
     } 
 
-    const reservePoints = computed((): PlayerPoints =>
-        Object.entries(tokens.reservePlayerTokenIds).reduce(
-            (accum: PlayerPoints, [playerId, tokenIds]) => {
-                accum[playerId] = sum(tokenIds.map((tokenId) => gameData.tokens[tokenId].value));
-                return accum;
-            },
-            {}
-        )
-    );
+    // const reservePoints = computed((): PlayerPoints =>
+    //     Object.entries(tokens.reservePlayerTokenIds).reduce(
+    //         (accum: PlayerPoints, [playerId, tokenIds]) => {
+    //             accum[playerId] = sum(tokenIds.map((tokenId) => gameData.tokens[tokenId].value));
+    //             return accum;
+    //         },
+    //         {}
+    //     )
+    // );
 
-    return { earnedPoints, initEarnedPoints, reservePoints };
+    return { points, initPoints };
 });
 
 export { useScoresStore };

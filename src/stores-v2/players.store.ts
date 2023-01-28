@@ -2,6 +2,14 @@ import { defineStore } from "pinia";
 import { computed, ref } from "vue";
 import { useGameDataStore } from "./game-data.store";
 
+const PLAYER_COLOR_OPTIONS = {
+    green: "bg-green-500",
+    blue: "bg-blue-400",
+    orange: "bg-orange-400",
+    red: "bg-red-400",
+    violet: "bg-violet-500"
+};
+
 const usePlayersStore = defineStore("players", () => {
     const gameData = useGameDataStore();
 
@@ -36,4 +44,4 @@ const usePlayersStore = defineStore("players", () => {
     };
 });
 
-export { usePlayersStore };
+export { usePlayersStore, PLAYER_COLOR_OPTIONS };

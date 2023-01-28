@@ -2,7 +2,8 @@
 import { computed, ref, watchEffect } from "vue";
 import { onBeforeRouteLeave } from "vue-router";
 
-import { PLAYER_COLOR_OPTIONS, type PlayerColor, type Player } from "@/stores/game-data-store-types";
+import { PLAYER_COLOR_OPTIONS} from "@/stores-v2/players.store";
+import type { Player, PlayerColor } from "@/stores-v2/game-data.types";
 import { checkMaxLength, checkMinLength, checkSepecialChars  } from "@/utils/validators";
 import { randId } from "@/utils/rand";
 import AppInput from "@/components/AppInput.vue";
@@ -39,7 +40,7 @@ const gamePlayers = ref<Player[]>([]);
 
 const gameNameErrors = computed(() => {
     const errors = gameNameValidator(gameName.value);
-    if (existingGames.some(game => game.name === gameName.value)) {
+    if (existingGames.some(existingGameName => existingGameName === gameName.value)) {
         errors.push(`A game with name "${gameName.value}" already exists.`);
     }
     return errors;

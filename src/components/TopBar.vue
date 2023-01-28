@@ -5,7 +5,7 @@ import { useGameDataStore } from '@/stores-v2/game-data.store';
 import { useGameStateStore } from '@/stores-v2/game-state.store';
 import { usePlayersStore } from '@/stores-v2/players.store';
 import { usePlaceTokensState } from '@/stores-v2/states/use-place-tokens-state';
-import { PLAYER_COLOR_OPTIONS } from '@/stores/game-data-store-types';
+import { PLAYER_COLOR_OPTIONS } from '@/stores-v2/players.store';
 
 const gameData = useGameDataStore();
 const gameState = useGameStateStore();

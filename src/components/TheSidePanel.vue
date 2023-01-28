@@ -4,7 +4,7 @@
 import { useGameDataStore } from '@/stores-v2/game-data.store';
 import { useGameStateStore } from '@/stores-v2/game-state.store';
 import { usePlayersStore } from '@/stores-v2/players.store';
-import { PLAYER_COLOR_OPTIONS } from '@/stores/game-data-store-types';
+import { PLAYER_COLOR_OPTIONS } from '@/stores-v2/players.store';
 import TokenReserve from './TokenReserve.vue';
 // import { usePlayersDataStore } from '@/stores/players-data-store';
 

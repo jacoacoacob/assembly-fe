@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { computed, inject, type StyleValue } from "vue";
 
-import { PLAYER_COLOR_OPTIONS, type PlayerColor } from "@/stores/game-data-store-types";
+// import { PLAYER_COLOR_OPTIONS, type PlayerColor } from "@/stores/game-data-store-type
+import { PLAYER_COLOR_OPTIONS } from "@/stores-v2/players.store";
 
-import type { Token } from "@/stores-v2/game-data.types";
+
+import type { Token, PlayerColor } from "@/stores-v2/game-data.types";
 import { useGameStateStore } from "@/stores-v2/game-state.store";
 import { useGameDataStore } from "@/stores-v2/game-data.store";
 import { usePlayersStore } from "@/stores-v2/players.store";

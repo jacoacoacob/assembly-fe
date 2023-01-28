@@ -47,6 +47,13 @@ const usePlaceTokensState = defineStore("place-tokens-state", () => {
         tokens.draggedTokenId = "";
     }
 
+    const helpMessage = computed(() => {
+        if (isTurnEndable.value) {
+            return 'Hit the spacebar or click the "end turn" button to end your turn.'
+        }
+        return "Move a token from your reserve to an open tile on the board."
+    });
+
     function _isPlacementComplete() {
         const inPlayReserveTokens = tokens.inPlayTokenIds.filter(
             (tokenId) => tokens.reserveTokenIds.includes(tokenId)
@@ -70,7 +77,7 @@ const usePlaceTokensState = defineStore("place-tokens-state", () => {
     }
 
     function endTurn() {
-        events.sendMany(["players:next"], ["tokens:set_candidate_token_id", ""]);
+        events.sendMany(["players:next"]);
         players.viewActivePlayer();
         if (_isPlacementComplete()) {
             _startPlayState();
@@ -89,7 +96,7 @@ const usePlaceTokensState = defineStore("place-tokens-state", () => {
         }
     }
 
-    return { startMove, endMove, endTurn, isTurnEndable };
+    return { startMove, endMove, endTurn, isTurnEndable, helpMessage };
 })
 
 export { usePlaceTokensState };

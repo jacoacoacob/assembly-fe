@@ -9,12 +9,14 @@ import { useGameDataStore } from "./game-data.store";
 import { playersEventHandlers, type PlayersEventHandlers } from "./handlers/players.handlers";
 import { gameStateEventHandlers, type GameStateEventHandlers } from "./handlers/game-state.handlers";
 import { tilesEventHandlers, type TilesEventHandlers } from "./handlers/tiles.handlers";
+import { scoresEventHandlers, type ScoresEventHandlers } from "./handlers/scores.handlers";
 
 type StoreEventHandler =
     NewGameEventHandlers |
     TokensEventHandlers |
     PlayersEventHandlers |
     GameStateEventHandlers |
+    ScoresEventHandlers |
     TilesEventHandlers;
 
 const useEventsStore = defineStore("events", () => {
@@ -27,6 +29,7 @@ const useEventsStore = defineStore("events", () => {
         players: playersEventHandlers(),
         tiles: tilesEventHandlers(),
         game_state: gameStateEventHandlers(),
+        scores: scoresEventHandlers(),
     };
     
     function handleEvent<Domain extends EventDomain, E extends Event<Domain, string>>(event: GameEvent) {
@@ -44,6 +47,10 @@ const useEventsStore = defineStore("events", () => {
         const event = { domain, name, type, data } as GameEvent;
         handleEvent(event);
         saveGameHistory(gameData.$state);
+    }
+
+    if (import.meta.env.DEV) {
+        (window as any).sendEvent = send;
     }
 
     function sendMany<Event extends GameEvent>(...args: ([Event["type"], Event["data"]] | [Event["type"]])[]) {

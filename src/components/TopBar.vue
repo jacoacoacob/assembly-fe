@@ -1,41 +1,42 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 
 import { useGameDataStore } from '@/stores-v2/game-data.store';
 import { useGameStateStore } from '@/stores-v2/game-state.store';
 import { usePlayersStore } from '@/stores-v2/players.store';
 import { usePlaceTokensState } from '@/stores-v2/states/use-place-tokens-state';
 import { PLAYER_COLOR_OPTIONS } from '@/stores-v2/players.store';
+import { usePreferencesStore } from '@/stores-v2/preferences.store';
 
 const gameData = useGameDataStore();
 const gameState = useGameStateStore();
 const players = usePlayersStore();
 const placeTokensState = usePlaceTokensState();
+const prefs = usePreferencesStore();
 
-const isTurnEndable = computed(() => {
+const helpMessage = computed(() => {
     switch (gameState.currentState) {
-        case "new_game": return true;
-        case "play": return true;
-        case "place_tokens": return placeTokensState.isTurnEndable;
+        case "place_tokens": return placeTokensState.helpMessage;
     }
+    return "";
 });
 
-function endTurn() {
-    switch (gameState.currentState) {
-        case "new_game": return;
-        case "place_tokens": return placeTokensState.endTurn();
-        case "play": return;
-    }
-}
 
 </script>
 
 <template>
     <div class="flex justify-between items-center">
-        <div class="space-x-4">
-            <button class="button button-dense" @click="endTurn" :disabled="!isTurnEndable">
-                End Turn
+        <div class="space-x-2">
+            <button
+                class="button button-dense button-outline"
+                :class="{ 'bg-cyan-100': prefs.showHelpMessage }"
+                @click="prefs.showHelpMessage = !prefs.showHelpMessage"
+            >
+                ?
             </button>
+            <span v-if="prefs.showHelpMessage" class="rounded p-2 bg-cyan-100">
+                {{ helpMessage }}
+            </span>
         </div>
         <ul class="flex space-x-4">
             <li v-for="player, i in gameData.players" :key="player.id">

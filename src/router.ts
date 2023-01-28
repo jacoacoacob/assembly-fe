@@ -81,14 +81,8 @@ const router = createRouter({
                 const events = useEventsStore();
                 const gameHistory = loadGameHistory(to.params.name as string);
                 if (gameHistory) {
-                    console.log("gameHistory", gameHistory)
                     events.loadHistory(gameHistory);
                 }
-                // const gameState = useGameStateStore();
-                // const data = loadGame(to.params.name as string);
-                // if (data) {
-                //     gameState.loadHistory(data.history);
-                // }
             },
             meta: {
                 breadcrumbs: [

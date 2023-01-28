@@ -4,7 +4,7 @@ import { RouterLink, type RouteParams } from 'vue-router';
 
 <template>
     <div class="flex justify-center bg-slate-900">
-        <div class="flex flex-col flex-1 justify-center items-center min-h-screen font-mono max-w-6xl relative bg-slate-50">
+        <div class="flex flex-col flex-1 justify-center items-center min-h-screen  max-w-6xl relative bg-slate-50">
             <nav aria-label="breadcrumbs" class="absolute top-3 left-8">
                 <ol class="flex space-x-2">
                     <li v-for="crumb, i in $route.meta.breadcrumbs">

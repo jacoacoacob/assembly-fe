@@ -34,7 +34,7 @@ const scores = useScoresStore();
             </li>
         </ul>
         <div class="space-y-2">
-            <h3 class="font-semibold text-lg">reserve ({{ players.viewedPlayer.name }})</h3>
+            <h3 class="text-lg"><span class="font-semibold">{{ players.viewedPlayer.name }}</span>'s tokens</h3>
             <div v-if="players.viewedPlayer">
                 <TokenReserve :playerId="players.viewedPlayer.id" />
             </div>

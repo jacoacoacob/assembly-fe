@@ -55,7 +55,9 @@ const usePlaceTokensState = defineStore("place-tokens-state", () => {
     }
 
     function _playerHasMove(playerId: string) {
-        const availableReserveTokens = tokens.availableReservePlayerTokenIds[playerId];
+        const availableReserveTokens = tokens.availableReservePlayerTokenIds[playerId].filter(
+            (tokenId) => gameData.tokens[tokenId].tileIndex === -1
+        );
         return availableReserveTokens.length > 0;
     }
 

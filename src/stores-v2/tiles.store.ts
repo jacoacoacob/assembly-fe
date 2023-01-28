@@ -46,8 +46,12 @@ const useTilesStore = defineStore("tiles", () => {
         }, [])
     );
 
+    const openInPlayTiles = computed(() =>
+        inPlayTiles.value.filter((tileIndex) => openTiles.value.includes(tileIndex))
+    );
+
     function isValidMove(tileIndex: number, tokenId: string) {
-        if (openTiles.value.includes(tileIndex)) {
+        if (openInPlayTiles.value.includes(tileIndex)) {
             const tile = gameData.tiles[tileIndex];
             const token = gameData.tokens[tokenId];
             const tileTokenValues = tileTokenGraph.value[tileIndex].map((tokenId) => gameData.tokens[tokenId].value);
@@ -55,10 +59,6 @@ const useTilesStore = defineStore("tiles", () => {
         }
         return false;
     }
-
-    const openInPlayTiles = computed(() =>
-        inPlayTiles.value.filter((tileIndex) => openTiles.value.includes(tileIndex))
-    );
 
     return { openTiles, inPlayTiles, openInPlayTiles, isValidMove, tileTokenGraph, candidateTileIndex };
 });

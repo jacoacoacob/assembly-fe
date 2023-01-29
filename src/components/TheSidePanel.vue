@@ -28,7 +28,7 @@ const scores = useScoresStore();
                         </span>
                     </div>
                     <div>
-                        <span class="text-slate-500">{{ scores.liveScore[player.id] }} +</span> {{ scores.points[player.id] }}
+                        <span class="text-slate-500">{{ scores.liveScore[player.id] ?? 0 }} +</span> {{ scores.points[player.id] }}
                     </div>
                 </button>
             </li>

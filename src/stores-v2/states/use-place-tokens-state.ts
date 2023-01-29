@@ -6,6 +6,8 @@ import { useGameDataStore } from "../game-data.store";
 import { usePlayersStore } from "../players.store";
 import { useTilesStore } from "../tiles.store";
 import { useTokensStore } from "../tokens.store";
+import { useScoresStore } from "../scores.store";
+import { useScoring } from "../use-scoring";
 
 /**
  * Methods and data to be used in components when gameState.currentState === "place_tokens"
@@ -16,7 +18,8 @@ const usePlaceTokensState = defineStore("place-tokens-state", () => {
     const tokens = useTokensStore();
     const players = usePlayersStore();
     const tiles = useTilesStore();
-
+    const scores = useScoresStore();
+    const scoring = useScoring();
 
     const isTurnEndable = computed(() => {
         const candidateToken = gameData.tokens[tokens.candidateTokenId];
@@ -72,7 +75,8 @@ const usePlaceTokensState = defineStore("place-tokens-state", () => {
         events.sendMany(
             ["game_state:set_state", "play"],
             ["tiles:set_in_play_tiles", gameData.tiles.map((_, i) => i)],
-            ["tokens:set_in_play_token_ids", Object.keys(gameData.tokens)]
+            ["tokens:set_in_play_token_ids", Object.keys(gameData.tokens)],
+            ["scores:set_points", scoring.calculatePoints()]
         );
     }
 

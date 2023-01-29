@@ -24,6 +24,21 @@ const useTokensStore = defineStore("tokens", () => {
         }, {})
     );
 
+    const onBoardTokenIds = computed(() =>
+        Object.keys(gameData.tokens).filter((tokenId) => gameData.tokens[tokenId].tileIndex > -1)
+    );
+
+    const onBoardPlayerTokenIds = computed((): PlayerTokenIds =>
+        Object.entries(playerTokenIds.value).reduce(
+            (accum: PlayerTokenIds, [playerId, tokenIds]) => {
+                accum[playerId] = tokenIds.filter(
+                    (tokenId) => onBoardTokenIds.value.includes(tokenId)
+                )
+                return accum;
+            },
+            {}
+        )
+    );
 
     const reserveTokenIds = computed(() =>
         Object.keys(gameData.tokens).filter((tokenId) => gameData.tokens[tokenId].tileIndex === -1)
@@ -33,7 +48,7 @@ const useTokensStore = defineStore("tokens", () => {
         Object.entries(playerTokenIds.value).reduce(
             (accum: PlayerTokenIds, [playerId, tokenIds]) => {
                 accum[playerId] = tokenIds.filter(
-                    (tokenId) => gameData.tokens[tokenId].tileIndex === -1
+                    (tokenId) => reserveTokenIds.value.includes(tokenId)
                 );
                 return accum;
             },
@@ -86,6 +101,8 @@ const useTokensStore = defineStore("tokens", () => {
         inPlayTokenIds,
         playerTokenIds,
         availableReservePlayerTokenIds,
+        onBoardTokenIds,
+        onBoardPlayerTokenIds,
         reserveTokenIds,
         reservePlayerTokenIds,
         reservePlayerTokenIdsByTokenValue,

@@ -5,20 +5,18 @@ import { useGameDataStore } from "../game-data.store";
 import { useScoresStore } from "../scores.store";
 import { useTilesStore } from "../tiles.store";
 import { useTokensStore } from "../tokens.store";
+import { useScoring } from "../use-scoring";
 
 const usePlayState = defineStore("play-state", () => {
     const gameData = useGameDataStore();
     const events = useEventsStore();
     const tokens = useTokensStore();
     const tiles = useTilesStore();
-    const points = useScoresStore();
-
-    function _calculatePoints() {
-
-    }
+    const scores = useScoresStore();
+    const scoring = useScoring();
 
     function endRound() {
-        // events.send("scores:set_points")
+        events.send("scores:set_points", scoring.calculatePoints(scores.points));
     }
 
     function endTurn() {
@@ -45,7 +43,7 @@ const usePlayState = defineStore("play-state", () => {
         tokens.draggedTokenId = "";
     }
 
-    return { startMove, endMove, endRound, endTurn  };
+    return { startMove, endMove, endRound, endTurn };
 });
 
 export { usePlayState };

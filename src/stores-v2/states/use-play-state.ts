@@ -16,7 +16,7 @@ const usePlayState = defineStore("play-state", () => {
     const scoring = useScoring();
 
     function endRound() {
-        events.send("scores:set_points", scoring.calculatePoints(scores.points));
+        events.send("scores:set_points", scoring.calculatePoints());
     }
 
     function endTurn() {

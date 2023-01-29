@@ -5,10 +5,9 @@ import { useTilesStore } from "./tiles.store";
 import type { PlayerPoints } from "./scores.types";
 import { useTokensStore } from "./tokens.store";
 import type { Token, Player, Tile } from "./game-data.types";
-import { computed } from "vue";
 
-type PlayerTileTokenValues = Record<Player["id"], Record<Token["tileIndex"], Token["value"]>>;
 type TilePlayerTokenValues = Record<Player["id"], number>[];
+type TilePlayerScores = TilePlayerTokenValues;
 
 function useScoring() {
     const gameData = useGameDataStore();
@@ -16,26 +15,12 @@ function useScoring() {
     const tiles = useTilesStore();
     const tokens = useTokensStore();
 
-    function calculatePoints(): PlayerPoints {
-        const playerTileTokenValues = Object.entries(tokens.onBoardPlayerTokenIds).reduce(
-            (accum: PlayerTileTokenValues, [playerId, tokenIds]) => {
-                accum[playerId] = tokenIds.reduce(
-                    (accum: PlayerTileTokenValues[string], tokenId) => {
-                        const token = gameData.tokens[tokenId];
-                        if (typeof accum[token.tileIndex] === "undefined") {
-                            accum[token.tileIndex] = 0;
-                        }
-                        accum[token.tileIndex] += token.value;
-                        return accum;
-                    },
-                    {}
-                );
-                return accum;
-            },
-            {}
-        );
+    function initPlayerPoints(): PlayerPoints {
+        return Object.fromEntries(gameData.players.map((player) => [player.id, 0]))
+    }
 
-        const tilePlayerTokenValues: TilePlayerTokenValues = tiles.tileTokenGraph.map(
+    function _getTilePlayerTokenValues(): TilePlayerTokenValues {
+        return tiles.tileTokenGraph.map(
             (tokenIds) => tokenIds.reduce(
                 (accum: TilePlayerTokenValues[number], tokenId) => {
                     const token = gameData.tokens[tokenId];
@@ -48,11 +33,54 @@ function useScoring() {
                 {}
             )
         );
-
-        return {}
     }
 
-    return { calculatePoints };
+    function _getTilePlayerScores(tilePlayerTokenValues: TilePlayerTokenValues): TilePlayerScores {
+        return tilePlayerTokenValues.map(
+            (playerTokenValues, tileIndex) => {
+                const tile = gameData.tiles[tileIndex];
+                const tileTokenValues = sum(
+                    tiles.tileTokenGraph[tileIndex].map((tokenId) => gameData.tokens[tokenId].value)
+                );
+                const tileCapacityModifier = Math.floor((tile.capacity - tileTokenValues) / 2);
+                return Object.entries(playerTokenValues).reduce(
+                    (accum: TilePlayerScores[number], [playerId, playerTokenTotal], i, arr) => {
+                        if (arr.length === 1) {
+                            accum[playerId] -= 1;
+                        } else {
+                            arr.forEach(([playerId_, playerTokenTotal_]) => {
+                                if (playerId !== playerId_) {
+                                    accum[playerId] += playerTokenTotal - playerTokenTotal_ + tileCapacityModifier;
+                                }
+                            });
+                        }
+                        return accum;
+                    },
+                    initPlayerPoints()
+                )
+            }
+        );
+    }
+
+    function _getTilePlayerScoresTotals(tilePlayerScores: TilePlayerScores) {
+        return tilePlayerScores.reduce(
+            (accum: PlayerPoints, tileScores) => {
+                Object.entries(tileScores).forEach(([playerId, playerPoints]) => {
+                    accum[playerId] += playerPoints;
+                })
+                return accum;
+            },
+            initPlayerPoints()
+        );
+    }
+
+    function calculatePoints(): PlayerPoints {
+        const tilePlayerTokenValues = _getTilePlayerTokenValues();
+        const tilePlayerScores = _getTilePlayerScores(tilePlayerTokenValues);
+        return _getTilePlayerScoresTotals(tilePlayerScores);
+    }
+
+    return { calculatePoints, initPlayerPoints };
 }
 
 export { useScoring };

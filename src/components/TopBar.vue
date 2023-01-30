@@ -4,9 +4,11 @@ import { computed } from 'vue';
 import { useGameStateStore } from '@/stores-v2/game-state.store';
 import { usePlaceTokensState } from '@/stores-v2/states/use-place-tokens-state';
 import { usePreferencesStore } from '@/stores-v2/preferences.store';
+import { usePlayState } from '@/stores-v2/states/use-play-state';
 
 const gameState = useGameStateStore();
 const placeTokensState = usePlaceTokensState();
+const playState = usePlayState();
 const prefs = usePreferencesStore();
 
 const helpMessage = computed(() => {
@@ -28,7 +30,7 @@ function endTurn() {
     switch (gameState.currentState) {
         case "new_game": return;
         case "place_tokens": return placeTokensState.endTurn();
-        case "play": return;
+        case "play": return playState.endTurn();
     }
 }
 </script>

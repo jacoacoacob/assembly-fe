@@ -40,33 +40,40 @@ const style = computed((): StyleValue => {
             left: `${left}px`,
         };
     }
-    return {}
+    return {
+
+    }
 });
 
 const player = computed(() => gameData.players.find(player => player.id === token.value.playerId));
 
 const className = computed(() => {
+    const candidateToken = gameData.tokens[tokens.candidateTokenId] || {};
     const cn: Record<string, boolean> = {};
-    cn["border-dashed border-2 shadow-xl"] = tokens.candidateTokenId === token.value.id
+    cn["border-dashed border-2 shadow-xl"] = (candidateToken.id === token.value.id && candidateToken.tileIndex > -1) || tokens.draggedTokenId === token.value.id;
     cn["bg-transparent text-slate-600"] = !isInPlay;
     cn[PLAYER_COLOR_OPTIONS[player.value?.color as PlayerColor]] = isInPlay.value;
+    cn["h-8 w-8"] = token.value.tileIndex > -1;
+    cn["h-6 w-6 text-sm"] = token.value.tileIndex === -1
     return cn;
 })
 
 const isDraggable = computed(() => {
+    const isActivePlayerToken = token.value.playerId === players.activePlayer.id;
     if (gameState.currentState === "place_tokens") {
-        const isActivePlayerToken = token.value.playerId === players.activePlayer.id;
         const candidateToken = gameData.tokens[tokens.candidateTokenId];
         if (candidateToken && candidateToken.tileIndex > -1) {
             return (
-                isInPlay &&
+                isInPlay.value &&
                 isActivePlayerToken &&
                 candidateToken.id === token.value.id
             );
         }
-        return isInPlay && isActivePlayerToken && token.value.tileIndex === -1;
+        return isInPlay.value && isActivePlayerToken && token.value.tileIndex === -1;
     }
-    return true;
+    if (gameState.currentState === "play") {
+        return isInPlay && isActivePlayerToken;
+    }
 });
 
 </script>
@@ -74,7 +81,7 @@ const isDraggable = computed(() => {
 <template>
     <div
         :id="token.id"
-        class="w-8 h-8 rounded-full border border-slate-600 flex justify-center items-center text-white"
+        class="rounded-full border border-slate-600 flex justify-center items-center text-white"
         :class="className"
         :style="style"
         :draggable="isDraggable"

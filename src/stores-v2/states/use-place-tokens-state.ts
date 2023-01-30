@@ -7,7 +7,9 @@ import { usePlayersStore } from "../players.store";
 import { useTilesStore } from "../tiles.store";
 import { useTokensStore } from "../tokens.store";
 import { useScoresStore } from "../scores.store";
-import { useScoring } from "../use-scoring";
+import { useScoring } from "../composables/use-scoring";
+import { usePlayerActionsStore } from "../player-actions.store";
+import { usePlaceTokenAction } from "../composables/use-place-token-action";
 
 /**
  * Methods and data to be used in components when gameState.currentState === "place_tokens"
@@ -20,6 +22,8 @@ const usePlaceTokensState = defineStore("place-tokens-state", () => {
     const tiles = useTilesStore();
     const scores = useScoresStore();
     const scoring = useScoring();
+    const playerActions = usePlayerActionsStore();
+    const placeTokenAction = usePlaceTokenAction();
 
     const isTurnEndable = computed(() => {
         const candidateToken = gameData.tokens[tokens.candidateTokenId];
@@ -31,23 +35,25 @@ const usePlaceTokensState = defineStore("place-tokens-state", () => {
     });
 
     function startMove(tokenId: string) {
-        if (tokenId !== tokens.candidateTokenId) {
-            events.send("tokens:set_candidate_token_id", tokenId);
-        }
+        placeTokenAction.pickupToken(tokenId);
+        // if (tokenId !== tokens.candidateTokenId) {
+        //     events.send("tokens:set_candidate_token_id", tokenId);
+        // }
     }
 
     function endMove(tokenId: string, tileIndex: number) {
-        const token = gameData.tokens[tokenId];
-        if (token.tileIndex === -1 && token.tileIndex === tileIndex) {
-            events.send("tokens:set_candidate_token_id", "");
-        }
-        if (token.tileIndex !== tileIndex) {
-            events.send("tokens:move_token", { tokenId, tileIndex });
-            if (tileIndex === -1) {
-                events.send("tokens:set_candidate_token_id", "");
-            }
-        }
-        tokens.draggedTokenId = "";
+        placeTokenAction.dropToken(tileIndex);
+        // const token = gameData.tokens[tokenId];
+        // if (token.tileIndex === -1 && token.tileIndex === tileIndex) {
+        //     events.send("tokens:set_candidate_token_id", "");
+        // }
+        // if (token.tileIndex !== tileIndex) {
+        //     events.send("tokens:move_token", { tokenId, tileIndex });
+        //     if (tileIndex === -1) {
+        //         events.send("tokens:set_candidate_token_id", "");
+        //     }
+        // }
+        // tokens.draggedTokenId = "";
     }
 
     const helpMessage = computed(() => {
@@ -64,13 +70,6 @@ const usePlaceTokensState = defineStore("place-tokens-state", () => {
         return inPlayReserveTokens.length === 0;
     }
 
-    function _playerHasMove(playerId: string) {
-        const availableReserveTokens = tokens.availableReservePlayerTokenIds[playerId].filter(
-            (tokenId) => gameData.tokens[tokenId].tileIndex === -1
-        );
-        return availableReserveTokens.length > 0;
-    }
-
     function _startPlayState() {
         events.sendMany(
             ["game_state:set_state", "play"],
@@ -81,11 +80,15 @@ const usePlaceTokensState = defineStore("place-tokens-state", () => {
     }
 
     function endTurn() {
+        if (!placeTokenAction.canCommit) {
+            return;
+        }
+        placeTokenAction.commit()
         events.sendMany(["players:next"]);
         players.viewActivePlayer();
         if (_isPlacementComplete()) {
             _startPlayState();
-        } else if (!_playerHasMove(players.activePlayer.id)) {
+        } else if (!playerActions.canPlaceToken) {
             events.send(
                 "tiles:set_in_play_tiles",
                 tiles.inPlayTiles.concat(

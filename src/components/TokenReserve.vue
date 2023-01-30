@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { usePlaceTokenAction } from '@/stores-v2/composables/use-place-token-action';
 import { useGameDataStore } from '@/stores-v2/game-data.store';
 import { useGameStateStore } from '@/stores-v2/game-state.store';
 import { usePlayersStore } from '@/stores-v2/players.store';
@@ -13,6 +14,8 @@ const gameData = useGameDataStore();
 const players = usePlayersStore();
 const tokensStore = useTokensStore();
 const placeTokensState = usePlaceTokensState();
+
+const placeTokenAction = usePlaceTokenAction();
 
 const props = defineProps<{
     playerId: string;
@@ -35,9 +38,10 @@ function onDrop(event: DragEvent) {
     const tokenId = event.dataTransfer?.getData("text");
     const token = gameData.tokens[tokenId ?? ""];
     if (token) {
-        if (gameState.currentState === "place_tokens") {
-            placeTokensState.endMove(token.id, -1);
-        }
+        placeTokenAction.dropToken(-1);
+        // if (gameState.currentState === "place_tokens") {
+            // placeTokensState.endMove(token.id, -1);
+        // }
     }
 }
 

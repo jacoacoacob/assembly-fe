@@ -1,9 +1,10 @@
 import { computed } from "vue";
 import { useEventsStore } from "../events.store";
 import { useGameDataStore } from "../game-data.store";
+import type { Token } from "../game-data.types";
 import { useTokensStore } from "../tokens.store";
 
-function usePlaceTokenAction() {
+function useMove() {
     const gameData = useGameDataStore();
     const events = useEventsStore();
     const tokens = useTokensStore();
@@ -23,31 +24,13 @@ function usePlaceTokenAction() {
             // token was picked up from reserve and is droppped onto a tile
             tokens.candidateTokenId = token.id;
             gameData.moveToken(token.id, destTileIndex);
-            // events.send("tokens:set_candidate_token_id", token.id);
-                // ["tokens:move_token", {
-                //     tokenId: token.id,
-                //     tileIndex: destTileIndex
-                // }]
-            // );
         } else if (token.tileIndex > -1 && destTileIndex === -1) {
             // token was picked up from tile and dropped on reserve
             tokens.candidateTokenId = "";
             gameData.moveToken(token.id, destTileIndex);
-            // events.send("tokens:set_candidate_token_id", "");
-            // events.sendMany(
-            //     ["tokens:set_candidate_token_id", ""],
-            //     ["tokens:move_token", {
-            //         tokenId: token.id,
-            //         tileIndex: destTileIndex,
-            //     }]
-            // );
         } else if (token.tileIndex > -1 && token.tileIndex !== destTileIndex) {
             // token was picked up from tile and dropped on different tile
             gameData.moveToken(token.id, destTileIndex);
-            // events.send("tokens:move_token", {
-            //     tokenId: token.id,
-            //     tileIndex: destTileIndex,
-            // });
         }
         // Other scenarios include:
         // - token was picked up from and dropped back onto the same tile
@@ -75,4 +58,4 @@ function usePlaceTokenAction() {
     return { pickupToken, dropToken, commit, canCommit };
 }
 
-export { usePlaceTokenAction };
+export { useMove };

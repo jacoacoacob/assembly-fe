@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { provide, onMounted } from 'vue';
+import { useRoute, onBeforeRouteLeave } from 'vue-router';
 
 import TheBoard from '@/components/TheBoard.vue';
 import TheSidePanel from '@/components/TheSidePanel.vue';
@@ -13,7 +14,6 @@ import { useGameStateStore } from '@/stores-v2/game-state.store';
 import { usePlayersStore } from '@/stores-v2/players.store';
 import { useGameDataStore } from '@/stores-v2/game-data.store';
 import { usePlayState } from '@/stores-v2/states/use-play-state';
-import { usePlaceTokenAction } from '@/stores-v2/composables/use-place-token-action';
 
 const gameData = useGameDataStore();
 const placeTokensState = usePlaceTokensState();
@@ -29,28 +29,14 @@ provide("token:dragstart", (event: DragEvent) => {
     const tokenId = (event.target as HTMLDivElement).id;
     if (event.dataTransfer) {
         event.dataTransfer.setData("text", tokenId);
-        // placeTokenAction.pickupToken(tokenId);
         switch (gameState.currentState) {
             case "place_tokens": placeTokensState.startMove(tokenId);
             case "play": playState.startMove(tokenId);
         }
-        // tokens.draggedTokenId = tokenId;
     }
 });
 
 provide("token:dragend", (event: DragEvent) => {
-    // const tokenId = event.dataTransfer?.getData("text");
-    // const token = gameData.tokens[tokenId ?? ""];
-    // if (token && tokens.candidateTokenId === token.id) {
-    //     const isPlaceTokensState = gameState.currentState === "place_tokens";
-    //     const isPlayState = gameState.currentState === "play";
-    //     // if (isPlaceTokensState && token.tileIndex === -1) {
-    //     //     events.send("tokens:set_candidate_token_id", "");
-    //     // }
-    //     // if (isPlayState) {
-    //     //     events.send("tokens:set_candidate_token_id", "");
-    //     // }
-    // }
     tokens.draggedTokenId = "";
 });
 
@@ -90,7 +76,6 @@ provide("tile:drop", (event: DragEvent) => {
     const tileIndex = findTileIndex(target);
     const tokenId = event.dataTransfer?.getData("text");
     if (typeof tileIndex === "number" && tokenId && tiles.isValidMove(tileIndex, tokenId)) {
-        // placeTokenAction.dropToken(tileIndex);
         switch (gameState.currentState) {
             case "place_tokens": return placeTokensState.endMove(tokenId, tileIndex);
             case "play": return playState.endMove(tokenId, tileIndex);

@@ -8,6 +8,7 @@ import { useScoresStore } from "./scores.store";
 import { useTokensStore } from "./tokens.store";
 import { useEventsStore } from "./events.store";
 import { useTilesStore } from "./tiles.store";
+import { useMove } from "./composables/use-move";
 
 const PLACE_TOKENS_COST = 1;
 
@@ -22,11 +23,13 @@ const usePlayerActionsStore = defineStore("player-actions", () => {
     const events = useEventsStore();
     const tiles = useTilesStore();
 
+    const move = useMove();
+
     const canPlaceToken = computed(() => {
         const playerPoints = scores.points[players.activePlayer.id];
         const availableTokens = tokens.availableReservePlayerTokenIds[players.activePlayer.id];
         if (gameState.currentState === "play") {
-            return availableTokens.length > 0 && playerPoints > PLACE_TOKENS_COST;
+            return availableTokens.length > 0 && playerPoints - PLACE_TOKENS_COST > 0;
         }
         if (gameState.currentState === "place_tokens") {
             return availableTokens.length > 0;
@@ -35,54 +38,23 @@ const usePlayerActionsStore = defineStore("player-actions", () => {
     });
 
     const canMoveToken = computed(() => {
-        return false;
+        return true;
     });
 
     const canRemoveToken = computed(() => {
-
+        return false;
     });
 
-    // const availableActions = computed((): PlayerAction[] => {
-    //     const playerPoints = scores.points[players.activePlayer.id];
+    return {
+        canPlaceToken,
+        canMoveToken,
+        canRemoveToken,
 
-    //     function _canPlaceToken() {
-    //         const availableTokens = tokens.availableReservePlayerTokenIds[players.activePlayer.id];
-    //         if (gameState.currentState === "play") {
-    //             return availableTokens.length > 0 && playerPoints > PLACE_TOKENS_COST;
-    //         }
-    //         if (gameState.currentState === "place_tokens") {
-    //             return availableTokens.length > 0;
-    //         }
-    //         return false;
-    //     }
-    
-    //     function _canMoveToken() {
-    //         if (gameState.currentState === "play") {
-
-    //         }
-    //         return false;
-    //     }
-    
-    //     function _canRemoveToken() {
-    //         if (gameState.currentState === "play") {
-
-    //         }
-    //         return false;
-    //     }
-
-    //     return [
-    //         _canPlaceToken() && "place_token",
-    //         _canMoveToken() && "move_token",
-    //         _canRemoveToken() && "remove_token",
-    //     ].filter(Boolean) as PlayerAction[]
-    // });
-
-
-
-    return { canPlaceToken };
+    };
 });
 
 export { usePlayerActionsStore };
+export type { PlayerAction };
 
 
 /**

@@ -1,4 +1,5 @@
  import { createRouter, createWebHistory, type RouteParams, type RouterLinkProps } from "vue-router";
+ import { pinia } from "./pinia";
 
 import SavedGamesView from "@/views/SavedGamesView.vue";
 import NewGameView from "@/views/NewGameView.vue";
@@ -6,7 +7,7 @@ import WelcomeView from "@/views/WelcomeView.vue";
 import GameView from "@/views/GameView.vue";
 import { loadGameHistory } from "./api/game-api";
 import { useEventsStore } from "./stores-v2/events.store";
-import { useGameDataStore } from "./stores-v2/game-data.store";
+import { useGameDataStore, initialState } from "./stores-v2/game-data.store";
 import { useGameStateStore } from "./stores-v2/game-state.store";
 
 interface Breadcrumb {
@@ -40,9 +41,15 @@ const router = createRouter({
             name: "new-game",
             component: NewGameView,
             beforeEnter() {
-                const gameData = useGameDataStore();
-                const gameState = useGameStateStore();
-                gameData.$reset();
+                console.log("/new-game beforeEnter")
+                const gameData = useGameDataStore(pinia);
+                const gameState = useGameStateStore(pinia);
+                gameData.name = "";
+                gameData.history = [];
+                gameData.grid = { rows: 0, cols: 0, tileSize: 0 };
+                gameData.tokens = {}
+                gameData.tiles = [];
+                gameData.ts_updated = new Date().toISOString();
                 gameState.currentState = "new_game";
             },
             meta: {
@@ -78,7 +85,8 @@ const router = createRouter({
             name: "game",
             component: GameView,
             beforeEnter(to) {
-                const events = useEventsStore();
+                console.log("/game/:name? beforeEnter")
+                const events = useEventsStore(pinia);
                 const gameHistory = loadGameHistory(to.params.name as string);
                 if (gameHistory) {
                     events.loadHistory(gameHistory);

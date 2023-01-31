@@ -3,10 +3,14 @@ import TokenReserve from './TokenReserve.vue';
 import { useGameDataStore } from '@/stores-v2/game-data.store';
 import { usePlayersStore, PLAYER_COLOR_OPTIONS } from '@/stores-v2/players.store';
 import { useScoresStore } from '@/stores-v2/scores.store';
+import { usePlayState } from '@/stores-v2/states/use-play-state';
+import { useGameStateStore } from '@/stores-v2/game-state.store';
 
+const gameState = useGameStateStore();
 const gameData = useGameDataStore();
 const players = usePlayersStore();
 const scores = useScoresStore();
+const playState = usePlayState();
 </script>
 
 <template>
@@ -38,6 +42,19 @@ const scores = useScoresStore();
             <div v-if="players.viewedPlayer">
                 <TokenReserve :playerId="players.viewedPlayer.id" />
             </div>
+        </div>
+        <!-- <div v-if="gameState.currentState === 'play'"> -->
+        <div>
+            <h3>
+                Actions
+            </h3>
+            <ul class="space-y-2">
+                <li v-for="action, i in playState.availableActions" :key="i">
+                    <button class="button button-dense w-full">
+                        {{ action }}
+                    </button>
+                </li>
+            </ul>
         </div>
     </div>
 </template>

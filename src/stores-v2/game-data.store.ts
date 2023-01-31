@@ -41,4 +41,4 @@ const useGameDataStore = defineStore("game-data", {
     },
 });
 
-export { useGameDataStore };
+export { useGameDataStore, initialState };

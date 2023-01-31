@@ -20,18 +20,37 @@ const useMoveTokenStore = defineStore("move-token", () => {
     const gameData = useGameDataStore();
     const events = useEventsStore();
 
-    const movingTokenId = ref<Token["id"]>("");
-    const candidateTokenId = ref<Token["id"]>("");
+    // const movingTokenId = ref<Token["id"]>("");
+    const moveCandidateTokenId = ref<Token["id"]>("");
 
     const _candidateOriginTileIndex = ref<Token["tileIndex"] | null>(null);
     const _candidateDestTileIndex = ref<Token["tileIndex"] | null>(null);
 
     function pickup(tokenId: string) {
-
+        const token = gameData.tokens[tokenId];
+        if (!token) {
+            console.warn(`[useMoveTokenStore::pickup] No token found with id "${token}"`);
+            return;
+        }
+        if (_candidateOriginTileIndex.value === null) {
+            // It's possible that a player could pick up a token, drop it, and
+            // then change their mind and pick it up again and drop it somewhere
+            // else. We need to store the original position of the token so that
+            // it can be recorded in the commit and used to calculate the cost
+            // of moving the token.
+            _candidateOriginTileIndex.value = token.tileIndex;
+        }
+        moveCandidateTokenId.value = tokenId;
     }
 
     function drop(destTileIndex: number) {
-
+        const tokenId = moveCandidateTokenId.value;
+        const token = gameData.tokens[tokenId];
+        if (!token) {
+            console.warn(`[useMoveTokenStore::drop] No token found with id "${tokenId}"`);
+            return;
+        }
+        
     }
 
     /**
@@ -39,13 +58,13 @@ const useMoveTokenStore = defineStore("move-token", () => {
      * moved is recoreded in game history.
      */
     function commit() {
-        const candidateToken = gameData.tokens[candidateTokenId.value];
-        if (candidateTokenId.value) {
+        const candidateToken = gameData.tokens[moveCandidateTokenId.value];
+        if (moveCandidateTokenId.value) {
 
         }
     }
 
-    return { pickup, drop, commit, movingTokenId, candidateTokenId };
+    return { pickup, drop, commit, moveCandidateTokenId };
     
 });
 

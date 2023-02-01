@@ -46,11 +46,11 @@ function useMove() {
                 // using the event dispatch system so, now that the player is sure they're
                 // happy with the candidate token position, we need to make sure the move
                 // is logged in the game history
-                ["tokens:move_token", {
+                ["game_data:move_token", {
                     tokenId: candidateToken.id,
                     tileIndex: candidateToken.tileIndex,
                 }],
-                ["tokens:set_candidate_token_id", ""]
+                // ["tokens:set_candidate_token_id", ""]
             )
         }
     }

@@ -11,6 +11,8 @@ import { useGameDataStore } from "@/stores-v2/game-data.store";
 import { usePlayersStore } from "@/stores-v2/players.store";
 import { useTilesStore } from "@/stores-v2/tiles.store";
 import { useTokensStore } from "@/stores-v2/tokens.store";
+// import { useMove } from "@/stores-v2/composables/use-move";
+import { useMoveTokenStore } from "@/stores-v2/move.store";
 
 const props = defineProps<{ tokenId: Token["id"]; }>();
 
@@ -19,6 +21,7 @@ const gameData = useGameDataStore();
 const players = usePlayersStore();
 const tiles = useTilesStore();
 const tokens = useTokensStore();
+const moveToken = useMoveTokenStore();
 
 const token = computed(() => gameData.tokens[props.tokenId]);
 const isInPlay = computed(() => tokens.inPlayTokenIds.includes(props.tokenId));
@@ -48,7 +51,8 @@ const style = computed((): StyleValue => {
 const player = computed(() => gameData.players.find(player => player.id === token.value.playerId));
 
 const className = computed(() => {
-    const candidateToken = gameData.tokens[tokens.candidateTokenId] || {};
+    // const candidateToken = gameData.tokens[tokens.candidateTokenId] || {};
+    const candidateToken = gameData.tokens[moveToken.candidateId] || {};
     const cn: Record<string, boolean> = {};
     cn["border-dashed border-2 shadow-xl"] = (candidateToken.id === token.value.id && candidateToken.tileIndex > -1) || tokens.draggedTokenId === token.value.id;
     cn["bg-transparent text-slate-600"] = !isInPlay;
@@ -61,7 +65,8 @@ const className = computed(() => {
 const isDraggable = computed(() => {
     const isActivePlayerToken = token.value.playerId === players.activePlayer.id;
     if (gameState.currentState === "place_tokens") {
-        const candidateToken = gameData.tokens[tokens.candidateTokenId];
+        // const candidateToken = gameData.tokens[tokens.candidateTokenId];
+        const candidateToken = gameData.tokens[moveToken.candidateId];
         if (candidateToken && candidateToken.tileIndex > -1) {
             return (
                 isInPlay.value &&

@@ -8,7 +8,6 @@ import { useScoresStore } from "./scores.store";
 import { useTokensStore } from "./tokens.store";
 import { useEventsStore } from "./events.store";
 import { useTilesStore } from "./tiles.store";
-import { useMove } from "./composables/use-move";
 
 const PLACE_TOKENS_COST = 1;
 
@@ -23,7 +22,6 @@ const usePlayerActionsStore = defineStore("player-actions", () => {
     const events = useEventsStore();
     const tiles = useTilesStore();
 
-    const move = useMove();
 
     const canPlaceToken = computed(() => {
         const playerPoints = scores.points[players.activePlayer.id];

@@ -21,7 +21,7 @@ const useMoveTokenStore = defineStore("move-token", () => {
     const events = useEventsStore();
 
     // const movingTokenId = ref<Token["id"]>("");
-    const moveCandidateTokenId = ref<Token["id"]>("");
+    const candidateId = ref<Token["id"]>("");
 
     const _candidateOriginTileIndex = ref<Token["tileIndex"] | null>(null);
     const _candidateDestTileIndex = ref<Token["tileIndex"] | null>(null);
@@ -29,7 +29,7 @@ const useMoveTokenStore = defineStore("move-token", () => {
     function pickup(tokenId: string) {
         const token = gameData.tokens[tokenId];
         if (!token) {
-            console.warn(`[useMoveTokenStore::pickup] No token found with id "${token}"`);
+            console.warn(`[useMoveStore::pickup] No token found with id "${token}"`);
             return;
         }
         if (_candidateOriginTileIndex.value === null) {
@@ -40,18 +40,24 @@ const useMoveTokenStore = defineStore("move-token", () => {
             // of moving the token.
             _candidateOriginTileIndex.value = token.tileIndex;
         }
-        moveCandidateTokenId.value = tokenId;
+        candidateId.value = tokenId;
     }
 
     function drop(destTileIndex: number) {
-        const tokenId = moveCandidateTokenId.value;
+        const tokenId = candidateId.value;
         const token = gameData.tokens[tokenId];
         if (!token) {
-            console.warn(`[useMoveTokenStore::drop] No token found with id "${tokenId}"`);
+            console.warn(`[useMoveStore::drop] No token found with id "${tokenId}"`);
+            return;
+        }
+        gameData.moveToken(tokenId, destTileIndex);
+        if (_candidateOriginTileIndex.value === destTileIndex) {
+            _candidateOriginTileIndex.value = null;
+            _candidateDestTileIndex.value = null;
+            candidateId.value = "";
             return;
         }
         _candidateDestTileIndex.value = destTileIndex;
-        gameData.moveToken(tokenId, destTileIndex);
     }
 
     /**
@@ -59,28 +65,32 @@ const useMoveTokenStore = defineStore("move-token", () => {
      * moved is recoreded in game history.
      */
     function commit() {
-        const candidateToken = gameData.tokens[moveCandidateTokenId.value];
+        const candidateToken = gameData.tokens[candidateId.value];
         const originTileIndex = _candidateOriginTileIndex.value;
         const destTileIndex = _candidateDestTileIndex.value;
         if (candidateToken && originTileIndex !== null && destTileIndex !== null) {
-            if (originTileIndex === -1 && destTileIndex > -1) {
-                // token started in reserve and is dropped on tile
-            } else if (originTileIndex === -1 && destTileIndex === -1) {
-                // token started on reserve and is dropped back on reserve
-            } else if (originTileIndex > -1 && destTileIndex === -1) {
-                // token started on tile and is dropped on reserve
-            } else if (originTileIndex > -1 && destTileIndex > -1) {
-                // token started on tile and is dropped on a tile
-                if (originTileIndex === destTileIndex) {
-                    // token started on tile and is dropped back on same tile
-                } else {
-                    // token started on tile and is dropped on a different tile
-                }
-            }
+            events.send("game_data:move_token", {
+                tokenId: candidateToken.id,
+                tileIndex: destTileIndex
+            });
+            // if (originTileIndex === -1 && destTileIndex > -1) {
+            //     // token started in reserve and is dropped on tile
+            // } else if (originTileIndex === -1 && destTileIndex === -1) {
+            //     // token started on reserve and is dropped back on reserve
+            // } else if (originTileIndex > -1 && destTileIndex === -1) {
+            //     // token started on tile and is dropped on reserve
+            // } else if (originTileIndex > -1 && destTileIndex > -1) {
+            //     // token started on tile and is dropped on a tile
+            //     if (originTileIndex === destTileIndex) {
+            //         // token started on tile and is dropped back on same tile
+            //     } else {
+            //         // token started on tile and is dropped on a different tile
+            //     }
+            // }
         }
     }
 
-    return { pickup, drop, commit, moveCandidateTokenId };
+    return { pickup, drop, commit, candidateId };
     
 });
 

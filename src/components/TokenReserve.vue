@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { useMove } from '@/stores-v2/composables/use-move';
+import { computed } from 'vue';
+// import { useMove } from '@/stores-v2/composables/use-move';
 import { useGameDataStore } from '@/stores-v2/game-data.store';
 import { useGameStateStore } from '@/stores-v2/game-state.store';
 import { usePlayersStore } from '@/stores-v2/players.store';
 import { usePlaceTokensState } from '@/stores-v2/states/use-place-tokens-state';
 import { useTokensStore } from '@/stores-v2/tokens.store';
-import { computed } from 'vue';
+import { useMoveTokenStore } from '@/stores-v2/move.store';
 
 import GameToken from './GameToken.vue';
 
@@ -15,7 +16,7 @@ const players = usePlayersStore();
 const tokensStore = useTokensStore();
 const placeTokensState = usePlaceTokensState();
 
-const move = useMove();
+const moveToken = useMoveTokenStore();
 
 const props = defineProps<{
     playerId: string;
@@ -38,7 +39,7 @@ function onDrop(event: DragEvent) {
     const tokenId = event.dataTransfer?.getData("text");
     const token = gameData.tokens[tokenId ?? ""];
     if (token) {
-        move.dropToken(-1);
+        moveToken.drop(-1);
         // if (gameState.currentState === "place_tokens") {
             // placeTokensState.endMove(token.id, -1);
         // }

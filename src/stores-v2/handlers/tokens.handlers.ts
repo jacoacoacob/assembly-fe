@@ -5,24 +5,14 @@ import type { Event } from "../events.types";
 
 type E<Name extends string, Data = {}> = Event<"tokens", Name, Data>;
 
-type TokensEvent =
-    E<"move_token", { tokenId: string, tileIndex: number }> |
-    E<"set_in_play_token_ids", string[]> |
-    E<"set_candidate_token_id", string>;
+type TokensEvent = E<"set_in_play_token_ids", string[]>;
 
 function tokensEventHandlers() {
-    const gameData = useGameDataStore();
     const tokens = useTokensStore();
 
     return eventHandlers<"tokens", TokensEvent>({
-        move_token({ tokenId, tileIndex }) {
-            gameData.moveToken(tokenId, tileIndex);
-        },
         set_in_play_token_ids(tokenIds) {
             tokens.inPlayTokenIds = tokenIds;
-        },
-        set_candidate_token_id(candidateId) {
-            tokens.candidateTokenId = candidateId;
         },
     });
 }

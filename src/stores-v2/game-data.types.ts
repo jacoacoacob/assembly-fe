@@ -1,4 +1,4 @@
-import type { NewGameEvent } from "./handlers/new-game.handlers";
+import type { GameDataEvent } from "./handlers/game.handlers";
 import type { PlayersEvent } from "./handlers/players.handlers";
 import type { GameStateEvent } from "./handlers/game-state.handlers";
 import type { TokensEvent } from "./handlers/tokens.handlers";
@@ -33,7 +33,7 @@ interface Tile {
 }
 
 type GameEvent =
-    NewGameEvent |
+    GameDataEvent |
     TokensEvent |
     PlayersEvent |
     GameStateEvent |

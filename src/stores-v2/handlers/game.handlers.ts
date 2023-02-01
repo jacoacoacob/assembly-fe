@@ -5,21 +5,22 @@ import { useGameDataStore } from "../game-data.store";
 import { useScoresStore } from "../scores.store";
 import { useScoring } from "../composables/use-scoring";
 
-type E<Name extends string, Data = {}> = Event<"new_game", Name, Data>;
+type E<Name extends string, Data = {}> = Event<"game_data", Name, Data>;
 
-type NewGameEvent =
+type GameDataEvent =
     E<"set_name", Game["name"]> |
     E<"set_tokens", Game["tokens"]> |
     E<"set_grid", Game["grid"]> |
     E<"set_tiles", Game["tiles"]> |
-    E<"set_players", Game["players"]>;
+    E<"set_players", Game["players"]> |
+    E<"move_token", { tokenId: string; tileIndex: number }>;
 
-function newGameEventHandlers() {
+function gameDataEventHandlers() {
     const gameData = useGameDataStore();
     const scores = useScoresStore();
     const scoring = useScoring();
 
-    return eventHandlers<"new_game", NewGameEvent>({
+    return eventHandlers<"game_data", GameDataEvent>({
         set_name(name) {
             gameData.name = name;
         },
@@ -36,10 +37,13 @@ function newGameEventHandlers() {
             gameData.players = players;
             scores.points = scoring.initPlayerPoints();
         },
+        move_token({ tokenId, tileIndex }) {
+            gameData.moveToken(tokenId, tileIndex);
+        }
     });
 }
 
-type NewGameEventHandlers = ReturnType<typeof newGameEventHandlers>;
+type GameDataEventHandlers = ReturnType<typeof gameDataEventHandlers>;
 
-export { newGameEventHandlers };
-export type { NewGameEvent, NewGameEventHandlers };
+export { gameDataEventHandlers };
+export type { GameDataEvent, GameDataEventHandlers };

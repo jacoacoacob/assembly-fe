@@ -2,7 +2,7 @@ import { defineStore } from "pinia";
 import type { EventDomain, EventHandler, Event } from "./events.types";
 import type { Game, GameEvent } from "./game-data.types";
 
-import { newGameEventHandlers, type NewGameEventHandlers } from "./handlers/new-game.handlers";
+import { gameDataEventHandlers, type GameDataEventHandlers } from "./handlers/game.handlers";
 import { tokensEventHandlers, type TokensEventHandlers } from "./handlers/tokens.handlers";
 import { saveGameHistory } from "@/api/game-api";
 import { useGameDataStore } from "./game-data.store";
@@ -12,7 +12,7 @@ import { tilesEventHandlers, type TilesEventHandlers } from "./handlers/tiles.ha
 import { scoresEventHandlers, type ScoresEventHandlers } from "./handlers/scores.handlers";
 
 type StoreEventHandler =
-    NewGameEventHandlers |
+    GameDataEventHandlers |
     TokensEventHandlers |
     PlayersEventHandlers |
     GameStateEventHandlers |
@@ -24,7 +24,7 @@ const useEventsStore = defineStore("events", () => {
     const gameData = useGameDataStore();
     
     const handlers: Record<EventDomain, StoreEventHandler> = {
-        new_game: newGameEventHandlers(),
+        game_data: gameDataEventHandlers(),
         tokens: tokensEventHandlers(),
         players: playersEventHandlers(),
         tiles: tilesEventHandlers(),

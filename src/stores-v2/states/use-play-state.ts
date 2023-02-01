@@ -9,8 +9,7 @@ import { useTilesStore } from "../tiles.store";
 import { useTokensStore } from "../tokens.store";
 import { useScoring } from "../composables/use-scoring";
 import { usePlayerActionsStore, type PlayerAction } from "../player-actions.store";
-import { useMove } from "../composables/use-move";
-// import { usePlayerActions } from "../composables/use-player-actions";
+import { useMoveTokenStore } from "../move-token.store";
 
 
 const usePlayState = defineStore("play-state", () => {
@@ -23,7 +22,7 @@ const usePlayState = defineStore("play-state", () => {
     const actions = usePlayerActionsStore();
     
     const scoring = useScoring();
-    const move = useMove();
+    const moveToken = useMoveTokenStore();
 
     const selectedAction = ref<PlayerAction | null>(null);
 
@@ -49,11 +48,11 @@ const usePlayState = defineStore("play-state", () => {
         }
         events.send("players:next");
         players.viewActivePlayer();
-        move.commit();
+        moveToken.commit();
     }
 
     function startMove(tokenId: string) {
-        move.pickupToken(tokenId);
+        moveToken.pickup(tokenId);
         // switch (selectedAction.value) {
         //     case "move_token":
         //     case "place_token": 
@@ -66,7 +65,7 @@ const usePlayState = defineStore("play-state", () => {
 
     function endMove(tokenId: string, tileIndex: number) {
         if (selectedAction.value === "place_token") {
-            move.dropToken(tileIndex);
+            moveToken.drop(tileIndex);
             // const droppedToken = 
         }
         // switch (selectedAction.value) {

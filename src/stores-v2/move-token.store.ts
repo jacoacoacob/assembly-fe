@@ -73,21 +73,10 @@ const useMoveTokenStore = defineStore("move-token", () => {
                 tokenId: candidateToken.id,
                 tileIndex: destTileIndex
             });
-            // if (originTileIndex === -1 && destTileIndex > -1) {
-            //     // token started in reserve and is dropped on tile
-            // } else if (originTileIndex === -1 && destTileIndex === -1) {
-            //     // token started on reserve and is dropped back on reserve
-            // } else if (originTileIndex > -1 && destTileIndex === -1) {
-            //     // token started on tile and is dropped on reserve
-            // } else if (originTileIndex > -1 && destTileIndex > -1) {
-            //     // token started on tile and is dropped on a tile
-            //     if (originTileIndex === destTileIndex) {
-            //         // token started on tile and is dropped back on same tile
-            //     } else {
-            //         // token started on tile and is dropped on a different tile
-            //     }
-            // }
         }
+        candidateId.value = "";
+        _candidateOriginTileIndex.value = null;
+        _candidateDestTileIndex.value = null;
     }
 
     return { pickup, drop, commit, candidateId };

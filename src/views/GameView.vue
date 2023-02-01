@@ -86,6 +86,7 @@ provide("tile:drop", (event: DragEvent) => {
 
 function onWindowKeydown(event: KeyboardEvent) {
     if (event.code === "Space") {
+        console.log("onWindowKeydown", gameState.currentState)
         switch (gameState.currentState) {
             case "place_tokens": return placeTokensState.endTurn();
             case "play": return playState.endTurn();

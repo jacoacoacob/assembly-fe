@@ -38,7 +38,7 @@ const useEventsStore = defineStore("events", () => {
     }
 
     function loadHistory(history: Game["history"]) {
-        gameData.$reset();
+        gameData.history = [];
         history.forEach(handleEvent);
     }
 

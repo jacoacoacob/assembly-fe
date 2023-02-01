@@ -6,10 +6,9 @@ import { useGameDataStore } from "../game-data.store";
 import { usePlayersStore } from "../players.store";
 import { useTilesStore } from "../tiles.store";
 import { useTokensStore } from "../tokens.store";
-import { useScoresStore } from "../scores.store";
 import { useScoring } from "../composables/use-scoring";
 import { usePlayerActionsStore } from "../player-actions.store";
-import { useMove } from "../composables/use-move";
+import { useMoveTokenStore } from "../move-token.store";
 
 /**
  * Methods and data to be used in components when gameState.currentState === "place_tokens"
@@ -20,20 +19,19 @@ const usePlaceTokensState = defineStore("place-tokens-state", () => {
     const tokens = useTokensStore();
     const players = usePlayersStore();
     const tiles = useTilesStore();
-    const scores = useScoresStore();
     const scoring = useScoring();
     const actions = usePlayerActionsStore();
 
-    const move = useMove();
+    const moveToken = useMoveTokenStore();
 
-    const isTurnEndable = computed(() => move.canCommit);
+    const isTurnEndable = computed(() => Boolean(moveToken.candidateId));
 
     function startMove(tokenId: string) {
-        move.pickupToken(tokenId);
+        moveToken.pickup(tokenId);
     }
 
     function endMove(tokenId: string, tileIndex: number) {
-        move.dropToken(tileIndex);
+        moveToken.drop(tileIndex);
     }
 
     const helpMessage = computed(() => {
@@ -60,10 +58,10 @@ const usePlaceTokensState = defineStore("place-tokens-state", () => {
     }
 
     function endTurn() {
-        if (!move.canCommit) {
+        if (!isTurnEndable.value) {
             return;
         }
-        move.commit()
+        moveToken.commit()
         events.sendMany(["players:next"]);
         players.viewActivePlayer();
         if (_isPlacementComplete()) {

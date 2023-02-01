@@ -1,12 +1,11 @@
 <script setup lang="ts">
 import { computed } from 'vue';
-// import { useMove } from '@/stores-v2/composables/use-move';
 import { useGameDataStore } from '@/stores-v2/game-data.store';
 import { useGameStateStore } from '@/stores-v2/game-state.store';
 import { usePlayersStore } from '@/stores-v2/players.store';
 import { usePlaceTokensState } from '@/stores-v2/states/use-place-tokens-state';
 import { useTokensStore } from '@/stores-v2/tokens.store';
-import { useMoveTokenStore } from '@/stores-v2/move.store';
+import { useMoveTokenStore } from '@/stores-v2/move-token.store';
 
 import GameToken from './GameToken.vue';
 

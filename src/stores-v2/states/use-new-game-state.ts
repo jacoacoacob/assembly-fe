@@ -63,11 +63,11 @@ const useNewGameState = defineStore("new-game-state", () => {
 
     function createGame(name: string, players: Player[]) {
         events.sendMany(
-            ["new_game:set_name", name],
-            ["new_game:set_players", players],
-            ["new_game:set_tokens", createTokens(players)],
-            ["new_game:set_grid", createGrid(6, 9, 90)],
-            ["new_game:set_tiles", createTiles(6, 9, players.length < 4 ? [4, 8] : [5, 10])],
+            ["game_data:set_name", name],
+            ["game_data:set_players", players],
+            ["game_data:set_tokens", createTokens(players)],
+            ["game_data:set_grid", createGrid(6, 9, 90)],
+            ["game_data:set_tiles", createTiles(6, 9, players.length < 4 ? [4, 8] : [5, 10])],
             ["tiles:set_in_play_tiles", [10, 13, 16, 37, 40, 43]],
             ["game_state:set_state", "place_tokens"]
         );

@@ -38,6 +38,19 @@ const usePlayState = defineStore("play-state", () => {
         () => players.activePlayerIndex === gameData.players.length - 1
     );
 
+    const helpMessage = computed(() => {
+        if (!selectedAction.value) {
+            return "Choose an action.";
+        }
+        if (selectedAction.value === "move_token") {
+            return "Move any of your tokens currently on the board.";
+        }
+        if (selectedAction.value === "place_token") {
+            return "Move a token from your reserve onto the board"
+        }
+        return "";
+    })
+
     function endRound() {
         events.send("scores:set_points", sumDict(scores.points, scoring.calculatePoints()));
     }
@@ -49,44 +62,22 @@ const usePlayState = defineStore("play-state", () => {
         events.send("players:next");
         players.viewActivePlayer();
         moveToken.commit();
+        selectedAction.value = null;
     }
 
     function startMove(tokenId: string) {
         moveToken.pickup(tokenId);
-        // switch (selectedAction.value) {
-        //     case "move_token":
-        //     case "place_token": 
-        //     case "remove_token": move.pickupToken(tokenId);
-        // }
-        // if (tokenId !== tokens.candidateTokenId) {
-        //     events.send("tokens:set_candidate_token_id", tokenId);
-        // }
     }
 
     function endMove(tokenId: string, tileIndex: number) {
         if (selectedAction.value === "place_token") {
             moveToken.drop(tileIndex);
-            // const droppedToken = 
+        } else if (selectedAction.value === "move_token") {
+            moveToken.drop(tileIndex);
         }
-        // switch (selectedAction.value) {
-        //     case "move_token": return;
-        //     case "place_token": actions.placeToken.dropToken(tileIndex);
-        //     case "remove_token": return;
-        // }
-        // const token = gameData.tokens[tokenId];
-        // if (token.tileIndex === -1 && token.tileIndex === tileIndex) {
-        //     events.send("tokens:set_candidate_token_id", "");
-        // }
-        // if (token.tileIndex !== tileIndex) {
-        //     events.send("tokens:move_token", { tokenId, tileIndex });
-        //     if (tileIndex === -1) {
-        //         events.send("tokens:set_candidate_token_id", "");
-        //     }
-        // }
-        // tokens.draggedTokenId = "";
     }
 
-    return { startMove, endMove, endRound, endTurn, availableActions };
+    return { startMove, endMove, endRound, endTurn, availableActions, selectedAction, helpMessage };
 });
 
 export { usePlayState };

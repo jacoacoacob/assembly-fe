@@ -14,6 +14,7 @@ const prefs = usePreferencesStore();
 const helpMessage = computed(() => {
     switch (gameState.currentState) {
         case "place_tokens": return placeTokensState.helpMessage;
+        case "play": return playState.helpMessage;
     }
     return "";
 });

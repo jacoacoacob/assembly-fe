@@ -5,12 +5,18 @@ import { usePlayersStore, PLAYER_COLOR_OPTIONS } from '@/stores-v2/players.store
 import { useScoresStore } from '@/stores-v2/scores.store';
 import { usePlayState } from '@/stores-v2/states/use-play-state';
 import { useGameStateStore } from '@/stores-v2/game-state.store';
+import type { PlayerAction } from '@/stores-v2/player-actions.store';
 
 const gameState = useGameStateStore();
 const gameData = useGameDataStore();
 const players = usePlayersStore();
 const scores = useScoresStore();
 const playState = usePlayState();
+
+function selectAction(action: PlayerAction) {
+    playState.selectedAction = action === playState.selectedAction ? null : action;
+}
+
 </script>
 
 <template>
@@ -43,15 +49,18 @@ const playState = usePlayState();
                 <TokenReserve :playerId="players.viewedPlayer.id" />
             </div>
         </div>
-        <!-- <div v-if="gameState.currentState === 'play'"> -->
-        <div>
+        <div v-if="gameState.currentState === 'play'">
             <h3>
                 Actions
             </h3>
             <ul class="space-y-2">
                 <li v-for="action, i in playState.availableActions" :key="i">
-                    <button class="button button-dense w-full">
-                        {{ action }}
+                    <button
+                        class="button button-dense w-full"
+                        :class="{ 'bg-pink-400': action === playState.selectedAction }"
+                        @click="() => selectAction(action)"
+                    >
+                        {{ action.split("_").join(" ") }}
                     </button>
                 </li>
             </ul>

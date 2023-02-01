@@ -9,7 +9,7 @@ import { useTokensStore } from "./tokens.store";
 import { useEventsStore } from "./events.store";
 import { useTilesStore } from "./tiles.store";
 
-const PLACE_TOKENS_COST = 1;
+const PLACE_TOKEN_COST = 1;
 
 type PlayerAction = "place_token" | "move_token" | "remove_token";
 
@@ -22,32 +22,58 @@ const usePlayerActionsStore = defineStore("player-actions", () => {
     const events = useEventsStore();
     const tiles = useTilesStore();
 
-
-    const canPlaceToken = computed(() => {
-        const playerPoints = scores.points[players.activePlayer.id];
-        const availableTokens = tokens.availableReservePlayerTokenIds[players.activePlayer.id];
-        if (gameState.currentState === "play") {
-            return availableTokens.length > 0 && playerPoints - PLACE_TOKENS_COST > 0;
-        }
+    const placeToken = computed(() => {
+        const activePlayerId = players.activePlayer.id;
+        const playerPoints = scores.points[activePlayerId];
+        const eligableTokens = tokens.availableReservePlayerTokenIds[activePlayerId];
+        const eligableTiles = tiles.openInPlayTiles;
+        
         if (gameState.currentState === "place_tokens") {
-            return availableTokens.length > 0;
+            return { eligableTokens, eligableTiles };
         }
-        return false;
+        
+        if (gameState.currentState === "play") {
+            return {
+                eligableTiles,
+                // eligableTokens,
+                eligableTokens: playerPoints - PLACE_TOKEN_COST > 0 ? eligableTokens : [],
+            }
+        }
+        
+        return {
+            eligableTiles: [],
+            eligableTokens: [],
+        }
     });
 
-    const canMoveToken = computed(() => {
-        return true;
+    const moveToken = computed(() => {
+        const activePlayerId = players.activePlayer.id;
+        const playerPoints = scores.points[activePlayerId];
+        const eligableTokens = tokens.availableReservePlayerTokenIds[activePlayerId];
+        const eligableTiles = tiles.openInPlayTiles;
+        return {
+            eligableTiles,
+            eligableTokens,
+        };
     });
+    
+    const removeToken = computed(() => {
+        return {
+            eligableTokens: [],
+        };
+    })
 
-    const canRemoveToken = computed(() => {
-        return false;
-    });
+    const canPlaceToken = computed(() => placeToken.value.eligableTokens.length > 0);
+    const canMoveToken = computed(() => moveToken.value.eligableTokens.length > 0);
+    const canRemoveToken = computed(() => removeToken.value.eligableTokens.length > 0);
 
     return {
-        canPlaceToken,
         canMoveToken,
+        canPlaceToken,
         canRemoveToken,
-
+        moveToken,
+        placeToken,
+        removeToken,
     };
 });
 

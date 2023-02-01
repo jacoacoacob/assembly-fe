@@ -50,7 +50,8 @@ const useMoveTokenStore = defineStore("move-token", () => {
             console.warn(`[useMoveTokenStore::drop] No token found with id "${tokenId}"`);
             return;
         }
-        
+        _candidateDestTileIndex.value = destTileIndex;
+        gameData.moveToken(tokenId, destTileIndex);
     }
 
     /**
@@ -59,8 +60,23 @@ const useMoveTokenStore = defineStore("move-token", () => {
      */
     function commit() {
         const candidateToken = gameData.tokens[moveCandidateTokenId.value];
-        if (moveCandidateTokenId.value) {
-
+        const originTileIndex = _candidateOriginTileIndex.value;
+        const destTileIndex = _candidateDestTileIndex.value;
+        if (candidateToken && originTileIndex !== null && destTileIndex !== null) {
+            if (originTileIndex === -1 && destTileIndex > -1) {
+                // token started in reserve and is dropped on tile
+            } else if (originTileIndex === -1 && destTileIndex === -1) {
+                // token started on reserve and is dropped back on reserve
+            } else if (originTileIndex > -1 && destTileIndex === -1) {
+                // token started on tile and is dropped on reserve
+            } else if (originTileIndex > -1 && destTileIndex > -1) {
+                // token started on tile and is dropped on a tile
+                if (originTileIndex === destTileIndex) {
+                    // token started on tile and is dropped back on same tile
+                } else {
+                    // token started on tile and is dropped on a different tile
+                }
+            }
         }
     }
 

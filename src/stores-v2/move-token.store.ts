@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import { useEventsStore } from "./events.store";
 import { useGameDataStore } from "./game-data.store";
 import type { Tile, Token } from "./game-data.types";
@@ -20,11 +20,16 @@ const useMoveTokenStore = defineStore("move-token", () => {
     const gameData = useGameDataStore();
     const events = useEventsStore();
 
-    // const movingTokenId = ref<Token["id"]>("");
     const candidateId = ref<Token["id"]>("");
 
     const _candidateOriginTileIndex = ref<Token["tileIndex"] | null>(null);
     const _candidateDestTileIndex = ref<Token["tileIndex"] | null>(null);
+
+    const _hoveredTileIndex = ref<number | null>(null);
+
+    const isHoveredTileValidMove = computed(() => {
+        return true;
+    });
 
     function pickup(tokenId: string) {
         const token = gameData.tokens[tokenId];
@@ -43,14 +48,24 @@ const useMoveTokenStore = defineStore("move-token", () => {
         candidateId.value = tokenId;
     }
 
-    function drop(destTileIndex: number) {
+    function hoverTile(tileIndex: number | null) {
+        _hoveredTileIndex.value = tileIndex;
+    }
+
+    // function drop(destTileIndex: number) {
+    function drop() {
         const tokenId = candidateId.value;
         const token = gameData.tokens[tokenId];
         if (!token) {
             console.warn(`[useMoveStore::drop] No token found with id "${tokenId}"`);
             return;
         }
+        if (!_hoveredTileIndex.value) {
+            return;
+        }
+        const destTileIndex = _hoveredTileIndex.value;
         gameData.moveToken(tokenId, destTileIndex);
+        _hoveredTileIndex.value = null;
         if (_candidateOriginTileIndex.value === destTileIndex) {
             _candidateOriginTileIndex.value = null;
             _candidateDestTileIndex.value = null;
@@ -79,7 +94,7 @@ const useMoveTokenStore = defineStore("move-token", () => {
         _candidateDestTileIndex.value = null;
     }
 
-    return { pickup, drop, commit, candidateId };
+    return { pickup, hoverTile, drop, commit, candidateId, isHoveredTileValidMove };
     
 });
 

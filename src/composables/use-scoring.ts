@@ -1,10 +1,10 @@
 import { sum } from "@/utils/sum";
-import { useGameDataStore } from "../game-data.store";
-import { usePlayersStore } from "../players.store";
-import { useTilesStore } from "../tiles.store";
-import type { PlayerPoints } from "../scores.types";
-import { useTokensStore } from "../tokens.store";
-import type { Token, Player, Tile } from "../game-data.types";
+import { useGameDataStore } from "../stores-v2/game-data.store";
+import { usePlayersStore } from "../stores-v2/players.store";
+import { useTilesStore } from "../stores-v2/tiles.store";
+import type { PlayerPoints } from "../stores-v2/scores.types";
+import { useTokensStore } from "../stores-v2/tokens.store";
+import type { Token, Player, Tile } from "../stores-v2/game-data.types";
 
 type TilePlayerTokenValues = Record<Player["id"], number>[];
 type TilePlayerScores = TilePlayerTokenValues;

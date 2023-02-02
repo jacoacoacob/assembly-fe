@@ -38,10 +38,7 @@ function onDrop(event: DragEvent) {
     const tokenId = event.dataTransfer?.getData("text");
     const token = gameData.tokens[tokenId ?? ""];
     if (token) {
-        moveToken.drop(-1);
-        // if (gameState.currentState === "place_tokens") {
-            // placeTokensState.endMove(token.id, -1);
-        // }
+        // moveToken.drop(-1);
     }
 }
 

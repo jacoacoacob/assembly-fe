@@ -6,7 +6,7 @@ import { useGameDataStore } from "../game-data.store";
 import { usePlayersStore } from "../players.store";
 import { useTilesStore } from "../tiles.store";
 import { useTokensStore } from "../tokens.store";
-import { useScoring } from "../composables/use-scoring";
+import { useScoring } from "../../composables/use-scoring";
 import { usePlayerActionsStore } from "../player-actions.store";
 import { useMoveTokenStore } from "../move-token.store";
 
@@ -31,7 +31,7 @@ const usePlaceTokensState = defineStore("place-tokens-state", () => {
     }
 
     function endMove(tokenId: string, tileIndex: number) {
-        moveToken.drop(tileIndex);
+        // moveToken.drop(tileIndex);
     }
 
     const helpMessage = computed(() => {

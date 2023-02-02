@@ -3,7 +3,7 @@ import type { Game } from "../game-data.types";
 import type { Event } from "../events.types";
 import { useGameDataStore } from "../game-data.store";
 import { useScoresStore } from "../scores.store";
-import { useScoring } from "../composables/use-scoring";
+import { useScoring } from "../../composables/use-scoring";
 
 type E<Name extends string, Data = {}> = Event<"game_data", Name, Data>;
 

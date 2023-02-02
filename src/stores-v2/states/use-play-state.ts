@@ -7,7 +7,7 @@ import { usePlayersStore } from "../players.store";
 import { useScoresStore } from "../scores.store";
 import { useTilesStore } from "../tiles.store";
 import { useTokensStore } from "../tokens.store";
-import { useScoring } from "../composables/use-scoring";
+import { useScoring } from "../../composables/use-scoring";
 import { usePlayerActionsStore, type PlayerAction } from "../player-actions.store";
 import { useMoveTokenStore } from "../move-token.store";
 
@@ -71,9 +71,9 @@ const usePlayState = defineStore("play-state", () => {
 
     function endMove(tokenId: string, tileIndex: number) {
         if (selectedAction.value === "place_token") {
-            moveToken.drop(tileIndex);
+            // moveToken.drop(tileIndex);
         } else if (selectedAction.value === "move_token") {
-            moveToken.drop(tileIndex);
+            // moveToken.drop(tileIndex);
         }
     }
 

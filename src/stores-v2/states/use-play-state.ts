@@ -67,7 +67,7 @@ const usePlayState = defineStore("play-state", () => {
 
     const isMoveValid = computed(() => {
         if (selectedAction.value === "move_token") {
-            
+
         }
         if (selectedAction.value === "place_token") {
 
@@ -84,9 +84,9 @@ const usePlayState = defineStore("play-state", () => {
     }
 
     function dropToken() {
-        if (isMoveValid.value) {
-            moveToken.drop();
-        }
+
+        moveToken.drop();
+
     }
 
 

@@ -2,7 +2,9 @@ import { defineStore } from "pinia";
 import { computed, ref } from "vue";
 import { useEventsStore } from "./events.store";
 import { useGameDataStore } from "./game-data.store";
-import type { Tile, Token } from "./game-data.types";
+import type { Token } from "./game-data.types";
+import { useMoveValidationStore } from "./move-validation.store";
+import { useTilesStore } from "./tiles.store";
 
 /*
 
@@ -19,6 +21,8 @@ This store handles logic to move a token in the following ways
 const useMoveTokenStore = defineStore("move-token", () => {
     const gameData = useGameDataStore();
     const events = useEventsStore();
+    const tiles = useTilesStore();
+    const validation = useMoveValidationStore();
 
     const hoveredTileIndex = ref<number | null>(null);
     
@@ -27,6 +31,38 @@ const useMoveTokenStore = defineStore("move-token", () => {
     const candidateId = ref<Token["id"]>("");
     const candidateOriginTileIndex = ref<Token["tileIndex"] | null>(null);
     const candidateDestTileIndex = ref<Token["tileIndex"] | null>(null);
+    
+    const distance = computed(() => {
+        const origin = candidateOriginTileIndex.value;
+        if (typeof origin === "number") {
+            const dest = hoveredTileIndex.value ?? candidateDestTileIndex.value as number;
+            return validation.getDistance(origin, dest);
+        }
+        return null;
+    });
+
+    const cost = computed(() => {
+        if (typeof distance.value === "number") {
+            const token = gameData.tokens[candidateId.value];
+            return validation.getCost(
+                token.value,
+                candidateOriginTileIndex.value as number,
+                distance.value
+            );
+        }
+        return null;
+    });
+
+    const isValid = computed(() => {
+        if (candidateId.value) {
+            const dest = candidateDestTileIndex.value ?? hoveredTileIndex.value;
+            if (dest === candidateOriginTileIndex.value) {
+                return true;
+            }
+            return validation.isValidMove(candidateId.value, dest as number);
+        }
+        return null;
+    });
 
     function pickup(tokenId: string) {
         const token = gameData.tokens[tokenId];
@@ -65,6 +101,7 @@ const useMoveTokenStore = defineStore("move-token", () => {
             candidateOriginTileIndex.value = null;
             candidateDestTileIndex.value = null;
             candidateId.value = "";
+            console.log("EHEHHLLLO")
             return;
         }
         candidateDestTileIndex.value = destTileIndex;
@@ -89,7 +126,7 @@ const useMoveTokenStore = defineStore("move-token", () => {
         candidateDestTileIndex.value = null;
     }
 
-    return { pickup, drop, commit, movingTokenId, candidateId, hoveredTileIndex, candidateOriginTileIndex, candidateDestTileIndex };
+    return { pickup, drop, commit, cost, distance, isValid, movingTokenId, candidateId, hoveredTileIndex, candidateOriginTileIndex, candidateDestTileIndex };
     
 });
 

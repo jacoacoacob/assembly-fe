@@ -56,7 +56,7 @@ const className = computed(() => {
     // const candidateToken = gameData.tokens[tokens.candidateTokenId] || {};
     const candidateToken = gameData.tokens[moveToken.candidateId] || {};
     const cn: Record<string, boolean> = {};
-    cn["border-dashed border-2 shadow-xl"] = (candidateToken.id === token.value.id && candidateToken.tileIndex > -1) || tokens.draggedTokenId === token.value.id;
+    cn["border-dashed border-2 shadow-xl"] = (candidateToken.id === token.value.id && candidateToken.tileIndex > -1)  // || tokens.draggedTokenId === token.value.id;
     cn["bg-transparent text-slate-600"] = !isInPlay;
     cn[PLAYER_COLOR_OPTIONS[player.value?.color as PlayerColor]] = isInPlay.value;
     cn["h-8 w-8"] = token.value.tileIndex > -1;
@@ -78,6 +78,14 @@ const isDraggable = computed(() => {
         return isInPlay.value && isActivePlayerToken && token.value.tileIndex === -1;
     }
     if (gameState.currentState === "play") {
+        const candidateToken = gameData.tokens[moveToken.candidateId];
+        if (candidateToken && candidateToken.tileIndex > -1) {
+            return (
+                isInPlay &&
+                isActivePlayerToken &&
+                candidateToken.id === token.value.id
+            );
+        }
         return isInPlay && isActivePlayerToken;
     }
 });

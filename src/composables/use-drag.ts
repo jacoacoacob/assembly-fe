@@ -52,7 +52,7 @@ function useDrag() {
     function onTileDragEnter(event: DragEvent) {
         event.preventDefault();
         const tileIndex = getTileIndex(event);
-        if (tileIndex) {
+        if (typeof tileIndex === "number") {
             moveToken.hoveredTileIndex = tileIndex;
         }
     }

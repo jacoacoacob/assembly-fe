@@ -88,8 +88,7 @@ const useTilesStore = defineStore("tiles", () => {
                 _up(_left(tileIndex))
             ].filter((neighbor) => typeof neighbor === "number") as number[]
         );
-    })
-
+    });
 
     const tileDistanceGraph = computed((): TileDistanceGraph => {
         const { cols } = gameData.grid;

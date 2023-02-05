@@ -20,16 +20,13 @@ const useMoveTokenStore = defineStore("move-token", () => {
     const gameData = useGameDataStore();
     const events = useEventsStore();
 
+    const hoveredTileIndex = ref<number | null>(null);
+    
+    const movingTokenId = ref<Token["id"]>("");
+    
     const candidateId = ref<Token["id"]>("");
-
-    const _candidateOriginTileIndex = ref<Token["tileIndex"] | null>(null);
-    const _candidateDestTileIndex = ref<Token["tileIndex"] | null>(null);
-
-    const _hoveredTileIndex = ref<number | null>(null);
-
-    const isHoveredTileValidMove = computed(() => {
-        return true;
-    });
+    const candidateOriginTileIndex = ref<Token["tileIndex"] | null>(null);
+    const candidateDestTileIndex = ref<Token["tileIndex"] | null>(null);
 
     function pickup(tokenId: string) {
         const token = gameData.tokens[tokenId];
@@ -37,42 +34,40 @@ const useMoveTokenStore = defineStore("move-token", () => {
             console.warn(`[useMoveStore::pickup] No token found with id "${token}"`);
             return;
         }
-        if (_candidateOriginTileIndex.value === null) {
+        if (candidateOriginTileIndex.value === null) {
             // It's possible that a player could pick up a token, drop it, and
             // then change their mind and pick it up again and drop it somewhere
             // else. We need to store the original position of the token so that
             // it can be recorded in the commit and used to calculate the cost
             // of moving the token.
-            _candidateOriginTileIndex.value = token.tileIndex;
+            candidateOriginTileIndex.value = token.tileIndex;
         }
+        movingTokenId.value = tokenId;
         candidateId.value = tokenId;
     }
 
-    function hoverTile(tileIndex: number | null) {
-        _hoveredTileIndex.value = tileIndex;
-    }
 
-    // function drop(destTileIndex: number) {
     function drop() {
+        movingTokenId.value = "";
         const tokenId = candidateId.value;
         const token = gameData.tokens[tokenId];
         if (!token) {
             console.warn(`[useMoveStore::drop] No token found with id "${tokenId}"`);
             return;
         }
-        if (!_hoveredTileIndex.value) {
+        if (!hoveredTileIndex.value) {
             return;
         }
-        const destTileIndex = _hoveredTileIndex.value;
+        const destTileIndex = hoveredTileIndex.value;
         gameData.moveToken(tokenId, destTileIndex);
-        _hoveredTileIndex.value = null;
-        if (_candidateOriginTileIndex.value === destTileIndex) {
-            _candidateOriginTileIndex.value = null;
-            _candidateDestTileIndex.value = null;
+        hoveredTileIndex.value = null;
+        if (candidateOriginTileIndex.value === destTileIndex) {
+            candidateOriginTileIndex.value = null;
+            candidateDestTileIndex.value = null;
             candidateId.value = "";
             return;
         }
-        _candidateDestTileIndex.value = destTileIndex;
+        candidateDestTileIndex.value = destTileIndex;
     }
 
     /**
@@ -81,8 +76,8 @@ const useMoveTokenStore = defineStore("move-token", () => {
      */
     function commit() {
         const candidateToken = gameData.tokens[candidateId.value];
-        const originTileIndex = _candidateOriginTileIndex.value;
-        const destTileIndex = _candidateDestTileIndex.value;
+        const originTileIndex = candidateOriginTileIndex.value;
+        const destTileIndex = candidateDestTileIndex.value;
         if (candidateToken && originTileIndex !== null && destTileIndex !== null) {
             events.send("game_data:move_token", {
                 tokenId: candidateToken.id,
@@ -90,11 +85,11 @@ const useMoveTokenStore = defineStore("move-token", () => {
             });
         }
         candidateId.value = "";
-        _candidateOriginTileIndex.value = null;
-        _candidateDestTileIndex.value = null;
+        candidateOriginTileIndex.value = null;
+        candidateDestTileIndex.value = null;
     }
 
-    return { pickup, hoverTile, drop, commit, candidateId, isHoveredTileValidMove };
+    return { pickup, drop, commit, movingTokenId, candidateId, hoveredTileIndex, candidateOriginTileIndex, candidateDestTileIndex };
     
 });
 

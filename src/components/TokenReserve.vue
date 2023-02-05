@@ -1,21 +1,20 @@
 <script setup lang="ts">
 import { computed } from 'vue';
+
+import GameToken from './GameToken.vue';
 import { useGameDataStore } from '@/stores-v2/game-data.store';
 import { useGameStateStore } from '@/stores-v2/game-state.store';
 import { usePlayersStore } from '@/stores-v2/players.store';
-import { usePlaceTokensState } from '@/stores-v2/states/use-place-tokens-state';
 import { useTokensStore } from '@/stores-v2/tokens.store';
-import { useMoveTokenStore } from '@/stores-v2/move-token.store';
+import { useDrag } from '@/composables/use-drag';
 
-import GameToken from './GameToken.vue';
+
+const drag = useDrag();
 
 const gameState = useGameStateStore();
 const gameData = useGameDataStore();
 const players = usePlayersStore();
 const tokensStore = useTokensStore();
-const placeTokensState = usePlaceTokensState();
-
-const moveToken = useMoveTokenStore();
 
 const props = defineProps<{
     playerId: string;
@@ -25,27 +24,16 @@ const tokenIdSegments = computed(
     () => tokensStore.reservePlayerTokenIdsByTokenValue[props.playerId]
 );
 
-function onDragEnter(event: DragEvent) {
-    event.preventDefault();
-}
-
-function onDragOver(event: DragEvent) {
-    event.preventDefault();
-}
-
-function onDrop(event: DragEvent) {
-    event.preventDefault();
-    const tokenId = event.dataTransfer?.getData("text");
-    const token = gameData.tokens[tokenId ?? ""];
-    if (token) {
-        // moveToken.drop(-1);
-    }
-}
-
 </script>
 
 <template>
-    <div v-if="tokenIdSegments" class="flex flex-col select-none" @drop="onDrop" @dragenter="onDragEnter" @dragover="onDragOver">
+    <div
+        v-if="tokenIdSegments"
+        class="flex flex-col select-none"
+        @drop="drag.onReserveDrop"
+        @dragenter="drag.onReserveDragEnter"
+        @dragover="drag.onReserveDragOver"
+    >
         <div v-for="segment, i in tokenIdSegments" :key="i" class="flex">
             <GameToken
                 v-for="tokenId in segment"

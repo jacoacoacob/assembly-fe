@@ -12,8 +12,11 @@ import { usePlayersStore } from "@/stores-v2/players.store";
 import { useTilesStore } from "@/stores-v2/tiles.store";
 import { useTokensStore } from "@/stores-v2/tokens.store";
 import { useMoveTokenStore } from "@/stores-v2/move-token.store";
+import { useDrag } from "@/composables/use-drag";
 
 const props = defineProps<{ tokenId: Token["id"]; }>();
+
+const drag = useDrag();
 
 const gameState = useGameStateStore();
 const gameData = useGameDataStore();
@@ -25,15 +28,15 @@ const moveToken = useMoveTokenStore();
 const token = computed(() => gameData.tokens[props.tokenId]);
 const isInPlay = computed(() => tokens.inPlayTokenIds.includes(props.tokenId));
 
-const onDragStart = inject<(event: DragEvent) => void>("token:dragstart");
-const onDragEnd = inject<(event: DragEvent) => void>("token:dragend");
+// const onDragStart = inject<(event: DragEvent) => void>("token:dragstart");
+// const onDragEnd = inject<(event: DragEvent) => void>("token:dragend");
 
 const style = computed((): StyleValue => {
     const { tileSize } = gameData.grid;
     const { tileIndex } = token.value;
     if (tileIndex > -1) {
-        const tileContents = tiles.tileTokenGraph[tileIndex];
-        const tileTokenIndex = tileContents.indexOf(token.value.id);
+        const { tileTokenIds } = tiles.tileTokenGraph[tileIndex];
+        const tileTokenIndex = tileTokenIds.indexOf(token.value.id);
         const left = tileSize / 4 * (tileTokenIndex % 2 === 0 ? 1 : 3) - ((tileSize / 4 - 5));
         const top = tileSize / 4 * (tileTokenIndex < 2 ? 1 : 3) - (tileSize / 4 - 5);
         return {
@@ -64,7 +67,6 @@ const className = computed(() => {
 const isDraggable = computed(() => {
     const isActivePlayerToken = token.value.playerId === players.activePlayer.id;
     if (gameState.currentState === "place_tokens") {
-        // const candidateToken = gameData.tokens[tokens.candidateTokenId];
         const candidateToken = gameData.tokens[moveToken.candidateId];
         if (candidateToken && candidateToken.tileIndex > -1) {
             return (
@@ -89,8 +91,8 @@ const isDraggable = computed(() => {
         :class="className"
         :style="style"
         :draggable="isDraggable"
-        @dragend="onDragEnd"
-        @dragstart="onDragStart"
+        @dragend="drag.onTokenDragEnd"
+        @dragstart="drag.onTokenDragStart"
     >
         {{ token.value }}
     </div>

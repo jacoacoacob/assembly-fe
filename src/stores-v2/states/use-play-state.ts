@@ -65,19 +65,33 @@ const usePlayState = defineStore("play-state", () => {
         selectedAction.value = null;
     }
 
-    function startMove(tokenId: string) {
+    const isMoveValid = computed(() => {
+        if (selectedAction.value === "move_token") {
+            
+        }
+        if (selectedAction.value === "place_token") {
+
+        }
+        if (selectedAction.value === "remove_token") {
+
+        }
+        return false;
+    })
+
+
+    function pickupToken(tokenId: string) {
         moveToken.pickup(tokenId);
     }
 
-    function endMove(tokenId: string, tileIndex: number) {
-        if (selectedAction.value === "place_token") {
-            // moveToken.drop(tileIndex);
-        } else if (selectedAction.value === "move_token") {
-            // moveToken.drop(tileIndex);
+    function dropToken() {
+        if (isMoveValid.value) {
+            moveToken.drop();
         }
     }
 
-    return { startMove, endMove, endRound, endTurn, availableActions, selectedAction, helpMessage };
+
+
+    return { pickupToken, dropToken, endRound, endTurn, availableActions, selectedAction, helpMessage };
 });
 
 export { usePlayState };

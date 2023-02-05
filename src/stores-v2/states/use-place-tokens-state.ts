@@ -10,9 +10,6 @@ import { useScoring } from "../../composables/use-scoring";
 import { usePlayerActionsStore } from "../player-actions.store";
 import { useMoveTokenStore } from "../move-token.store";
 
-/**
- * Methods and data to be used in components when gameState.currentState === "place_tokens"
- */
 const usePlaceTokensState = defineStore("place-tokens-state", () => {
     const gameData = useGameDataStore();
     const events = useEventsStore();
@@ -26,12 +23,12 @@ const usePlaceTokensState = defineStore("place-tokens-state", () => {
 
     const isTurnEndable = computed(() => Boolean(moveToken.candidateId));
 
-    function startMove(tokenId: string) {
+    function pickupToken(tokenId: string) {
         moveToken.pickup(tokenId);
     }
 
-    function endMove(tokenId: string, tileIndex: number) {
-        // moveToken.drop(tileIndex);
+    function dropToken() {
+        moveToken.drop();
     }
 
     const helpMessage = computed(() => {
@@ -72,7 +69,7 @@ const usePlaceTokensState = defineStore("place-tokens-state", () => {
                 tiles.inPlayTiles.concat(
                     selectRandomFrom(
                         tiles.openTiles.filter(
-                            (tileIndex) => !tiles.openInPlayTiles.includes(tileIndex)
+                            (tileIndex) => !tiles.openTiles.includes(tileIndex)
                         ),
                         2
                     )
@@ -81,7 +78,7 @@ const usePlaceTokensState = defineStore("place-tokens-state", () => {
         }
     }
 
-    return { startMove, endMove, endTurn, isTurnEndable, helpMessage };
+    return { pickupToken, dropToken, endTurn, isTurnEndable, helpMessage };
 })
 
 export { usePlaceTokensState };

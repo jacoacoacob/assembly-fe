@@ -2,15 +2,17 @@ import { defineStore } from "pinia";
 import { computed, ref } from "vue";
 import { useGameDataStore } from "./game-data.store";
 import type { Token } from "./game-data.types";
+import { useMoveValidationStore } from "./move-validation.store";
 import { useTilesStore } from "./tiles.store";
 import type { PlayerTokenIds, PlayerTokenIdsByTokenValue } from "./tokens.types";
 
 const useTokensStore = defineStore("tokens", () => {
     const gameData = useGameDataStore();
     const tiles = useTilesStore();
+    const validation = useMoveValidationStore();
 
-    const candidateTokenId = ref("");
-    const draggedTokenId = ref("");
+    // const candidateTokenId = ref("");
+    // const draggedTokenId = ref("");
 
     const inPlayTokenIds = ref<Token["id"][]>([]);
 
@@ -66,8 +68,8 @@ const useTokensStore = defineStore("tokens", () => {
                 accum[playerId] = reserveTokenIds.filter(
                     (tokenId) => (
                         inPlayTokenIds.value.includes(tokenId) &&
-                        tiles.openInPlayTiles.some(
-                            (tileIndex) => tiles.isValidMove(tileIndex, tokenId)
+                        tiles.openTiles.some(
+                            (tileIndex) => validation.isValidMove(tokenId, tileIndex)
                         )
                     )
                 );
@@ -96,8 +98,8 @@ const useTokensStore = defineStore("tokens", () => {
     );
 
     return {
-        candidateTokenId,
-        draggedTokenId,
+        // candidateTokenId,
+        // draggedTokenId,
         inPlayTokenIds,
         playerTokenIds,
         availableReservePlayerTokenIds,

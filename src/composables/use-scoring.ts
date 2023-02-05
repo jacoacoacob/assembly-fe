@@ -21,7 +21,7 @@ function useScoring() {
 
     function _getTilePlayerTokenValues(): TilePlayerTokenValues {
         return tiles.tileTokenGraph.map(
-            (tokenIds) => tokenIds.reduce(
+            (node) => node.tileTokenIds.reduce(
                 (accum: TilePlayerTokenValues[number], tokenId) => {
                     const token = gameData.tokens[tokenId];
                     if (typeof accum[token.playerId] === "undefined") {
@@ -40,7 +40,7 @@ function useScoring() {
             (playerTokenValues, tileIndex) => {
                 const tile = gameData.tiles[tileIndex];
                 const tileTokenValues = sum(
-                    tiles.tileTokenGraph[tileIndex].map((tokenId) => gameData.tokens[tokenId].value)
+                    tiles.tileTokenGraph[tileIndex].tileTokenIds.map((tokenId) => gameData.tokens[tokenId].value)
                 );
                 const tileCapacityModifier = Math.floor((tile.capacity - tileTokenValues) / 2);
                 return Object.entries(playerTokenValues).reduce(

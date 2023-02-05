@@ -3,6 +3,8 @@ import { computed, ref } from "vue";
 
 import type { Token } from "./game-data.types";
 import { useGameDataStore } from "./game-data.store";
+import { useMoveTokenStore } from "./move-token.store";
+import { useMoveValidationStore } from "./move-validation.store";
 
 interface TileTokenGraphNode {
     tileTokenIds: Token["id"][];
@@ -14,6 +16,9 @@ type TileDistanceGraph = number[][];
 
 const useTilesStore = defineStore("tiles", () => {
     const gameData = useGameDataStore();
+    const moveToken = useMoveTokenStore();
+    const validation = useMoveValidationStore();
+
 
     const inPlayTiles = ref<number[]>([]);
 
@@ -30,6 +35,7 @@ const useTilesStore = defineStore("tiles", () => {
                 graph[token.tileIndex].tileTokenValuesSum += token.value;
             }
         }
+        console.log("calculate tileTokenGraph")
         return graph;
     });
 
@@ -117,7 +123,11 @@ const useTilesStore = defineStore("tiles", () => {
         inPlayTiles.value.reduce((accum: number[], tileIndex) => {
             const tile = gameData.tiles[tileIndex];
             const { tileTokenIds, tileTokenValuesSum } = tileTokenGraph.value[tileIndex];
-            if (tileTokenIds.length < 4 && tileTokenValuesSum < tile.capacity) {
+            if (moveToken.candidateId) {
+                if (validation.isValidMove(moveToken.candidateId, tileIndex)) {
+                    accum.push(tileIndex);
+                }
+            } else if (tileTokenIds.length < 4 && tileTokenValuesSum < tile.capacity) {
                 accum.push(tileIndex);
             }
             return accum;

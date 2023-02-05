@@ -53,9 +53,9 @@ const useMoveTokenStore = defineStore("move-token", () => {
         return null;
     });
 
-    const isValid = computed(() => {
+    const isValid = computed((): boolean | null => {
         if (candidateId.value) {
-            const dest = candidateDestTileIndex.value ?? hoveredTileIndex.value;
+            const dest = hoveredTileIndex.value;
             if (dest === candidateOriginTileIndex.value) {
                 return true;
             }
@@ -84,6 +84,9 @@ const useMoveTokenStore = defineStore("move-token", () => {
 
 
     function drop() {
+        if (!isValid.value) {
+            return;
+        }
         movingTokenId.value = "";
         const tokenId = candidateId.value;
         const token = gameData.tokens[tokenId];

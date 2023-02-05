@@ -9,8 +9,10 @@ import { useTilesStore } from '@/stores-v2/tiles.store';
 import { useTokensStore } from '@/stores-v2/tokens.store';
 import { useDrag } from '@/composables/use-drag';
 import { useMoveTokenStore } from '@/stores-v2/move-token.store';
+import { useMoveValidationStore } from '@/stores-v2/move-validation.store';
 
 const moveToken = useMoveTokenStore();
+const validation = useMoveValidationStore();
 const gameState = useGameStateStore();
 const gameData = useGameDataStore();
 const tiles = useTilesStore();
@@ -31,7 +33,9 @@ const tileContents = computed(() =>
 ));
 
 const className = computed(() => ({
-    "bg-slate-200": tiles.candidateTileIndex !== props.tileIndex && isOpen.value,
+    // "bg-slate-200": tiles.candidateTileIndex !== props.tileIndex && isOpen.value,
+    // "bg-slate-200": moveToken.hoveredTileIndex !== props.tileIndex && isOpen.value,
+    "bg-slate-200": isOpen.value,
     "invisible": !isInPlay.value,
     "border-slate-400 bg-slate-400": !isOpen.value,
     "bg-white": moveToken.hoveredTileIndex === props.tileIndex && isOpen.value,

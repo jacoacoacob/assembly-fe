@@ -31,20 +31,29 @@ const useMoveValidationStore = defineStore("move-validation", () => {
         return Math.ceil(tokenValue / 2) * distance;
     }
 
+    function _checkCost(token: Token, origin: number, dest: number) {
+        const playerPoints = scores.points[token.playerId];
+        return playerPoints > getCost(token.value, origin, getDistance(origin, dest));
+    }
+
+    function _checkTileCapacity(token: Token, dest: number) {
+        const tile = gameData.tiles[dest];
+        const { tileTokenValuesSum } = tiles.tileTokenGraph[dest];
+        return tileTokenValuesSum + token.value <= tile.capacity;
+    }
+
     function isValidMove(tokenId: string, dest: number) {
-        if (tiles.openTiles.includes(dest)) {
-            const token = gameData.tokens[tokenId];
-            const tile = gameData.tiles[dest];
-            const { tileTokenValuesSum } = tiles.tileTokenGraph[dest];
-            const playerPoints = scores.points[token.playerId];
-            const origin = tokenId === moveToken.candidateId
-                ? moveToken.candidateOriginTileIndex as number
-                : token.tileIndex;
-            const distance = getDistance(origin, dest);
-            const cost = getCost(token.value, origin, distance);
+        const token = gameData.tokens[tokenId];
+        const origin = tokenId === moveToken.candidateId
+            ? moveToken.candidateOriginTileIndex as number
+            : token.tileIndex;
+        if (gameState.currentState === "place_tokens") {
+            return _checkTileCapacity(token, dest);
+        }
+        if (gameState.currentState === "play") {
             return (
-                tileTokenValuesSum + token.value <= tile.capacity &&
-                playerPoints > cost
+                _checkTileCapacity(token, dest) &&
+                _checkCost(token, origin, dest)
             )
         }
         return false;

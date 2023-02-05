@@ -1,10 +1,7 @@
 <script setup lang="ts">
-import { computed, inject, type StyleValue } from "vue";
+import { computed, type StyleValue } from "vue";
 
-// import { PLAYER_COLOR_OPTIONS, type PlayerColor } from "@/stores/game-data-store-type
 import { PLAYER_COLOR_OPTIONS } from "@/stores-v2/players.store";
-
-
 import type { Token, PlayerColor } from "@/stores-v2/game-data.types";
 import { useGameStateStore } from "@/stores-v2/game-state.store";
 import { useGameDataStore } from "@/stores-v2/game-data.store";
@@ -28,8 +25,6 @@ const moveToken = useMoveTokenStore();
 const token = computed(() => gameData.tokens[props.tokenId]);
 const isInPlay = computed(() => tokens.inPlayTokenIds.includes(props.tokenId));
 
-// const onDragStart = inject<(event: DragEvent) => void>("token:dragstart");
-// const onDragEnd = inject<(event: DragEvent) => void>("token:dragend");
 
 const style = computed((): StyleValue => {
     const { tileSize } = gameData.grid;
@@ -53,10 +48,9 @@ const style = computed((): StyleValue => {
 const player = computed(() => gameData.players.find(player => player.id === token.value.playerId));
 
 const className = computed(() => {
-    // const candidateToken = gameData.tokens[tokens.candidateTokenId] || {};
     const candidateToken = gameData.tokens[moveToken.candidateId] || {};
     const cn: Record<string, boolean> = {};
-    cn["border-dashed border-2 shadow-xl"] = (candidateToken.id === token.value.id && candidateToken.tileIndex > -1)  // || tokens.draggedTokenId === token.value.id;
+    cn["border-dashed border-2 shadow-xl"] = candidateToken.id === token.value.id;
     cn["bg-transparent text-slate-600"] = !isInPlay;
     cn[PLAYER_COLOR_OPTIONS[player.value?.color as PlayerColor]] = isInPlay.value;
     cn["h-8 w-8"] = token.value.tileIndex > -1;

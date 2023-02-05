@@ -65,28 +65,13 @@ const usePlayState = defineStore("play-state", () => {
         selectedAction.value = null;
     }
 
-    const isMoveValid = computed(() => {
-        if (selectedAction.value === "move_token") {
-
-        }
-        if (selectedAction.value === "place_token") {
-
-        }
-        if (selectedAction.value === "remove_token") {
-
-        }
-        return false;
-    })
-
 
     function pickupToken(tokenId: string) {
         moveToken.pickup(tokenId);
     }
 
     function dropToken() {
-
         moveToken.drop();
-
     }
 
 

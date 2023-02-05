@@ -38,8 +38,11 @@ const useMoveValidationStore = defineStore("move-validation", () => {
 
     function _checkTileCapacity(token: Token, dest: number) {
         const tile = gameData.tiles[dest];
-        const { tileTokenValuesSum } = tiles.tileTokenGraph[dest];
-        return tileTokenValuesSum + token.value <= tile.capacity;
+        const { tileTokenValuesSum, tileTokenIds } = tiles.tileTokenGraph[dest];
+        return (
+            tileTokenIds.length < 4 &&
+            tileTokenValuesSum + token.value <= tile.capacity
+        )
     }
 
     function isValidMove(tokenId: string, dest: number) {

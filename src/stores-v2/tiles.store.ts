@@ -76,7 +76,7 @@ const useTilesStore = defineStore("tiles", () => {
             return null;
         }
 
-        return gameData.tiles.map((_, tileIndex) => 
+        return gameData.tiles.map((_, tileIndex) =>
             [
                 _up(tileIndex),
                 _up(_right(tileIndex)),
@@ -92,67 +92,26 @@ const useTilesStore = defineStore("tiles", () => {
 
 
     const tileDistanceGraph = computed((): TileDistanceGraph => {
-        const graph: TileDistanceGraph = tileAdjacencyList.value.map(
-            (_, _i, arr) => arr.map((_) => 0)
-        );
-
-        function traverse(tileIndex: number) {
-            const queue = [tileIndex];
-            const visited = [tileIndex];
-            let distance = 1;
-            while (queue.length > 0) {
-                const current = queue.shift() as number;
-                const neighbors = tileAdjacencyList.value[current].filter(
-                    (neighbor) => !visited.includes(neighbor)
-                );
-                if (neighbors.length) {
-                    neighbors.forEach((neighbor) => {
-                        if (!visited.includes(neighbor)) {
-                            visited.push(neighbor);
-                            graph[tileIndex][neighbor] = distance;
-                            queue.push(neighbor);
-                        }
-                    });
-                    distance += 1;
+        const { cols } = gameData.grid;
+        return gameData.tiles.map((_, tileIndex, arr) => {
+            const node: number[] = [];
+            const tileCol = tileIndex % cols;
+            const tileRow = Math.floor(tileIndex / cols);
+            for (let neighbor = 0; neighbor < arr.length; neighbor++) {
+                const neighborCol = neighbor % cols;
+                const neighborRow = Math.floor(neighbor / cols);
+                const distCols = Math.abs(tileCol - neighborCol);
+                const distRows = Math.abs(tileRow - neighborRow);
+                if (distRows === distCols) {
+                    node[neighbor] = distRows;
+                } else if (distRows > distCols) {
+                    node[neighbor] = Math.abs(distRows - distCols) + distCols;
+                } else if (distRows < distCols) {
+                    node[neighbor] = Math.abs(distRows - distCols) + distRows;
                 }
             }
-        }
-
-
-        traverse(0);
-
-        console.log(graph)
-
-        // function traverse(startTileIndex: number) {
-
-        //     const visited: number[] = [startTileIndex];
-
-            // function visitNeighbors(tileIndex: number, distance: number) {
-            //     // if (visited.includes(tileIndex)) {
-            //     //     return;
-            //     // }
-            //     distance += 1;
-            //     tileAdjacencyList.value[tileIndex].forEach((neighbor) => {
-            //         console.log({tileIndex, neighbor, distance, visited: visited.includes(neighbor)})
-            //         if (!visited.includes(neighbor)) {
-            //             visited.push(neighbor);
-            //             graph[tileIndex][neighbor] = distance;
-            //             visitNeighbors(neighbor, distance);
-            //         }
-            //     });
-            // }
-            
-            // visitNeighbors(startTileIndex, 0);
-        // }
-
-
-        // traverse(0)
-
-        // graph.forEach((_, tileIndex) => {
-        //     traverse(tileIndex);
-        // });
-
-        return graph;
+            return node;
+        });
     });
 
     const openTiles = computed(() =>

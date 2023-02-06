@@ -1,5 +1,5 @@
 
-type EventDomain = "game_data" | "tokens" | "tiles" | "players" | "scores" | "game_state" | "play";
+type EventDomain = "game_data" | "tokens" | "tiles" | "players" | "scores" | "game_state" | "player_moves";
 
 interface Event<Domain extends EventDomain, Name extends string, Data = any> {
     domain: Domain;

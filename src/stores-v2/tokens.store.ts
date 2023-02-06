@@ -68,7 +68,7 @@ const useTokensStore = defineStore("tokens", () => {
                 accum[playerId] = reserveTokenIds.filter(
                     (tokenId) => (
                         inPlayTokenIds.value.includes(tokenId) &&
-                        tiles.openTiles.some(
+                        tiles.openInPlayTiles.some(
                             (tileIndex) => validation.isValidMove(tokenId, tileIndex)
                         )
                     )

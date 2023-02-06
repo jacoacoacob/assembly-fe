@@ -14,6 +14,10 @@ function randId(len: number) {
 }
 
 function selectRandomFrom<Data>(list: Data[], count: number) {
+    if (list.length === 0) {
+        console.warn("[selectRandomFrom] list is empty");
+        return [];
+    }
     const rv: Data[] = [];
     let i = 0;
     while (i < count) {

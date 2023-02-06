@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import { computed } from "vue";
+import { computed, ref } from "vue";
 
 import { useGameStateStore } from "./game-state.store";
 import { useGameDataStore } from "./game-data.store";
@@ -9,11 +9,18 @@ import { useTokensStore } from "./tokens.store";
 import { useEventsStore } from "./events.store";
 import { useTilesStore } from "./tiles.store";
 
+
 const PLACE_TOKEN_COST = 1;
 
-type PlayerAction = "place_token" | "move_token" | "remove_token";
+type MoveKind = "place_token" | "move_token" | "remove_token";
 
-const usePlayerActionsStore = defineStore("player-actions", () => {
+interface CommittedMove {
+    origin: number;
+    dest: number;
+    tokenValue: number;
+}
+
+const usePlayerMovesStore = defineStore("player-moves", () => {
     const gameState = useGameStateStore();
     const gameData = useGameDataStore();
     const players = usePlayersStore();
@@ -22,24 +29,28 @@ const usePlayerActionsStore = defineStore("player-actions", () => {
     const events = useEventsStore();
     const tiles = useTilesStore();
 
+    const committedMoves = ref<CommittedMove[]>([]);
+
     const placeToken = computed(() => {
-        const activePlayerId = players.activePlayer.id;
-        const playerPoints = scores.points[activePlayerId];
-        const eligableTokens = tokens.inPlayReservePlayerTokenIds[activePlayerId];
-        const eligableTiles = tiles.openTiles;
-        
-        if (gameState.currentState === "place_tokens") {
-            return { eligableTokens, eligableTiles };
-        }
-        
-        if (gameState.currentState === "play") {
-            return {
-                eligableTiles,
-                // eligableTokens,
-                eligableTokens: playerPoints - PLACE_TOKEN_COST > 0 ? eligableTokens : [],
+        if (players.activePlayer) {
+            const activePlayerId = players.activePlayer.id;
+            const playerPoints = scores.points[activePlayerId];
+            const eligableTokens = tokens.inPlayReservePlayerTokenIds[activePlayerId];
+            const eligableTiles = tiles.openInPlayTiles;
+            
+            if (gameState.currentState === "place_tokens") {
+                return { eligableTokens, eligableTiles };
             }
+            
+            if (gameState.currentState === "play") {
+                return {
+                    eligableTiles,
+                    // eligableTokens,
+                    eligableTokens: playerPoints - PLACE_TOKEN_COST > 0 ? eligableTokens : [],
+                }
+            }
+            
         }
-        
         return {
             eligableTiles: [],
             eligableTokens: [],
@@ -47,21 +58,32 @@ const usePlayerActionsStore = defineStore("player-actions", () => {
     });
 
     const moveToken = computed(() => {
-        const activePlayerId = players.activePlayer.id;
-        const playerPoints = scores.points[activePlayerId];
-        const eligableTokens = tokens.inPlayReservePlayerTokenIds[activePlayerId];
-        const eligableTiles = tiles.openTiles;
+        if (players.activePlayer) {
+            const activePlayerId = players.activePlayer.id;
+            const playerPoints = scores.points[activePlayerId];
+            const eligableTokens = tokens.inPlayReservePlayerTokenIds[activePlayerId];
+            const eligableTiles = tiles.openInPlayTiles;
+            return {
+                eligableTiles,
+                eligableTokens,
+            };
+        }
         return {
-            eligableTiles,
-            eligableTokens,
+            eligableTiles: [],
+            eligableTokens: [],
         };
     });
     
     const removeToken = computed(() => {
-        const activePlayerId = players.activePlayer.id;
+        if (players.activePlayer) {
+            const activePlayerId = players.activePlayer.id;
+            return {
+                eligableTokens: tokens.onBoardPlayerTokenIds[activePlayerId],
+            };
+        }
         return {
-            eligableTokens: tokens.onBoardPlayerTokenIds[activePlayerId],
-        };
+            eligableTokens: []
+        }
     })
 
     const canPlaceToken = computed(() => placeToken.value.eligableTokens.length > 0);
@@ -72,14 +94,15 @@ const usePlayerActionsStore = defineStore("player-actions", () => {
         canMoveToken,
         canPlaceToken,
         canRemoveToken,
+        committedMoves,
         moveToken,
         placeToken,
         removeToken,
     };
 });
 
-export { usePlayerActionsStore };
-export type { PlayerAction };
+export { usePlayerMovesStore };
+export type { MoveKind, CommittedMove };
 
 
 /**

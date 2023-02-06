@@ -19,7 +19,6 @@ const useTilesStore = defineStore("tiles", () => {
     const moveToken = useMoveTokenStore();
     const validation = useMoveValidationStore();
 
-
     const inPlayTiles = ref<number[]>([]);
 
     const tileTokenGraph = computed(() => {
@@ -119,7 +118,7 @@ const useTilesStore = defineStore("tiles", () => {
         });
     });
 
-    const openTiles = computed(() =>
+    const openInPlayTiles = computed(() =>
         inPlayTiles.value.reduce((accum: number[], tileIndex) => {
             const tile = gameData.tiles[tileIndex];
             const { tileTokenIds, tileTokenValuesSum } = tileTokenGraph.value[tileIndex];
@@ -134,7 +133,7 @@ const useTilesStore = defineStore("tiles", () => {
         }, [])
     );
 
-    return { openTiles, inPlayTiles, tileTokenGraph, tileAdjacencyList, tileDistanceGraph };
+    return { openInPlayTiles, inPlayTiles, tileTokenGraph, tileAdjacencyList, tileDistanceGraph };
 });
 
 export { useTilesStore };

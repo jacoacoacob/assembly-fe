@@ -26,7 +26,7 @@ const props = defineProps<{
 
 
 const isInPlay = computed(() => tiles.inPlayTiles.includes(props.tileIndex));
-const isOpen = computed(() => tiles.openTiles.includes(props.tileIndex));
+const isOpen = computed(() => tiles.openInPlayTiles.includes(props.tileIndex));
 
 const tileContents = computed(() =>
     tiles.tileTokenGraph[props.tileIndex].tileTokenIds.map((tokenId) => gameData.tokens[tokenId]

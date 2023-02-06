@@ -7,7 +7,7 @@ import { usePlayersStore } from "../players.store";
 import { useTilesStore } from "../tiles.store";
 import { useTokensStore } from "../tokens.store";
 import { useScoring } from "../../composables/use-scoring";
-import { usePlayerActionsStore } from "../player-actions.store";
+import { usePlayerMovesStore } from "../player-moves.store";
 import { useMoveTokenStore } from "../move-token.store";
 
 const usePlaceTokensState = defineStore("place-tokens-state", () => {
@@ -17,11 +17,14 @@ const usePlaceTokensState = defineStore("place-tokens-state", () => {
     const players = usePlayersStore();
     const tiles = useTilesStore();
     const scoring = useScoring();
-    const actions = usePlayerActionsStore();
+    const playerMoves = usePlayerMovesStore();
 
     const moveToken = useMoveTokenStore();
 
-    const isTurnEndable = computed(() => Boolean(moveToken.candidateId));
+    const isTurnEndable = computed(() => {
+        const dest = moveToken.candidateDestTileIndex;
+        return typeof dest === "number" && dest > -1;
+    });
 
     function pickupToken(tokenId: string) {
         moveToken.pickup(tokenId);
@@ -58,18 +61,20 @@ const usePlaceTokensState = defineStore("place-tokens-state", () => {
         if (!isTurnEndable.value) {
             return;
         }
+        console.log("Helllo")
         moveToken.commit()
         events.sendMany(["players:next"]);
+        console.log("after players:next")
         players.viewActivePlayer();
         if (_isPlacementComplete()) {
             _startPlayState();
-        } else if (!actions.canPlaceToken) {
+        } else if (!playerMoves.canPlaceToken) {
             events.send(
                 "tiles:set_in_play_tiles",
                 tiles.inPlayTiles.concat(
                     selectRandomFrom(
-                        tiles.openTiles.filter(
-                            (tileIndex) => !tiles.openTiles.includes(tileIndex)
+                        gameData.tiles.map((_, i) => i).filter(
+                            (tileIndex) => !tiles.openInPlayTiles.includes(tileIndex)
                         ),
                         2
                     )

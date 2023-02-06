@@ -8,14 +8,9 @@ import { useScoresStore } from "../scores.store";
 import { useTilesStore } from "../tiles.store";
 import { useTokensStore } from "../tokens.store";
 import { useScoring } from "../../composables/use-scoring";
-import { usePlayerActionsStore, type PlayerAction } from "../player-actions.store";
+import { usePlayerMovesStore, type MoveKind } from "../player-moves.store";
 import { useMoveTokenStore } from "../move-token.store";
 
-interface CommittedMove {
-    origin: number;
-    dest: number;
-    tokenValue: number;
-}
 
 const usePlayState = defineStore("play-state", () => {
     const gameData = useGameDataStore();
@@ -24,30 +19,29 @@ const usePlayState = defineStore("play-state", () => {
     const tiles = useTilesStore();
     const scores = useScoresStore();
     const players = usePlayersStore();
-    const actions = usePlayerActionsStore();
+    const playerMoves = usePlayerMovesStore();
     
     const scoring = useScoring();
     const moveToken = useMoveTokenStore();
 
     const availableActions = computed(
-        (): PlayerAction[] => [
-            actions.canPlaceToken && "place_token",
-            actions.canMoveToken && "move_token",
-            actions.canRemoveToken && "remove_token",
-        ].filter(Boolean) as PlayerAction[]
+        (): MoveKind[] => [
+            playerMoves.canPlaceToken && "place_token",
+            playerMoves.canMoveToken && "move_token",
+            playerMoves.canRemoveToken && "remove_token",
+        ].filter(Boolean) as MoveKind[]
     );
 
-    const committedMoves = ref<CommittedMove[]>([]);
 
     const isTurnEndable = computed(() => {
-        return committedMoves.value.length > 0;
+        return playerMoves.committedMoves.length > 0;
     });
 
     const isLastTurnInRound = computed(
         () => players.activePlayerIndex === gameData.players.length - 1
     );
 
-    const currentAction = computed((): PlayerAction | null => {
+    const currentAction = computed((): MoveKind | null => {
         if (moveToken.candidateId) {
             const origin = moveToken.candidateOriginTileIndex;
             const dest = moveToken.hoveredTileIndex ?? moveToken.candidateDestTileIndex;
@@ -79,8 +73,6 @@ const usePlayState = defineStore("play-state", () => {
         return "";
     });
 
-
-
     function endRound() {
         events.send("scores:set_points", sumDict(scores.points, scoring.calculatePoints()));
     }
@@ -94,10 +86,7 @@ const usePlayState = defineStore("play-state", () => {
     }
 
     function commitMove() {
-        const committed = moveToken.commit();
-        if (committed) {
-            events.send("play:moved_token", committed);
-        }
+        moveToken.commit();
     }
 
     function pickupToken(tokenId: string) {
@@ -108,8 +97,7 @@ const usePlayState = defineStore("play-state", () => {
         moveToken.drop();
     }
 
-    return { pickupToken, dropToken, commitMove, committedMoves, endRound, endTurn, isTurnEndable, availableActions, helpMessage, currentAction };
+    return { pickupToken, dropToken, commitMove, endRound, endTurn, isTurnEndable, availableActions, helpMessage, currentAction };
 });
 
 export { usePlayState };
-export type { CommittedMove };

@@ -24,19 +24,29 @@ const useMoveValidationStore = defineStore("move-validation", () => {
         return tiles.tileDistanceGraph[origin][dest];
     }
 
-    function getCost(tokenValue: number, origin: number, distance: number) {
-        if (origin === -1) {
+    function getCost(tokenValue: number, origin: number, dest: number) {
+        if (origin === -1 && dest === -1) {
+            return 0;
+        }
+        if (dest === -1) {
             return tokenValue;
         }
-        return Math.ceil(tokenValue / 2) * distance;
+        if (origin === -1) {
+            return -tokenValue;
+        }
+        return -(Math.ceil(tokenValue / 2) * getDistance(origin, dest));
     }
 
     function _checkCost(token: Token, origin: number, dest: number) {
         const playerPoints = scores.points[token.playerId];
-        return playerPoints > getCost(token.value, origin, getDistance(origin, dest));
+        const cost = getCost(token.value, origin, dest);
+        return playerPoints + cost > 0;
     }
 
     function _checkTileCapacity(token: Token, dest: number) {
+        if (dest === -1) {
+            return true;
+        }
         const tile = gameData.tiles[dest];
         const { tileTokenValuesSum, tileTokenIds } = tiles.tileTokenGraph[dest];
         return (

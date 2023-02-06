@@ -30,7 +30,7 @@ const usePlayState = defineStore("play-state", () => {
         (): PlayerAction[] => [
             actions.canPlaceToken && "place_token",
             actions.canMoveToken && "move_token",
-            actions.canRemoveToken && "remove",
+            actions.canRemoveToken && "remove_token",
         ].filter(Boolean) as PlayerAction[]
     );
 
@@ -38,15 +38,34 @@ const usePlayState = defineStore("play-state", () => {
         () => players.activePlayerIndex === gameData.players.length - 1
     );
 
+    const inProgressAction = computed((): PlayerAction | null => {
+        if (moveToken.candidateId) {
+            const origin = moveToken.candidateOriginTileIndex;
+            const dest = moveToken.hoveredTileIndex ?? moveToken.candidateDestTileIndex;
+            if (origin === -1) {
+                return "place_token"
+            } else if (dest === -1) {
+                return "remove_token";
+            } else {
+                return "move_token";
+            }
+        }
+        return null;
+    });
+
     const helpMessage = computed(() => {
-        if (!selectedAction.value) {
-            return "Choose an action.";
-        }
-        if (selectedAction.value === "move_token") {
-            return "Move any of your tokens currently on the board.";
-        }
-        if (selectedAction.value === "place_token") {
-            return "Move a token from your reserve onto the board"
+        const action = inProgressAction.value;
+        const token = gameData.tokens[moveToken.movingTokenId];
+        if (action && token) {
+            switch (action) {
+                case "move_token": return "Drop the token on any open tile.";
+                case "place_token": return "Drop the token on any open tile.";
+                case "remove_token": return `
+                    Drop the token in your reserve and receive its value (${token.value}) in points
+                `
+            }
+        } else {
+
         }
         return "";
     })
@@ -62,7 +81,6 @@ const usePlayState = defineStore("play-state", () => {
         events.send("players:next");
         players.viewActivePlayer();
         moveToken.commit();
-        selectedAction.value = null;
     }
 
 
@@ -76,7 +94,7 @@ const usePlayState = defineStore("play-state", () => {
 
 
 
-    return { pickupToken, dropToken, endRound, endTurn, availableActions, selectedAction, helpMessage };
+    return { pickupToken, dropToken, endRound, endTurn, availableActions, selectedAction, helpMessage, inProgressAction };
 });
 
 export { usePlayState };

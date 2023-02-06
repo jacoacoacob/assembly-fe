@@ -25,7 +25,7 @@ const usePlayerActionsStore = defineStore("player-actions", () => {
     const placeToken = computed(() => {
         const activePlayerId = players.activePlayer.id;
         const playerPoints = scores.points[activePlayerId];
-        const eligableTokens = tokens.availableReservePlayerTokenIds[activePlayerId];
+        const eligableTokens = tokens.inPlayReservePlayerTokenIds[activePlayerId];
         const eligableTiles = tiles.openTiles;
         
         if (gameState.currentState === "place_tokens") {
@@ -49,7 +49,7 @@ const usePlayerActionsStore = defineStore("player-actions", () => {
     const moveToken = computed(() => {
         const activePlayerId = players.activePlayer.id;
         const playerPoints = scores.points[activePlayerId];
-        const eligableTokens = tokens.availableReservePlayerTokenIds[activePlayerId];
+        const eligableTokens = tokens.inPlayReservePlayerTokenIds[activePlayerId];
         const eligableTiles = tiles.openTiles;
         return {
             eligableTiles,
@@ -58,8 +58,9 @@ const usePlayerActionsStore = defineStore("player-actions", () => {
     });
     
     const removeToken = computed(() => {
+        const activePlayerId = players.activePlayer.id;
         return {
-            eligableTokens: [],
+            eligableTokens: tokens.onBoardPlayerTokenIds[activePlayerId],
         };
     })
 

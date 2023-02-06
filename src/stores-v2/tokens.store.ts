@@ -62,7 +62,7 @@ const useTokensStore = defineStore("tokens", () => {
      * tokenId lists indexed by playerId containing tokenIds of tokens
      * that could be placed on at least one in-play tile.
      */
-    const availableReservePlayerTokenIds = computed(() => 
+    const inPlayReservePlayerTokenIds = computed(() => 
         Object.entries(reservePlayerTokenIds.value).reduce(
             (accum: PlayerTokenIds, [playerId, reserveTokenIds]) => {
                 accum[playerId] = reserveTokenIds.filter(
@@ -102,7 +102,7 @@ const useTokensStore = defineStore("tokens", () => {
         // draggedTokenId,
         inPlayTokenIds,
         playerTokenIds,
-        availableReservePlayerTokenIds,
+        inPlayReservePlayerTokenIds,
         onBoardTokenIds,
         onBoardPlayerTokenIds,
         reserveTokenIds,

@@ -5,18 +5,14 @@ import { usePlayersStore, PLAYER_COLOR_OPTIONS } from '@/stores-v2/players.store
 import { useScoresStore } from '@/stores-v2/scores.store';
 import { usePlayState } from '@/stores-v2/states/use-play-state';
 import { useGameStateStore } from '@/stores-v2/game-state.store';
-import type { PlayerAction } from '@/stores-v2/player-actions.store';
+import { useMoveTokenStore } from '@/stores-v2/move-token.store';
 
 const gameState = useGameStateStore();
 const gameData = useGameDataStore();
 const players = usePlayersStore();
 const scores = useScoresStore();
+const moveToken = useMoveTokenStore();
 const playState = usePlayState();
-
-function selectAction(action: PlayerAction) {
-    playState.selectedAction = action === playState.selectedAction ? null : action;
-}
-
 </script>
 
 <template>
@@ -49,21 +45,24 @@ function selectAction(action: PlayerAction) {
                 <TokenReserve :playerId="players.viewedPlayer.id" />
             </div>
         </div>
-        <div v-if="gameState.currentState === 'play'">
-            <h3>
-                Actions
-            </h3>
-            <ul class="space-y-2">
-                <li v-for="action, i in playState.availableActions" :key="i">
-                    <button
-                        class="button button-dense w-full"
-                        :class="{ 'bg-pink-400': action === playState.selectedAction }"
-                        @click="() => selectAction(action)"
-                    >
+        <div v-if="gameState.currentState === 'play' && players.viewedPlayer === players.activePlayer">
+            <div v-if="playState.inProgressAction">
+                <div>
+                    <h3 class="font-semibold">Chosen action</h3>
+                    {{ playState.inProgressAction.split("_").join(" ") }}
+                </div>
+                <div>
+                    Cost: {{ typeof moveToken.cost === 'number' && moveToken.cost > 0 ? `+${moveToken.cost}` : moveToken.cost }}
+                </div>
+            </div>
+            <div v-else>
+                <h3 class="font-semibold">Actions</h3>
+                <ul>
+                    <li v-for="action in playState.availableActions" :key="action">
                         {{ action.split("_").join(" ") }}
-                    </button>
-                </li>
-            </ul>
+                    </li>
+                </ul>
+            </div>
         </div>
     </div>
 </template>

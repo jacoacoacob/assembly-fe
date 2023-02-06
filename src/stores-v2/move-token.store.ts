@@ -42,24 +42,22 @@ const useMoveTokenStore = defineStore("move-token", () => {
     });
 
     const cost = computed(() => {
-        if (typeof distance.value === "number") {
+        const origin = candidateOriginTileIndex.value as number;
+        const dest = hoveredTileIndex.value ?? candidateDestTileIndex.value as number;
+        if (typeof origin === "number" && typeof dest === "number") {
             const token = gameData.tokens[candidateId.value];
-            return validation.getCost(
-                token.value,
-                candidateOriginTileIndex.value as number,
-                distance.value
-            );
+            return validation.getCost(token.value, origin, dest);
         }
         return null;
     });
 
     const isValid = computed((): boolean | null => {
-        if (candidateId.value) {
-            const dest = hoveredTileIndex.value;
+        const dest = hoveredTileIndex.value;
+        if (typeof dest === "number") {
             if (dest === candidateOriginTileIndex.value) {
                 return true;
             }
-            return validation.isValidMove(candidateId.value, dest as number);
+            return validation.isValidMove(candidateId.value, dest);
         }
         return null;
     });
@@ -104,7 +102,6 @@ const useMoveTokenStore = defineStore("move-token", () => {
             candidateOriginTileIndex.value = null;
             candidateDestTileIndex.value = null;
             candidateId.value = "";
-            console.log("EHEHHLLLO")
             return;
         }
         candidateDestTileIndex.value = destTileIndex;

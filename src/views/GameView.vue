@@ -45,14 +45,17 @@ onMounted(() => {
 </script>
 
 <template>
-    <div class="px-8 w-full space-y-4">
-        <TopBar />
+    <div class="px-8 w-full space-x-6 flex">
+        <div class="space-y-6 ">
+            <TopBar />
+            <TheBoard />
+        </div>
+        <TheSidePanel class="flex-1 w-full" />
+
+        <!-- <TopBar />
         <div class="flex space-x-8">
             <TheBoard />
             <TheSidePanel class="flex-1 w-full" />
-        </div>
-        <p class="flex-1">
-            <!-- Move a token from your reserve to an open tile on the board. -->
-        </p>
+        </div> -->
     </div>
 </template>

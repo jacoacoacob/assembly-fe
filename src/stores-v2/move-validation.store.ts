@@ -38,6 +38,9 @@ const useMoveValidationStore = defineStore("move-validation", () => {
     }
 
     function _checkCost(token: Token, origin: number, dest: number) {
+        if (dest === -1) {
+            return true;
+        }
         const playerPoints = scores.points[token.playerId];
         const cost = getCost(token.value, origin, dest);
         return playerPoints + cost > 0;

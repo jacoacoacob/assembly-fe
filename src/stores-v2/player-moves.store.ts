@@ -8,6 +8,8 @@ import { useScoresStore } from "./scores.store";
 import { useTokensStore } from "./tokens.store";
 import { useEventsStore } from "./events.store";
 import { useTilesStore } from "./tiles.store";
+import { useMoveValidationStore } from "./move-validation.store";
+import { useMovesDetails } from "@/composables/use-move-details";
 
 
 const PLACE_TOKEN_COST = 1;
@@ -28,8 +30,11 @@ const usePlayerMovesStore = defineStore("player-moves", () => {
     const tokens = useTokensStore();
     const events = useEventsStore();
     const tiles = useTilesStore();
+    const validation = useMoveValidationStore();
 
     const committedMoves = ref<CommittedMove[]>([]);
+
+    const committedMovesDetails = useMovesDetails(committedMoves);
 
     const placeToken = computed(() => {
         if (players.activePlayer) {
@@ -90,11 +95,21 @@ const usePlayerMovesStore = defineStore("player-moves", () => {
     const canMoveToken = computed(() => moveToken.value.eligableTokens.length > 0);
     const canRemoveToken = computed(() => removeToken.value.eligableTokens.length > 0);
 
+    const availableMoveKinds = computed(
+        (): MoveKind[] => [
+            canPlaceToken.value && "place_token",
+            canMoveToken.value && "move_token",
+            canRemoveToken.value && "remove_token",
+        ].filter(Boolean) as MoveKind[]
+    )
+
     return {
+        availableMoveKinds,
         canMoveToken,
         canPlaceToken,
         canRemoveToken,
         committedMoves,
+        committedMovesDetails,
         moveToken,
         placeToken,
         removeToken,

@@ -6,6 +6,7 @@ import { useScoresStore } from '@/stores-v2/scores.store';
 import { usePlayState } from '@/stores-v2/states/use-play-state';
 import { useGameStateStore } from '@/stores-v2/game-state.store';
 import { useMoveTokenStore } from '@/stores-v2/move-token.store';
+import PlayerMoves from './PlayerMoves.vue';
 
 const gameState = useGameStateStore();
 const gameData = useGameDataStore();
@@ -45,7 +46,8 @@ const playState = usePlayState();
                 <TokenReserve :playerId="players.viewedPlayer.id" />
             </div>
         </div>
-        <div v-if="gameState.currentState === 'play' && players.viewedPlayer === players.activePlayer">
+        <PlayerMoves v-if="gameState.currentState === 'play'" />
+        <!-- <div v-if="gameState.currentState === 'play' && players.viewedPlayer === players.activePlayer">
             <div v-if="playState.currentAction">
                 <div>
                     <h3 class="font-semibold">Chosen action</h3>
@@ -63,6 +65,6 @@ const playState = usePlayState();
                     </li>
                 </ul>
             </div>
-        </div>
+        </div> -->
     </div>
 </template>

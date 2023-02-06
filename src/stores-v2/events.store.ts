@@ -2,7 +2,7 @@ import { defineStore } from "pinia";
 import type { EventDomain, EventHandler, Event } from "./events.types";
 import type { Game, GameEvent } from "./game-data.types";
 
-import { gameDataEventHandlers, type GameDataEventHandlers } from "./handlers/game.handlers";
+import { gameDataEventHandlers, type GameDataEventHandlers } from "./handlers/game-data.handlers";
 import { tokensEventHandlers, type TokensEventHandlers } from "./handlers/tokens.handlers";
 import { saveGameHistory } from "@/api/game-api";
 import { useGameDataStore } from "./game-data.store";
@@ -10,6 +10,7 @@ import { playersEventHandlers, type PlayersEventHandlers } from "./handlers/play
 import { gameStateEventHandlers, type GameStateEventHandlers } from "./handlers/game-state.handlers";
 import { tilesEventHandlers, type TilesEventHandlers } from "./handlers/tiles.handlers";
 import { scoresEventHandlers, type ScoresEventHandlers } from "./handlers/scores.handlers";
+import { playEventHandlers, type PlayEventHandlers } from "./handlers/play.handlers";
 
 type StoreEventHandler =
     GameDataEventHandlers |
@@ -17,6 +18,7 @@ type StoreEventHandler =
     PlayersEventHandlers |
     GameStateEventHandlers |
     ScoresEventHandlers |
+    PlayEventHandlers |
     TilesEventHandlers;
 
 const useEventsStore = defineStore("events", () => {
@@ -30,6 +32,7 @@ const useEventsStore = defineStore("events", () => {
         tiles: tilesEventHandlers(),
         game_state: gameStateEventHandlers(),
         scores: scoresEventHandlers(),
+        play: playEventHandlers(),
     };
     
     function handleEvent<Domain extends EventDomain, E extends Event<Domain, string>>(event: GameEvent) {

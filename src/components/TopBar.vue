@@ -22,7 +22,7 @@ const helpMessage = computed(() => {
 const isTurnEndable = computed(() => {
     switch (gameState.currentState) {
         case "new_game": return true;
-        case "play": return true;
+        case "play": return playState.isTurnEndable;
         case "place_tokens": return placeTokensState.isTurnEndable;
     }
 });
@@ -50,7 +50,15 @@ function endTurn() {
                 {{ helpMessage }}
             </span>
         </div>
-        <div>
+        <div class="space-x-4">
+            <button
+                v-if="gameState.currentState === 'play'"
+                class="button button-dense"
+                :disabled="!playState.currentAction"
+                @click="playState.commitMove"
+            >
+                commit move
+            </button>
             <button class="button button-dense" @click="endTurn" :disabled="!isTurnEndable">
                 end turn
             </button>

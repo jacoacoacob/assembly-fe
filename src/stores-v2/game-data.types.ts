@@ -1,9 +1,10 @@
-import type { GameDataEvent } from "./handlers/game.handlers";
+import type { GameDataEvent } from "./handlers/game-data.handlers";
 import type { PlayersEvent } from "./handlers/players.handlers";
 import type { GameStateEvent } from "./handlers/game-state.handlers";
 import type { TokensEvent } from "./handlers/tokens.handlers";
 import type { TilesEvent } from "./handlers/tiles.handlers";
 import type { ScoresEvent } from "./handlers/scores.handlers";
+import type { PlayEvent } from "./handlers/play.handlers";
 
 type PlayerColor = "green" | "blue" | "orange" | "red" | "violet";
 
@@ -38,6 +39,7 @@ type GameEvent =
     PlayersEvent |
     GameStateEvent |
     TilesEvent |
+    PlayEvent |
     ScoresEvent;
 
 interface Game {

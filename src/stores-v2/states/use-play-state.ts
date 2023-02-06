@@ -11,6 +11,11 @@ import { useScoring } from "../../composables/use-scoring";
 import { usePlayerActionsStore, type PlayerAction } from "../player-actions.store";
 import { useMoveTokenStore } from "../move-token.store";
 
+interface CommittedMove {
+    origin: number;
+    dest: number;
+    tokenValue: number;
+}
 
 const usePlayState = defineStore("play-state", () => {
     const gameData = useGameDataStore();
@@ -24,8 +29,6 @@ const usePlayState = defineStore("play-state", () => {
     const scoring = useScoring();
     const moveToken = useMoveTokenStore();
 
-    const selectedAction = ref<PlayerAction | null>(null);
-
     const availableActions = computed(
         (): PlayerAction[] => [
             actions.canPlaceToken && "place_token",
@@ -34,11 +37,17 @@ const usePlayState = defineStore("play-state", () => {
         ].filter(Boolean) as PlayerAction[]
     );
 
+    const committedMoves = ref<CommittedMove[]>([]);
+
+    const isTurnEndable = computed(() => {
+        return committedMoves.value.length > 0;
+    });
+
     const isLastTurnInRound = computed(
         () => players.activePlayerIndex === gameData.players.length - 1
     );
 
-    const inProgressAction = computed((): PlayerAction | null => {
+    const currentAction = computed((): PlayerAction | null => {
         if (moveToken.candidateId) {
             const origin = moveToken.candidateOriginTileIndex;
             const dest = moveToken.hoveredTileIndex ?? moveToken.candidateDestTileIndex;
@@ -54,7 +63,7 @@ const usePlayState = defineStore("play-state", () => {
     });
 
     const helpMessage = computed(() => {
-        const action = inProgressAction.value;
+        const action = currentAction.value;
         const token = gameData.tokens[moveToken.movingTokenId];
         if (action && token) {
             switch (action) {
@@ -68,7 +77,9 @@ const usePlayState = defineStore("play-state", () => {
 
         }
         return "";
-    })
+    });
+
+
 
     function endRound() {
         events.send("scores:set_points", sumDict(scores.points, scoring.calculatePoints()));
@@ -80,9 +91,14 @@ const usePlayState = defineStore("play-state", () => {
         }
         events.send("players:next");
         players.viewActivePlayer();
-        moveToken.commit();
     }
 
+    function commitMove() {
+        const committed = moveToken.commit();
+        if (committed) {
+            events.send("play:moved_token", committed);
+        }
+    }
 
     function pickupToken(tokenId: string) {
         moveToken.pickup(tokenId);
@@ -92,9 +108,8 @@ const usePlayState = defineStore("play-state", () => {
         moveToken.drop();
     }
 
-
-
-    return { pickupToken, dropToken, endRound, endTurn, availableActions, selectedAction, helpMessage, inProgressAction };
+    return { pickupToken, dropToken, commitMove, committedMoves, endRound, endTurn, isTurnEndable, availableActions, helpMessage, currentAction };
 });
 
 export { usePlayState };
+export type { CommittedMove };

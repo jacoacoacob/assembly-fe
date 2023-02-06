@@ -46,10 +46,10 @@ const playState = usePlayState();
             </div>
         </div>
         <div v-if="gameState.currentState === 'play' && players.viewedPlayer === players.activePlayer">
-            <div v-if="playState.inProgressAction">
+            <div v-if="playState.currentAction">
                 <div>
                     <h3 class="font-semibold">Chosen action</h3>
-                    {{ playState.inProgressAction.split("_").join(" ") }}
+                    {{ playState.currentAction.split("_").join(" ") }}
                 </div>
                 <div>
                     Cost: {{ typeof moveToken.cost === 'number' && moveToken.cost > 0 ? `+${moveToken.cost}` : moveToken.cost }}

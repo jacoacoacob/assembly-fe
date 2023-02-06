@@ -4,6 +4,7 @@ import { useEventsStore } from "./events.store";
 import { useGameDataStore } from "./game-data.store";
 import type { Token } from "./game-data.types";
 import { useMoveValidationStore } from "./move-validation.store";
+import type { CommittedMove } from "./states/use-play-state";
 import { useTilesStore } from "./tiles.store";
 
 /*
@@ -111,19 +112,28 @@ const useMoveTokenStore = defineStore("move-token", () => {
      * Compose and send appropriate events so that the token having been
      * moved is recoreded in game history.
      */
-    function commit() {
+    function commit(): CommittedMove | undefined {
         const candidateToken = gameData.tokens[candidateId.value];
-        const originTileIndex = candidateOriginTileIndex.value;
-        const destTileIndex = candidateDestTileIndex.value;
-        if (candidateToken && originTileIndex !== null && destTileIndex !== null) {
+        const origin = candidateOriginTileIndex.value;
+        const dest = candidateDestTileIndex.value;
+        let didSend = false;
+        if (candidateToken && origin !== null && dest !== null) {
+            didSend = true;
             events.send("game_data:move_token", {
                 tokenId: candidateToken.id,
-                tileIndex: destTileIndex
+                tileIndex: dest
             });
         }
         candidateId.value = "";
         candidateOriginTileIndex.value = null;
         candidateDestTileIndex.value = null;
+        if (didSend) {
+            return {
+                origin: origin as number,
+                dest: dest as number,
+                tokenValue: candidateToken.value
+            };
+        }
     }
 
     return { pickup, drop, commit, cost, distance, isValid, movingTokenId, candidateId, hoveredTileIndex, candidateOriginTileIndex, candidateDestTileIndex };

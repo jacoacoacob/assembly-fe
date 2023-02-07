@@ -64,13 +64,12 @@ const usePlayState = defineStore("play-state", () => {
         return "";
     });
 
-    function endRound() {
-        events.send("scores:set_points", sumDict(scores.points, scoring.calculatePoints()));
-    }
-
     function endTurn() {
+        if (!isTurnEndable.value) {
+            return;
+        }
         if (isLastTurnInRound.value) {
-            endRound();
+            events.send("scores:set_points", sumDict(scores.points, scoring.scoreTiles()));
         }
         events.send("players:next");
         players.viewActivePlayer();
@@ -88,7 +87,7 @@ const usePlayState = defineStore("play-state", () => {
         moveToken.drop();
     }
 
-    return { pickupToken, dropToken, commitMove, endRound, endTurn, isTurnEndable, helpMessage, currentAction, currentMove };
+    return { pickupToken, dropToken, commitMove, endTurn, isTurnEndable, helpMessage, currentAction, currentMove };
 });
 
 export { usePlayState };

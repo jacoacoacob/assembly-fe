@@ -10,7 +10,7 @@ const useScoresStore = defineStore("scores", () => {
 
     const points = ref<PlayerPoints>({});
 
-    const liveScore = computed(() => scoring.calculatePoints())
+    const liveScore = computed(() => scoring.scoreTiles())
 
     return { points, liveScore };
 });

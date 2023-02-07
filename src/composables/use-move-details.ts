@@ -69,8 +69,9 @@ function useMoveDetail<
     const mapMove = moveMapper(validation);
 
     if (isRef(move)) {
-        return computed(() => mapMove(move.value)) as Details
+        return computed(() => mapMove(move.value)) as Details;
     }
+
     return mapMove(move) as Details;
 }
 
@@ -84,6 +85,7 @@ function useMovesDetails<
     if (isRef(moves)) {
         return computed(() => (moves.value).map(mapMove)) as Details;
     }
+
     return moves.map(mapMove) as Details;
 }
 

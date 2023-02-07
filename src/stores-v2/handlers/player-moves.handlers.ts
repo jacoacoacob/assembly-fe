@@ -12,7 +12,7 @@ function playerMovesEventHandlers() {
 
     return eventHandlers<"player_moves", PlayerMovesEvent>({
         commit(data) {
-            playerMoves.committedMoves.push(data);
+            playerMoves.committedMoves.unshift(data);
         },
     });
 }

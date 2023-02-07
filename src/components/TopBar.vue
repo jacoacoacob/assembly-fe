@@ -5,11 +5,13 @@ import { useGameStateStore } from '@/stores-v2/game-state.store';
 import { usePlaceTokensState } from '@/stores-v2/states/use-place-tokens-state';
 import { usePreferencesStore } from '@/stores-v2/preferences.store';
 import { usePlayState } from '@/stores-v2/states/use-play-state';
+import { useMoveTokenStore } from '@/stores-v2/move-token.store';
 
 const gameState = useGameStateStore();
 const placeTokensState = usePlaceTokensState();
 const playState = usePlayState();
 const prefs = usePreferencesStore();
+const moveToken = useMoveTokenStore();
 
 const helpMessage = computed(() => {
     switch (gameState.currentState) {
@@ -54,14 +56,15 @@ function endTurn() {
             <button
                 v-if="gameState.currentState === 'play'"
                 class="button button-dense"
-                :disabled="!playState.currentAction"
+                :disabled="(typeof moveToken.candidateDestTileIndex !== 'number')"
                 @click="playState.commitMove"
             >
-                commit move
+                commit move <span class="text-xs font-mono">[enter]</span>
             </button>
             <button class="button button-dense" @click="endTurn" :disabled="!isTurnEndable">
-                end turn
+                end turn <span class="text-xs font-mono">[space]</span>
             </button>
         </div>
     </div>
 </template>
+

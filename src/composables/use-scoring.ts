@@ -74,13 +74,13 @@ function useScoring() {
         );
     }
 
-    function calculatePoints(): PlayerPoints {
+    function scoreTiles(): PlayerPoints {
         const tilePlayerTokenValues = _getTilePlayerTokenValues();
         const tilePlayerScores = _getTilePlayerScores(tilePlayerTokenValues);
         return _getTilePlayerScoresTotals(tilePlayerScores);
     }
 
-    return { calculatePoints, initPlayerPoints };
+    return { scoreTiles, initPlayerPoints };
 }
 
 export { useScoring };

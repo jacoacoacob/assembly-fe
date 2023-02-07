@@ -14,37 +14,32 @@ const withDetails = ref<number[]>([]);
 </script>
 
 <template>
+    <div>
+        <h4 class="font-semibold">your score</h4>
+    </div>
     <div class="relative h-full">
+        <h4  class="font-semibold">moves</h4>
         <ul class="space-y-2 absolute overflow-scroll h-full w-full">
-            <li v-if="playState.currentMove" class="text-sm flex items-start space-x-4">
-                <div>
-                        {{ playState.currentMove.kind }}
-                    </div>
-                    <div>
-                        {{ playState.currentMove.costDisplay }} points
-                    </div>
+            <li
+                v-if="playState.currentMove"
+                class="text-sm flex items-center space-x-1 px-2 py-1  rounded border border-slate-300 text-slate-600"
+            >
+                <span class="font-semibold">{{ playState.currentMove.kind.split("_").join(" ") }}</span>
+                <span>for</span>
+                <span class="font-semibold">
+                    {{ playState.currentMove.costDisplay }}
+                </span>
             </li>
-            <li v-for="move, i in playerMoves.committedMovesDetails" class="text-sm flex items-start space-x-4">
-                <button
-                    role="checkbox"
-                    class="button button-dense"
-                    :class="{ 'bg-cyan-200': withDetails.includes(i) }"
-                    @click="withDetails.includes(i) ? withDetails.splice(withDetails.indexOf(i), 1) : withDetails.push(i)"
-                >
-                    ?
-                </button>
-                <div v-if="withDetails.includes(i)">
-                    {{ move.detail }}
-                </div>
-                <div v-else>
-                    <div>
-                        {{ move.kind }}
-                    </div>
-                    <div>
-                        {{ move.costDisplay }} points
-                    </div>
-                </div>
-
+            <li
+                v-for="move, i in playerMoves.committedMovesDetails"
+                :key="i"
+                class="text-sm flex items-center space-x-1 px-2 py-1 bg-slate-200 rounded border border-slate-600"
+            >
+                <span class="font-semibold">{{ move.kind.split("_").join(" ") }}</span>
+                <span>for</span>
+                <span class="font-semibold">
+                    {{ move.costDisplay }}
+                </span>
             </li>
         </ul>
     </div>

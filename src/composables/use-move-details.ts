@@ -37,6 +37,7 @@ type Moves =
 interface MoveDetails {
     origin: number;
     dest: number;
+    cost: number;
     costDisplay: string;
     kind: MoveKind;
     detail: string
@@ -49,6 +50,7 @@ function moveMapper(validation: ReturnType<typeof useMoveValidationStore>) {
         return {
             origin,
             dest,
+            cost,
             costDisplay: moveCost(cost),
             kind: kind(move),
             detail: `

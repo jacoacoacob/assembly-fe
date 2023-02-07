@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, inject, type Ref } from 'vue';
 
 import { useGameStateStore } from '@/stores-v2/game-state.store';
 import { usePlaceTokensState } from '@/stores-v2/states/use-place-tokens-state';
@@ -13,13 +13,7 @@ const playState = usePlayState();
 const prefs = usePreferencesStore();
 const moveToken = useMoveTokenStore();
 
-const helpMessage = computed(() => {
-    switch (gameState.currentState) {
-        case "place_tokens": return placeTokensState.helpMessage;
-        case "play": return playState.helpMessage;
-    }
-    return "";
-});
+const boardView = inject<Ref<"rules" | "game">>("boardView");
 
 const isTurnEndable = computed(() => {
     switch (gameState.currentState) {
@@ -42,26 +36,39 @@ function endTurn() {
     <div class="flex justify-between items-center">
         <div class="space-x-2">
             <button
-                class="button button-dense button-outline"
-                :class="{ 'bg-cyan-100': prefs.showHelpMessage }"
-                @click="prefs.showHelpMessage = !prefs.showHelpMessage"
+                class="button button-dense button-text"
+                :class="{
+                    'bg-slate-900 text-white': boardView === 'game',
+                }"
+                @click="boardView = 'game'"
             >
-                ?
+                Board
             </button>
-            <span v-if="prefs.showHelpMessage && helpMessage.length" class="rounded p-2 bg-cyan-100">
-                {{ helpMessage }}
-            </span>
+            <button
+                class="button button-dense button-text"
+                :class="{
+                    'bg-slate-900 text-white': boardView === 'rules',
+                }"
+                @click="boardView = 'rules'"
+            >
+                Rules
+            </button>
+
         </div>
         <div class="space-x-4">
             <button
                 v-if="gameState.currentState === 'play'"
                 class="button button-dense"
-                :disabled="(typeof moveToken.candidateDestTileIndex !== 'number')"
+                :disabled="(typeof moveToken.candidateDestTileIndex !== 'number') || boardView !== 'game'"
                 @click="playState.commitMove"
             >
                 commit move <span class="text-xs font-mono">[enter]</span>
             </button>
-            <button class="button button-dense" @click="endTurn" :disabled="!isTurnEndable">
+            <button
+                class="button button-dense"
+                :disabled="!isTurnEndable || boardView !== 'game'"
+                @click="endTurn"
+            >
                 end turn <span class="text-xs font-mono">[space]</span>
             </button>
         </div>

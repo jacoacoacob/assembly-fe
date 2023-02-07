@@ -1,4 +1,4 @@
-import { computed, isRef, ref, type ComputedRef, type Ref } from "vue";
+import { computed, isRef, type ComputedRef, type Ref } from "vue";
 
 import { useMoveValidationStore } from "@/stores-v2/move-validation.store";
 import type { CommittedMove, MoveKind } from "@/stores-v2/player-moves.store";
@@ -27,12 +27,6 @@ function kind(move: CommittedMove): MoveKind {
     }
     return "move_token";
 }
-
-type Moves =
-    CommittedMove |
-    CommittedMove[] |
-    Ref<CommittedMove> |
-    Ref<CommittedMove[]>;
 
 interface MoveDetails {
     origin: number;

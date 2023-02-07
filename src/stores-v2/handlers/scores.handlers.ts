@@ -6,14 +6,14 @@ import type { Player } from "../game-data.types";
 type E<Name extends string, Data = {}> = Event<"scores", Name, Data>;
 
 type ScoresEvent =
-    E<"set_points", Record<Player["id"], number>>;
+    E<"set_point_totals", Record<Player["id"], number>>;
 
 function scoresEventHandlers() {
     const scores = useScoresStore();
 
     return eventHandlers<"scores", ScoresEvent>({
-        set_points(earnedPoints) {
-            scores.pointTotals = earnedPoints;
+        set_point_totals(pointTotals) {
+            scores.pointTotals = pointTotals;
         },
     });
 }

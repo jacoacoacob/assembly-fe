@@ -18,7 +18,7 @@ const boardView = inject<Ref<"game" | "rules">>("boardView");
 <template>
     <div class="bg-slate-100 border-2 border-slate-500 p-4 relative" v-if="players.viewedPlayer">
         <div v-if="boardView === 'rules'" class="absolute top-0 left-0 bg-slate-100 opacity-50 h-full w-full z-50"></div>
-        <div class="space-y-6 flex flex-col h-full">
+        <div class="space-y-5 flex flex-col h-full" :aria-hidden="boardView !== 'game'">
             <ul class="space-y-2">
                 <li v-for="player, i in gameData.players" :key="player.id">
                     <button

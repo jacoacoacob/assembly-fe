@@ -5,11 +5,11 @@ import type { PlayerPoints } from "./scores.types";
 import { useScoring } from "../composables/use-scoring";
 
 const useScoresStore = defineStore("scores", () => {
-    const { tileScores, committedMovePoints } = useScoring();
+    const { tileScores, committedMovesCost, currentMoveCost, currentMoveTilePoints } = useScoring();
 
     const pointTotals = ref<PlayerPoints>({});
 
-    return { pointTotals, tileScores, committedMovePoints  };
+    return { pointTotals, tileScores, committedMovesCost, currentMoveCost, currentMoveTilePoints };
 });
 
 export { useScoresStore };

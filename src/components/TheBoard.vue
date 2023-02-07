@@ -19,7 +19,7 @@ const tileStyle = computed(() => ({
 
 const className = computed(() => ({
     "border-2": gameState.currentState === "place_tokens",
-}))
+}));
 </script>
 
 <template>

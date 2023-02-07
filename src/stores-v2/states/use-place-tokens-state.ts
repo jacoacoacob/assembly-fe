@@ -54,7 +54,7 @@ const usePlaceTokensState = defineStore("place-tokens-state", () => {
             ["game_state:set_state", "play"],
             ["tiles:set_in_play_tiles", gameData.tiles.map((_, i) => i)],
             ["tokens:set_in_play_token_ids", Object.keys(gameData.tokens)],
-            ["scores:set_points", scores.tileScores]
+            ["scores:set_point_totals", scores.tileScores]
         );
     }
 

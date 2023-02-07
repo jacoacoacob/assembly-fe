@@ -33,8 +33,7 @@ const tileContents = computed(() =>
 ));
 
 const className = computed(() => ({
-    // "bg-slate-200": tiles.candidateTileIndex !== props.tileIndex && isOpen.value,
-    // "bg-slate-200": moveToken.hoveredTileIndex !== props.tileIndex && isOpen.value,
+    "bg-white border-2 border-cyan-500": moveToken.candidateOriginTileIndex === props.tileIndex,
     "bg-slate-200": isOpen.value,
     "invisible": !isInPlay.value,
     "border-slate-400 bg-slate-400": !isOpen.value,

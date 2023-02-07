@@ -1,9 +1,13 @@
+import { useMoveDetail } from "@/composables/use-move-details";
+import { sumDict } from "@/utils/sum";
 import { defineStore } from "pinia";
 import { computed, ref } from "vue";
 import { useEventsStore } from "./events.store";
 import { useGameDataStore } from "./game-data.store";
 import type { Token } from "./game-data.types";
 import { useMoveValidationStore } from "./move-validation.store";
+import { usePlayersStore } from "./players.store";
+import { useScoresStore } from "./scores.store";
 import { useTilesStore } from "./tiles.store";
 
 /*
@@ -21,7 +25,8 @@ This store handles logic to move a token in the following ways
 const useMoveTokenStore = defineStore("move-token", () => {
     const gameData = useGameDataStore();
     const events = useEventsStore();
-    const tiles = useTilesStore();
+    const scores = useScoresStore();
+    const players = usePlayersStore();
     const validation = useMoveValidationStore();
 
     const hoveredTileIndex = ref<number | null>(null);
@@ -116,16 +121,24 @@ const useMoveTokenStore = defineStore("move-token", () => {
         const origin = candidateOriginTileIndex.value;
         const dest = candidateDestTileIndex.value;
         if (candidateToken && origin !== null && dest !== null) {
+            const move = {
+                origin,
+                dest,
+                tokenValue: candidateToken.value
+            };
+            const { cost } = useMoveDetail(move);
             events.sendMany(
                 ["game_data:move_token", {
                     tokenId: candidateToken.id,
                     tileIndex: dest
                 }],
-                ["player_moves:commit", {
-                    origin,
-                    dest,
-                    tokenValue: candidateToken.value
-                }]
+                ["player_moves:commit", move],
+                ["scores:set_point_totals", sumDict(
+                    scores.pointTotals,
+                    {
+                        [players.activePlayer.id]: cost,
+                    }
+                )]
             );
         }
         candidateId.value = "";

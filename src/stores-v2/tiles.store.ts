@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 import { computed, ref } from "vue";
 
-import type { Token } from "./game-data.types";
+import type { Game, Tile, Token } from "./game-data.types";
 import { useGameDataStore } from "./game-data.store";
 import { useMoveTokenStore } from "./move-token.store";
 import { useMoveValidationStore } from "./move-validation.store";
@@ -11,8 +11,25 @@ interface TileTokenGraphNode {
     tileTokenValuesSum: number;
 }
 
+type TileTokenGraph = TileTokenGraphNode[];
 type TileAdjacencyList = number[][];
 type TileDistanceGraph = number[][];
+
+function makeTileTokenGraph(tiles: Game["tiles"], tokens: Game["tokens"]): TileTokenGraph {
+    const graph: TileTokenGraphNode[] = tiles.map(() => ({
+        tileTokenIds: [],
+        tileTokenValuesSum: 0,
+    }));
+    const tokenValues = Object.values(tokens);
+    for (let i = 0; i < tokenValues.length; i++) {
+        const token = tokenValues[i];
+        if (token.tileIndex > -1) {
+            graph[token.tileIndex].tileTokenIds.push(token.id);
+            graph[token.tileIndex].tileTokenValuesSum += token.value;
+        }
+    }
+    return graph;
+}
 
 const useTilesStore = defineStore("tiles", () => {
     const gameData = useGameDataStore();
@@ -21,22 +38,9 @@ const useTilesStore = defineStore("tiles", () => {
 
     const inPlayTiles = ref<number[]>([]);
 
-    const tileTokenGraph = computed(() => {
-        const graph: TileTokenGraphNode[] = gameData.tiles.map(() => ({
-            tileTokenIds: [],
-            tileTokenValuesSum: 0,
-        }));
-        const tokenValues = Object.values(gameData.tokens);
-        for (let i = 0; i < tokenValues.length; i++) {
-            const token = tokenValues[i];
-            if (token.tileIndex > -1) {
-                graph[token.tileIndex].tileTokenIds.push(token.id);
-                graph[token.tileIndex].tileTokenValuesSum += token.value;
-            }
-        }
-        console.log("calculate tileTokenGraph")
-        return graph;
-    });
+
+
+    const tileTokenGraph = computed(() => makeTileTokenGraph(gameData.tiles, gameData.tokens));
 
     const tileAdjacencyList = computed((): TileAdjacencyList => {
         const { rows, cols } = gameData.grid;
@@ -136,4 +140,5 @@ const useTilesStore = defineStore("tiles", () => {
     return { openInPlayTiles, inPlayTiles, tileTokenGraph, tileAdjacencyList, tileDistanceGraph };
 });
 
-export { useTilesStore };
+export { useTilesStore, makeTileTokenGraph };
+export type { TileTokenGraph };

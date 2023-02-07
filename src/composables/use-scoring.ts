@@ -1,12 +1,13 @@
+import { computed } from "vue";
 import { sum } from "@/utils/sum";
 import { useGameDataStore } from "../stores-v2/game-data.store";
-import { usePlayersStore } from "../stores-v2/players.store";
-import { useTilesStore } from "../stores-v2/tiles.store";
+import { useTilesStore, makeTileTokenGraph, type TileTokenGraph } from "../stores-v2/tiles.store";
 import type { PlayerPoints } from "../stores-v2/scores.types";
-import { useTokensStore } from "../stores-v2/tokens.store";
-import type { Player } from "../stores-v2/game-data.types";
+import type { Game, Player } from "../stores-v2/game-data.types";
 import { usePlayerMovesStore } from "@/stores-v2/player-moves.store";
-import { computed } from "vue";
+import { useMoveTokenStore } from "@/stores-v2/move-token.store";
+import { useMoveDetail } from "./use-move-details";
+import { usePlayersStore } from "@/stores-v2/players.store";
 
 type TilePlayerTokenValues = Record<Player["id"], number>[];
 type TilePlayerScores = TilePlayerTokenValues;
@@ -14,14 +15,16 @@ type TilePlayerScores = TilePlayerTokenValues;
 function useScoring() {
     const gameData = useGameDataStore();
     const tiles = useTilesStore();
+    const moveToken = useMoveTokenStore();
+    const players = usePlayersStore();
     const playerMoves = usePlayerMovesStore();
 
     function initPlayerPoints(): PlayerPoints {
         return Object.fromEntries(gameData.players.map((player) => [player.id, 0]))
     }
 
-    function _getTilePlayerTokenValues(): TilePlayerTokenValues {
-        return tiles.tileTokenGraph.map(
+    function _getTilePlayerTokenValues(tileTokenGraph: TileTokenGraph): TilePlayerTokenValues {
+        return tileTokenGraph.map(
             (node) => node.tileTokenIds.reduce(
                 (accum: TilePlayerTokenValues[number], tokenId) => {
                     const token = gameData.tokens[tokenId];
@@ -76,16 +79,53 @@ function useScoring() {
     }
 
     const tileScores = computed((): PlayerPoints => {
-        const tilePlayerTokenValues = _getTilePlayerTokenValues();
+        const tilePlayerTokenValues = _getTilePlayerTokenValues(tiles.tileTokenGraph);
         const tilePlayerScores = _getTilePlayerScores(tilePlayerTokenValues);
         return _getTilePlayerScoresTotals(tilePlayerScores);
     });
 
-    const committedMovePoints = computed((): number => {
+    const currentMoveCost = computed(() => {
+        if (moveToken.candidateId) {
+            const origin = moveToken.candidateOriginTileIndex as number;
+            const dest = moveToken.hoveredTileIndex ?? moveToken.candidateDestTileIndex as number;
+            const tokenValue = gameData.tokens[moveToken.candidateId].value;
+            const { cost } = useMoveDetail({ origin, dest, tokenValue });
+            return cost;
+        }
+    });
+
+    const currentMoveTilePoints = computed(() => {
+        const { hoveredTileIndex, candidateOriginTileIndex, candidateId } = moveToken;
+        if (candidateId && hoveredTileIndex !== candidateOriginTileIndex) {
+            const tileTokenGraph = makeTileTokenGraph(
+                gameData.tiles,
+                Object.entries(gameData.tokens).reduce(
+                    (accum: Game["tokens"], [tokenId, token]) => {
+                        if (tokenId === candidateId) {
+                            accum[tokenId] = {
+                                ...token,
+                                tileIndex: hoveredTileIndex as number,
+                            }
+                        } else {
+                            accum[tokenId] = token;
+                        }
+                        return accum;
+                    },
+                    {}
+                )
+            );
+            const tilePlayerTokenValues = _getTilePlayerTokenValues(tileTokenGraph);
+            const tilePlayerScores = _getTilePlayerScores(tilePlayerTokenValues);
+            const scores = _getTilePlayerScoresTotals(tilePlayerScores);
+            return scores[players.activePlayer.id] - tileScores.value[players.activePlayer.id];
+        }
+    });
+
+    const committedMovesCost = computed((): number => {
         return sum(playerMoves.committedMovesDetails.map((move) => move.cost))
     });
 
-    return { initPlayerPoints, tileScores, committedMovePoints };
+    return { initPlayerPoints, tileScores, committedMovesCost, currentMoveCost, currentMoveTilePoints };
 }
 
 export { useScoring };

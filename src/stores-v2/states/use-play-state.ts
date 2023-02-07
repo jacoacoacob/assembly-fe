@@ -68,8 +68,14 @@ const usePlayState = defineStore("play-state", () => {
         if (!isTurnEndable.value) {
             return;
         }
+        events.send("scores:set_points", sumDict(
+            scores.pointTotals,
+            {
+                [players.activePlayer.id]: scores.committedMovePoints
+            }
+        ));
         if (isLastTurnInRound.value) {
-            events.send("scores:set_points", sumDict(scores.points, scoring.scoreTiles()));
+            events.send("scores:set_points", sumDict(scores.pointTotals, scores.tileScores));
         }
         events.send("players:next");
         players.viewActivePlayer();

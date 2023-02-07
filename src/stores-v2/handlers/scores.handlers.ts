@@ -13,7 +13,7 @@ function scoresEventHandlers() {
 
     return eventHandlers<"scores", ScoresEvent>({
         set_points(earnedPoints) {
-            scores.points = earnedPoints;
+            scores.pointTotals = earnedPoints;
         },
     });
 }

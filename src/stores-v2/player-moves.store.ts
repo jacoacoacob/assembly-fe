@@ -39,7 +39,7 @@ const usePlayerMovesStore = defineStore("player-moves", () => {
     const placeToken = computed(() => {
         if (players.activePlayer) {
             const activePlayerId = players.activePlayer.id;
-            const playerPoints = scores.points[activePlayerId];
+            const playerPoints = scores.pointTotals[activePlayerId];
             const eligableTokens = tokens.inPlayReservePlayerTokenIds[activePlayerId];
             const eligableTiles = tiles.openInPlayTiles;
             
@@ -65,7 +65,7 @@ const usePlayerMovesStore = defineStore("player-moves", () => {
     const moveToken = computed(() => {
         if (players.activePlayer) {
             const activePlayerId = players.activePlayer.id;
-            const playerPoints = scores.points[activePlayerId];
+            const playerPoints = scores.pointTotals[activePlayerId];
             const eligableTokens = tokens.inPlayReservePlayerTokenIds[activePlayerId];
             const eligableTiles = tiles.openInPlayTiles;
             return {

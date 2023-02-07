@@ -4,16 +4,17 @@ import { usePlayersStore } from "../stores-v2/players.store";
 import { useTilesStore } from "../stores-v2/tiles.store";
 import type { PlayerPoints } from "../stores-v2/scores.types";
 import { useTokensStore } from "../stores-v2/tokens.store";
-import type { Token, Player, Tile } from "../stores-v2/game-data.types";
+import type { Player } from "../stores-v2/game-data.types";
+import { usePlayerMovesStore } from "@/stores-v2/player-moves.store";
+import { computed } from "vue";
 
 type TilePlayerTokenValues = Record<Player["id"], number>[];
 type TilePlayerScores = TilePlayerTokenValues;
 
 function useScoring() {
     const gameData = useGameDataStore();
-    const players = usePlayersStore();
     const tiles = useTilesStore();
-    const tokens = useTokensStore();
+    const playerMoves = usePlayerMovesStore();
 
     function initPlayerPoints(): PlayerPoints {
         return Object.fromEntries(gameData.players.map((player) => [player.id, 0]))
@@ -74,13 +75,17 @@ function useScoring() {
         );
     }
 
-    function scoreTiles(): PlayerPoints {
+    const tileScores = computed((): PlayerPoints => {
         const tilePlayerTokenValues = _getTilePlayerTokenValues();
         const tilePlayerScores = _getTilePlayerScores(tilePlayerTokenValues);
         return _getTilePlayerScoresTotals(tilePlayerScores);
-    }
+    });
 
-    return { scoreTiles, initPlayerPoints };
+    const committedMovePoints = computed((): number => {
+        return sum(playerMoves.committedMovesDetails.map((move) => move.cost))
+    });
+
+    return { initPlayerPoints, tileScores, committedMovePoints };
 }
 
 export { useScoring };

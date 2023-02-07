@@ -8,12 +8,11 @@ import { useScoresStore } from '@/stores-v2/scores.store';
 import { usePlayersStore } from '@/stores-v2/players.store';
 
 const playState = usePlayState();
-const moveToken = useMoveTokenStore();
 const playerMoves = usePlayerMovesStore();
 const scores = useScoresStore();
 const players = usePlayersStore();
 
-const liveTilePoints = computed(() => scores.liveTileScores[players.viewedPlayer.id]);
+const currentTilePoints = computed(() => scores.tileScores[players.viewedPlayer.id]);
 
 const isViewingActivePlayer = computed(() => players.activePlayerIndex === players.viewedPlayerIndex);
 
@@ -21,7 +20,7 @@ const isViewingActivePlayer = computed(() => players.activePlayerIndex === playe
 
 <template>
     <div>
-        <h4 class="font-semibold">your score</h4>
+        <h4 class="font-semibold">future points</h4>
         <div class="flex justify-between">
             <div v-if="isViewingActivePlayer">
                 <div class="text-sm">move cost</div>
@@ -36,18 +35,18 @@ const isViewingActivePlayer = computed(() => players.activePlayerIndex === playe
                     <span v-if="playState.currentMove" class="text-slate-500">
                         {{ playState.currentMove.cost }} +
                     </span>
-                    {{ scores.committedMovesPoints }}
+                    {{ scores.committedMovePoints }}
                 </div>
-                <div class="font-semibold text-sm">{{ liveTilePoints }}</div>
-                <div class="font-semibold text-sm">{{ scores.committedMovesPoints + liveTilePoints }}</div>
+                <div class="font-semibold text-sm">{{ currentTilePoints }}</div>
+                <div class="font-semibold text-sm">{{ scores.committedMovePoints + currentTilePoints }}</div>
             </div>
             <div v-else>
-                <div class="font-semibold text-sm">{{ liveTilePoints }}</div>
+                <div class="font-semibold text-sm">{{ currentTilePoints }}</div>
             </div>
         </div>
         <!-- <p class="text-sm">
             <span v-if="isViewingActivePlayer">
-                At the end of your turn, you will receive <span class="font-semibold"> {{ scores.committedMovesPoints }}</span> points.
+                At the end of your turn, you will receive <span class="font-semibold"> {{ scores.committedMovePoints }}</span> points.
             </span>
             If the board remains in its current state at the end of the round, you will receive
             <span class="font-semibold">{{ liveTilePoints }}</span> points.

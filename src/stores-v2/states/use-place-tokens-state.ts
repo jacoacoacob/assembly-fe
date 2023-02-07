@@ -9,6 +9,7 @@ import { useTokensStore } from "../tokens.store";
 import { useScoring } from "../../composables/use-scoring";
 import { usePlayerMovesStore } from "../player-moves.store";
 import { useMoveTokenStore } from "../move-token.store";
+import { useScoresStore } from "../scores.store";
 
 const usePlaceTokensState = defineStore("place-tokens-state", () => {
     const gameData = useGameDataStore();
@@ -16,7 +17,7 @@ const usePlaceTokensState = defineStore("place-tokens-state", () => {
     const tokens = useTokensStore();
     const players = usePlayersStore();
     const tiles = useTilesStore();
-    const scoring = useScoring();
+    const scores = useScoresStore();
     const playerMoves = usePlayerMovesStore();
 
     const moveToken = useMoveTokenStore();
@@ -53,7 +54,7 @@ const usePlaceTokensState = defineStore("place-tokens-state", () => {
             ["game_state:set_state", "play"],
             ["tiles:set_in_play_tiles", gameData.tiles.map((_, i) => i)],
             ["tokens:set_in_play_token_ids", Object.keys(gameData.tokens)],
-            ["scores:set_points", scoring.scoreTiles()]
+            ["scores:set_points", scores.tileScores]
         );
     }
 
@@ -61,7 +62,6 @@ const usePlaceTokensState = defineStore("place-tokens-state", () => {
         if (!isTurnEndable.value) {
             return;
         }
-        console.log("Helllo")
         moveToken.commit()
         events.sendMany(["players:next"]);
         console.log("after players:next")

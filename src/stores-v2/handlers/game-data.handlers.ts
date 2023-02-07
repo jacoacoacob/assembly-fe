@@ -35,7 +35,7 @@ function gameDataEventHandlers() {
         },
         set_players(players) {
             gameData.players = players;
-            scores.points = scoring.initPlayerPoints();
+            scores.pointTotals = scoring.initPlayerPoints();
         },
         move_token({ tokenId, tileIndex }) {
             gameData.moveToken(tokenId, tileIndex);

@@ -6,7 +6,6 @@ import { useGameDataStore } from "../game-data.store";
 import { usePlayersStore } from "../players.store";
 import { useTilesStore } from "../tiles.store";
 import { useTokensStore } from "../tokens.store";
-import { useScoring } from "../../composables/use-scoring";
 import { usePlayerMovesStore } from "../player-moves.store";
 import { useMoveTokenStore } from "../move-token.store";
 import { useScoresStore } from "../scores.store";

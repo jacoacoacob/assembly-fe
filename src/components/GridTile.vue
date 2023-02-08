@@ -1,22 +1,16 @@
 <script setup lang="ts">
-import { computed, inject } from 'vue';
+import { computed } from 'vue';
 
 import GameToken from './GameToken.vue';
 import type { Tile } from "@/stores-v2/game-data.types";
-import { useGameStateStore } from '@/stores-v2/game-state.store';
 import { useGameDataStore } from '@/stores-v2/game-data.store';
 import { useTilesStore } from '@/stores-v2/tiles.store';
-import { useTokensStore } from '@/stores-v2/tokens.store';
 import { useDrag } from '@/composables/use-drag';
 import { useMoveTokenStore } from '@/stores-v2/move-token.store';
-import { useMoveValidationStore } from '@/stores-v2/move-validation.store';
 
 const moveToken = useMoveTokenStore();
-const validation = useMoveValidationStore();
-const gameState = useGameStateStore();
 const gameData = useGameDataStore();
 const tiles = useTilesStore();
-const tokens = useTokensStore();
 const drag = useDrag();
 
 const props = defineProps<{
@@ -24,22 +18,29 @@ const props = defineProps<{
     tile: Tile;
 }>();
 
-
-const isInPlay = computed(() => tiles.inPlayTiles.includes(props.tileIndex));
-const isOpen = computed(() => tiles.openInPlayTiles.includes(props.tileIndex));
-
 const tileContents = computed(() =>
     tiles.tileTokenGraph[props.tileIndex].tileTokenIds.map((tokenId) => gameData.tokens[tokenId]
 ));
 
-const className = computed(() => ({
-    "bg-white border-2 border-cyan-500": moveToken.candidateOriginTileIndex === props.tileIndex,
-    "bg-slate-200": isOpen.value,
-    "invisible": !isInPlay.value,
-    "border-slate-400 bg-slate-400": !isOpen.value,
-    "bg-white": moveToken.hoveredTileIndex === props.tileIndex && isOpen.value,
-}));
-
+const className = computed(() => {
+    const isVisible = tiles.inPlayTiles.includes(props.tileIndex);
+    const isOpen = tiles.openInPlayTiles.includes(props.tileIndex);
+    const isHovered = moveToken.hoveredTileIndex === props.tileIndex;
+    const isMoveOrigin = moveToken.candidateOriginTileIndex === props.tileIndex;
+    if (!isVisible) {
+        return "invisible";
+    }
+    if (isMoveOrigin) {
+        return "bg-white border-cyan-400 ring-2 ring-cyan-500 z-50";
+    }
+    if (!isOpen) {
+        return "border-slate-400 bg-slate-400"
+    }
+    if (isHovered) {
+        return "bg-white";
+    }
+    return "bg-slate-200"
+});
 </script>
 
 <template>

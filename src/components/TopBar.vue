@@ -59,6 +59,22 @@ function endTurn() {
             <button
                 v-if="gameState.currentState === 'play'"
                 class="button button-dense"
+                :disabled="(!moveToken.canCommit && !isTurnEndable) || boardView !== 'game'"
+                @click="moveToken.canCommit ? playState.commitMove : endTurn"
+            >
+                {{ moveToken.canCommit ? 'commit move' : 'finish turn' }}
+                <span class="text-xs font-mono">[space]</span>
+            </button>
+            <!-- <button
+                class="button button-dense"
+                :disabled="!isTurnEndable || boardView !== 'game'"
+                @click="endTurn"
+            >
+                end turn <span class="text-xs font-mono">[space]</span>
+            </button> -->
+            <!-- <button
+                v-if="gameState.currentState === 'play'"
+                class="button button-dense"
                 :disabled="(typeof moveToken.candidateDestTileIndex !== 'number') || boardView !== 'game'"
                 @click="playState.commitMove"
             >
@@ -70,7 +86,7 @@ function endTurn() {
                 @click="endTurn"
             >
                 end turn <span class="text-xs font-mono">[space]</span>
-            </button>
+            </button> -->
         </div>
     </div>
 </template>

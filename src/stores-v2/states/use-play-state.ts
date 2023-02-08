@@ -79,7 +79,9 @@ const usePlayState = defineStore("play-state", () => {
     }
 
     function commitMove() {
-        moveToken.commit();
+        if (moveToken.canCommit) {
+            moveToken.commit();
+        }
     }
 
     function pickupToken(tokenId: string) {

@@ -125,7 +125,9 @@ const useTilesStore = defineStore("tiles", () => {
             const tile = gameData.tiles[tileIndex];
             const { tileTokenIds, tileTokenValuesSum } = tileTokenGraph.value[tileIndex];
             if (moveToken.candidateId) {
-                if (validation.isValidMove(moveToken.candidateId, tileIndex)) {
+                if (moveToken.candidateOriginTileIndex === tileIndex) {
+                    accum.push(tileIndex)
+                } else if (validation.isValidMove(moveToken.candidateId, tileIndex)) {
                     accum.push(tileIndex);
                 }
             } else if (tileTokenIds.length < 4 && tileTokenValuesSum < tile.capacity) {

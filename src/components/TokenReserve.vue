@@ -27,18 +27,20 @@ const tokenIdSegments = computed(
 );
 
 const className = computed(() => {
+    const isHovered = moveToken.hoveredTileIndex === -1;
+    const isOrigin =  moveToken.candidateOriginTileIndex === -1;
     return {
-        "bg-white border-cyan-500": moveToken.candidateOriginTileIndex === -1,
-        "border-transparent": (moveToken.candidateOriginTileIndex ?? 0) > -1,
-    }
+        "bg-white ring-2 ring-cyan-500": isOrigin,
+        "bg-white": isHovered,
+        "bg-slate-200": !isOrigin && !isHovered,
+    };
 })
 
 </script>
 
 <template>
     <div
-        v-if="tokenIdSegments"
-        class="flex flex-col select-none p-1 border-2"
+        class="flex flex-col select-none p-1 rounded min-h-[30px]"
         :class="className"
         @drop="drag.onReserveDrop"
         @dragenter="drag.onReserveDragEnter"

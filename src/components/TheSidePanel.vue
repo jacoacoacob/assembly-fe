@@ -37,7 +37,7 @@ const boardView = inject<Ref<"game" | "rules">>("boardView");
                             </span>
                         </div>
                         <div>
-                            <span class="text-slate-500">{{ scores.tileScores[player.id] ?? 0 }} +</span> {{ scores.pointTotals[player.id] }}
+                            <span class="text-slate-500">{{ scores.liveTileScores[player.id] ?? 0 }} +</span> {{ scores.pointTotals[player.id] }}
                         </div>
                     </button>
                 </li>

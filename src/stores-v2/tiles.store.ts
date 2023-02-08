@@ -38,8 +38,6 @@ const useTilesStore = defineStore("tiles", () => {
 
     const inPlayTiles = ref<number[]>([]);
 
-
-
     const tileTokenGraph = computed(() => makeTileTokenGraph(gameData.tiles, gameData.tokens));
 
     const tileAdjacencyList = computed((): TileAdjacencyList => {

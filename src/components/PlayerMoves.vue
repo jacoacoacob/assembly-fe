@@ -12,14 +12,15 @@ const playerMoves = usePlayerMovesStore();
 const scores = useScoresStore();
 const players = usePlayersStore();
 
-const currentTilePoints = computed(() => scores.tileScores[players.viewedPlayer.id]);
+const currentTilePoints = computed(() => scores.liveTileScores[players.viewedPlayer.id]);
+const tilePointsDelta = computed(() => scores.liveTileScoresDelta[players.viewedPlayer.id]);
 
 const isViewingActivePlayer = computed(() => players.activePlayerIndex === players.viewedPlayerIndex);
 
 </script>
 
 <template>
-    <div>
+    <!-- <div>
         <h4 class="font-semibold">points</h4>
         <div class="flex justify-between">
             <div v-if="isViewingActivePlayer">
@@ -49,14 +50,7 @@ const isViewingActivePlayer = computed(() => players.activePlayerIndex === playe
                 <div class="font-semibold text-sm">{{ currentTilePoints }}</div>
             </div>
         </div>
-        <!-- <p class="text-sm">
-            <span v-if="isViewingActivePlayer">
-                At the end of your turn, you will receive <span class="font-semibold"> {{ scores.committedMovesCost }}</span> points.
-            </span>
-            If the board remains in its current state at the end of the round, you will receive
-            <span class="font-semibold">{{ liveTilePoints }}</span> points.
-        </p> -->
-    </div>
+    </div> -->
     <div class="relative h-full">
         <h4 class="font-semibold">moves</h4>
         <ul
@@ -68,9 +62,11 @@ const isViewingActivePlayer = computed(() => players.activePlayerIndex === playe
                 class="text-sm flex items-center space-x-1 px-2 py-1 rounded border border-slate-300 text-slate-600"
             >
                 <span class="font-semibold">{{ playState.currentMove.kind.split("_").join(" ") }}</span>
-                <span>for</span>
-                <span class="font-semibold">
-                    {{ playState.currentMove.costDisplay }}
+                <span>
+                    <!-- ({{ playState.currentMove.cost > 0 ? 'gain' : 'cost'}} -->
+                    (<span class="font-semibold">
+                        {{ playState.currentMove.costDisplay }}
+                    </span>)
                 </span>
             </li>
             <li
@@ -79,7 +75,7 @@ const isViewingActivePlayer = computed(() => players.activePlayerIndex === playe
                 class="text-sm flex items-center space-x-1 px-2 py-1 bg-slate-200 rounded border border-slate-600"
             >
                 <span class="font-semibold">{{ move.kind.split("_").join(" ") }}</span>
-                <span>for</span>
+                <span>cost</span>
                 <span class="font-semibold">
                     {{ move.costDisplay }}
                 </span>

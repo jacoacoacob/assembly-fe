@@ -16,7 +16,6 @@ function useScoring() {
     const gameData = useGameDataStore();
     const tiles = useTilesStore();
     const moveToken = useMoveTokenStore();
-    const players = usePlayersStore();
     const playerMoves = usePlayerMovesStore();
 
     function initPlayerPoints(): PlayerPoints {
@@ -39,12 +38,26 @@ function useScoring() {
         );
     }
 
-    function _getTilePlayerScores(tilePlayerTokenValues: TilePlayerTokenValues): TilePlayerScores {
+    function _getTilePlayerScores(tileTokenGraph: TileTokenGraph): TilePlayerScores {
+        const tilePlayerTokenValues = tileTokenGraph.map(
+            (node) => node.tileTokenIds.reduce(
+                (accum: TilePlayerTokenValues[number], tokenId) => {
+                    const token = gameData.tokens[tokenId];
+                    if (typeof accum[token.playerId] === "undefined") {
+                        accum[token.playerId] = 0;
+                    }
+                    accum[token.playerId] += token.value;
+                    return accum;
+                },
+                {}
+            )
+        );
+        
         return tilePlayerTokenValues.map(
             (playerTokenValues, tileIndex) => {
                 const tile = gameData.tiles[tileIndex];
                 const tileTokenValues = sum(
-                    tiles.tileTokenGraph[tileIndex].tileTokenIds.map((tokenId) => gameData.tokens[tokenId].value)
+                    tileTokenGraph[tileIndex].tileTokenIds.map((tokenId) => gameData.tokens[tokenId].value)
                 );
                 const tileCapacityModifier = Math.floor((tile.capacity - tileTokenValues) / 2);
                 return Object.entries(playerTokenValues).reduce(
@@ -78,11 +91,31 @@ function useScoring() {
         );
     }
 
-    const tileScores = computed((): PlayerPoints => {
-        const tilePlayerTokenValues = _getTilePlayerTokenValues(tiles.tileTokenGraph);
-        const tilePlayerScores = _getTilePlayerScores(tilePlayerTokenValues);
+    const liveTileScores = computed((): PlayerPoints => {
+        const { hoveredTileIndex, candidateId } = moveToken;
+        const tileTokenGraph = typeof hoveredTileIndex === "number"
+            ? makeTileTokenGraph(
+                gameData.tiles,
+                Object.entries(gameData.tokens).reduce(
+                    (accum: Game["tokens"], [tokenId, token]) => {
+                        if (tokenId === candidateId) {
+                            accum[tokenId] = {
+                                ...token,
+                                tileIndex: hoveredTileIndex,
+                            }
+                        } else {
+                            accum[tokenId] = token;
+                        }
+                        return accum;
+                    },
+                    {}
+                )
+            )
+            : tiles.tileTokenGraph;
+        const tilePlayerScores = _getTilePlayerScores(tileTokenGraph);
         return _getTilePlayerScoresTotals(tilePlayerScores);
     });
+
 
     const currentMoveCost = computed(() => {
         if (moveToken.candidateId) {
@@ -94,38 +127,11 @@ function useScoring() {
         }
     });
 
-    const currentMoveTilePoints = computed(() => {
-        const { hoveredTileIndex, candidateOriginTileIndex, candidateId } = moveToken;
-        if (candidateId && hoveredTileIndex !== candidateOriginTileIndex) {
-            const tileTokenGraph = makeTileTokenGraph(
-                gameData.tiles,
-                Object.entries(gameData.tokens).reduce(
-                    (accum: Game["tokens"], [tokenId, token]) => {
-                        if (tokenId === candidateId) {
-                            accum[tokenId] = {
-                                ...token,
-                                tileIndex: hoveredTileIndex as number,
-                            }
-                        } else {
-                            accum[tokenId] = token;
-                        }
-                        return accum;
-                    },
-                    {}
-                )
-            );
-            const tilePlayerTokenValues = _getTilePlayerTokenValues(tileTokenGraph);
-            const tilePlayerScores = _getTilePlayerScores(tilePlayerTokenValues);
-            const scores = _getTilePlayerScoresTotals(tilePlayerScores);
-            return scores[players.activePlayer.id] - tileScores.value[players.activePlayer.id];
-        }
-    });
-
     const committedMovesCost = computed((): number => {
         return sum(playerMoves.committedMovesDetails.map((move) => move.cost))
     });
 
-    return { initPlayerPoints, tileScores, committedMovesCost, currentMoveCost, currentMoveTilePoints };
+    return { initPlayerPoints, liveTileScores, committedMovesCost, currentMoveCost };
 }
 
 export { useScoring };

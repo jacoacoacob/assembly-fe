@@ -69,10 +69,13 @@ const usePlayState = defineStore("play-state", () => {
             return;
         }
         if (isLastTurnInRound.value) {
-            events.send("scores:set_point_totals", sumDict(
-                scores.pointTotals,
-                scores.tileScores
-            ));
+            events.sendMany(
+                ["scores:set_point_totals", sumDict(
+                    scores.pointTotals,
+                    scores.liveTileScores
+                )],
+                ["scores:set_initial_round_tile_scores", scores.liveTileScores]
+            )
         }
         events.send("players:next");
         players.viewActivePlayer();

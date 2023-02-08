@@ -7,6 +7,7 @@ import { useGameStateStore } from '@/stores-v2/game-state.store';
 import { usePlayersStore } from '@/stores-v2/players.store';
 import { useTokensStore } from '@/stores-v2/tokens.store';
 import { useDrag } from '@/composables/use-drag';
+import { useMoveTokenStore } from '@/stores-v2/move-token.store';
 
 
 const drag = useDrag();
@@ -15,6 +16,7 @@ const gameState = useGameStateStore();
 const gameData = useGameDataStore();
 const players = usePlayersStore();
 const tokensStore = useTokensStore();
+const moveToken = useMoveTokenStore();
 
 const props = defineProps<{
     playerId: string;
@@ -24,12 +26,20 @@ const tokenIdSegments = computed(
     () => tokensStore.reservePlayerTokenIdsByTokenValue[props.playerId]
 );
 
+const className = computed(() => {
+    return {
+        "bg-white border-cyan-500": moveToken.candidateOriginTileIndex === -1,
+        "border-transparent": (moveToken.candidateOriginTileIndex ?? 0) > -1,
+    }
+})
+
 </script>
 
 <template>
     <div
         v-if="tokenIdSegments"
-        class="flex flex-col select-none"
+        class="flex flex-col select-none p-1 border-2"
+        :class="className"
         @drop="drag.onReserveDrop"
         @dragenter="drag.onReserveDragEnter"
         @dragover="drag.onReserveDragOver"
@@ -40,7 +50,9 @@ const tokenIdSegments = computed(
                 :key="tokenId"
                 :tokenId="tokenId"
                 class="mr-1 mb-1"
-                :class="{ 'opacity-60': gameData.tokens[tokenId].playerId !== players.activePlayer.id }"
+                :class="{
+                    'opacity-60': gameData.tokens[tokenId].playerId !== players.activePlayer.id,
+                }"
             />
         </div>
     </div>

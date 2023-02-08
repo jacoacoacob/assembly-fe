@@ -5,6 +5,7 @@ import { computed, ref } from "vue";
 import { useEventsStore } from "./events.store";
 import { useGameDataStore } from "./game-data.store";
 import type { Token } from "./game-data.types";
+import { useGameStateStore } from "./game-state.store";
 import { useMoveValidationStore } from "./move-validation.store";
 import { usePlayersStore } from "./players.store";
 import { useScoresStore } from "./scores.store";
@@ -23,6 +24,7 @@ This store handles logic to move a token in the following ways
 */
 
 const useMoveTokenStore = defineStore("move-token", () => {
+    const gameState = useGameStateStore();
     const gameData = useGameDataStore();
     const events = useEventsStore();
     const scores = useScoresStore();
@@ -126,20 +128,22 @@ const useMoveTokenStore = defineStore("move-token", () => {
                 dest,
                 tokenValue: candidateToken.value
             };
-            const { cost } = useMoveDetail(move);
             events.sendMany(
                 ["game_data:move_token", {
                     tokenId: candidateToken.id,
                     tileIndex: dest
                 }],
                 ["player_moves:commit", move],
-                ["scores:set_point_totals", sumDict(
+            );
+            if (gameState.currentState === "play") {
+                const { cost } = useMoveDetail(move);
+                events.send("scores:set_point_totals", sumDict(
                     scores.pointTotals,
                     {
                         [players.activePlayer.id]: cost,
                     }
-                )]
-            );
+                ))
+            }
         }
         candidateId.value = "";
         candidateOriginTileIndex.value = null;

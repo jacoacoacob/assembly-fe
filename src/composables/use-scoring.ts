@@ -91,7 +91,11 @@ function useScoring() {
         );
     }
 
-    const liveTileScores = computed((): PlayerPoints => {
+    const tileScores = computed(() => {
+
+    });
+
+    const tileScoresTotals = computed((): PlayerPoints => {
         const { hoveredTileIndex, candidateId } = moveToken;
         const tileTokenGraph = typeof hoveredTileIndex === "number"
             ? makeTileTokenGraph(
@@ -131,7 +135,7 @@ function useScoring() {
         return sum(playerMoves.committedMovesDetails.map((move) => move.cost))
     });
 
-    return { initPlayerPoints, liveTileScores, committedMovesCost, currentMoveCost };
+    return { initPlayerPoints, tileScoresTotals, committedMovesCost, currentMoveCost };
 }
 
 export { useScoring };

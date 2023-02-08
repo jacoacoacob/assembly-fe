@@ -12,8 +12,8 @@ const playerMoves = usePlayerMovesStore();
 const scores = useScoresStore();
 const players = usePlayersStore();
 
-const currentTilePoints = computed(() => scores.liveTileScores[players.viewedPlayer.id]);
-const tileScoresDelta = computed(() => scores.liveTileScoresDelta[players.viewedPlayer.id]);
+const currentTilePoints = computed(() => scores.tileScoresTotals[players.viewedPlayer.id]);
+const tileScoresDelta = computed(() => scores.tileScoresTotalsDelta[players.viewedPlayer.id]);
 
 const isViewingActivePlayer = computed(() => players.activePlayerIndex === players.viewedPlayerIndex);
 

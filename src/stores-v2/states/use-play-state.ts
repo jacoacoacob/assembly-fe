@@ -69,9 +69,9 @@ const usePlayState = defineStore("play-state", () => {
             events.sendMany(
                 ["scores:set_point_totals", sumDict(
                     scores.pointTotals,
-                    scores.liveTileScores
+                    scores.tileScoresTotals
                 )],
-                ["scores:set_initial_round_tile_scores", scores.liveTileScores]
+                ["scores:set_initial_round_tile_scores", scores.tileScoresTotals]
             )
         }
         events.send("players:next");

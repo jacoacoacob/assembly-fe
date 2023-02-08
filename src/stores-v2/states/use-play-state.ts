@@ -16,17 +16,14 @@ import { useMoveDetail } from "@/composables/use-move-details";
 const usePlayState = defineStore("play-state", () => {
     const gameData = useGameDataStore();
     const events = useEventsStore();
-    const tokens = useTokensStore();
-    const tiles = useTilesStore();
     const scores = useScoresStore();
     const players = usePlayersStore();
     const playerMoves = usePlayerMovesStore();
     
-    const scoring = useScoring();
     const moveToken = useMoveTokenStore();
 
     const isTurnEndable = computed(() => {
-        return playerMoves.committedMoves.length > 0;
+        return !moveToken.canCommit && playerMoves.committedMoves.length > 0;
     });
 
     const isLastTurnInRound = computed(

@@ -114,24 +114,28 @@ const useMoveTokenStore = defineStore("move-token", () => {
         candidateDestTileIndex.value = destTileIndex;
     }
 
+    const canCommit = computed(() =>
+        Boolean(gameData.tokens[candidateId.value]) &&
+        candidateOriginTileIndex.value !== null && 
+        candidateDestTileIndex.value !== null
+    );
+
     /**
      * Compose and send appropriate events so that the token having been
      * moved is recoreded in game history.
      */
     function commit(){
-        const candidateToken = gameData.tokens[candidateId.value];
-        const origin = candidateOriginTileIndex.value;
-        const dest = candidateDestTileIndex.value;
-        if (candidateToken && origin !== null && dest !== null) {
+        if (canCommit.value) {
+            const candidateToken = gameData.tokens[candidateId.value];
             const move = {
-                origin,
-                dest,
+                origin: candidateOriginTileIndex.value as number,
+                dest: candidateDestTileIndex.value as number,
                 tokenValue: candidateToken.value
             };
             events.sendMany(
                 ["game_data:move_token", {
                     tokenId: candidateToken.id,
-                    tileIndex: dest
+                    tileIndex: move.dest
                 }],
                 ["player_moves:commit", move],
             );
@@ -150,7 +154,7 @@ const useMoveTokenStore = defineStore("move-token", () => {
         candidateDestTileIndex.value = null;
     }
 
-    return { pickup, drop, commit, cost, distance, isValid, movingTokenId, candidateId, hoveredTileIndex, candidateOriginTileIndex, candidateDestTileIndex };
+    return { pickup, drop, commit, canCommit, cost, distance, isValid, movingTokenId, candidateId, hoveredTileIndex, candidateOriginTileIndex, candidateDestTileIndex };
     
 });
 

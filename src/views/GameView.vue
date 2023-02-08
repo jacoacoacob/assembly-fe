@@ -10,11 +10,13 @@ import { useGameStateStore } from '@/stores-v2/game-state.store';
 import { usePlayersStore } from '@/stores-v2/players.store';
 import { usePlayState } from '@/stores-v2/states/use-play-state';
 import TheRules from '@/components/TheRules.vue';
+import { useMoveTokenStore } from '@/stores-v2/move-token.store';
 
 const placeTokensState = usePlaceTokensState();
 const playState = usePlayState();
 const gameState = useGameStateStore();
 const players = usePlayersStore();
+const moveToken = useMoveTokenStore();
 
 const boardView = ref<"rules" | "game">("game");
 
@@ -24,14 +26,15 @@ function onWindowKeydown(event: KeyboardEvent) {
     if (boardView.value === "game") {
         const { currentState } = gameState;
         if (event.code === "Space") {
-            switch (currentState) {
-                case "place_tokens": return placeTokensState.endTurn();
-                case "play": return playState.endTurn();
-            }
-        }
-        if (event.code === "Enter") {
-            switch (currentState) {
-                case "play": return playState.commitMove();
+            if (moveToken.canCommit) {
+                switch (currentState) {
+                    case "play": return playState.commitMove();
+                }
+            } else {
+                switch (currentState) {
+                    case "place_tokens": return placeTokensState.endTurn();
+                    case "play": return playState.endTurn();
+                }
             }
         }
     }

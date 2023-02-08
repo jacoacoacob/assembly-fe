@@ -10,7 +10,6 @@ import { useMoveTokenStore } from '@/stores-v2/move-token.store';
 const gameState = useGameStateStore();
 const placeTokensState = usePlaceTokensState();
 const playState = usePlayState();
-const prefs = usePreferencesStore();
 const moveToken = useMoveTokenStore();
 
 const boardView = inject<Ref<"rules" | "game">>("boardView");
@@ -23,11 +22,15 @@ const isTurnEndable = computed(() => {
     }
 });
 
-function endTurn() {
-    switch (gameState.currentState) {
-        case "new_game": return;
-        case "place_tokens": return placeTokensState.endTurn();
-        case "play": return playState.endTurn();
+function commitOrEndTurn() {
+    if (moveToken.canCommit) {
+        moveToken.commit();
+    } else if (isTurnEndable) {
+        switch (gameState.currentState) {
+            case "new_game": return;
+            case "place_tokens": return placeTokensState.endTurn();
+            case "play": return playState.endTurn();
+        }
     }
 }
 </script>
@@ -59,34 +62,25 @@ function endTurn() {
             <button
                 v-if="gameState.currentState === 'play'"
                 class="button button-dense"
+                :class="{
+                    'bg-green-300': moveToken.canCommit,
+                    'bg-yellow-300': isTurnEndable,
+                }"
                 :disabled="(!moveToken.canCommit && !isTurnEndable) || boardView !== 'game'"
-                @click="moveToken.canCommit ? playState.commitMove : endTurn"
+                @click="commitOrEndTurn "
             >
-                {{ moveToken.canCommit ? 'commit move' : 'finish turn' }}
-                <span class="text-xs font-mono">[space]</span>
+                <template v-if="moveToken.canCommit">
+                    commit move
+                    <span class="text-xs font-mono">[space]</span>
+                </template>
+                <template v-else-if="isTurnEndable">
+                    finish turn
+                    <span class="text-xs font-mono">[space]</span>
+                </template>
+                <template v-else>
+                    make a move
+                </template>
             </button>
-            <!-- <button
-                class="button button-dense"
-                :disabled="!isTurnEndable || boardView !== 'game'"
-                @click="endTurn"
-            >
-                end turn <span class="text-xs font-mono">[space]</span>
-            </button> -->
-            <!-- <button
-                v-if="gameState.currentState === 'play'"
-                class="button button-dense"
-                :disabled="(typeof moveToken.candidateDestTileIndex !== 'number') || boardView !== 'game'"
-                @click="playState.commitMove"
-            >
-                commit move <span class="text-xs font-mono">[enter]</span>
-            </button>
-            <button
-                class="button button-dense"
-                :disabled="!isTurnEndable || boardView !== 'game'"
-                @click="endTurn"
-            >
-                end turn <span class="text-xs font-mono">[space]</span>
-            </button> -->
         </div>
     </div>
 </template>

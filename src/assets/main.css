@@ -2,33 +2,42 @@
 @tailwind components;
 @tailwind utilities;
 
-
 @layer base {
     a {
         @apply text-pink-500;
     }
 }
 
+@layer utilities {
+
+}
+
 @layer components {
     .button {
-        box-shadow: 3px 3px black;
-        @apply bg-slate-50 border border-slate-700 cursor-pointer px-4 py-2 rounded inline-block text-center;
+        @apply 
+            bg-slate-50
+            border
+            border-slate-700 
+            cursor-pointer 
+            px-4 
+            py-2
+            rounded
+            inline-block
+            text-center
+            disabled:text-slate-500;
+    }
+    .button-shadow {
+        @apply shadow-[3px_3px_black] active:shadow-[2px_2px_black] disabled:shadow-slate-500;
     }
     .button:disabled {
-        @apply cursor-not-allowed;
+        @apply cursor-not-allowed ;
         color: theme("colors.slate.500");
         box-shadow: 3px 3px theme("colors.slate.500");
     }
     .button-text {
         @apply shadow-none border-none;
     }
-    .button-outline {
-        @apply shadow-none border-slate-700;
-    }
     .button-dense {
         @apply px-2 py-1;
-    }
-    .button:active:not(.button-text):not(.button-outline):not(:disabled) {
-        box-shadow: 2px 2px black;
     }
 }

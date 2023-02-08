@@ -155,7 +155,7 @@ function savePlayer() {
                                     label="Name"
                                 />
                                 <div class="flex justify-end">
-                                    <button class="order-2 button button-dense ml-2" type="submit">
+                                    <button class="order-2 button button-shadow button-dense ml-2" type="submit">
                                         Save
                                     </button>
                                     <button class="order-1 button button-text button-dense text-red-500" @click="gamePlayers.splice(i, 1)">
@@ -171,14 +171,14 @@ function savePlayer() {
                                     </div>
                                 </div>
                                 <div>
-                                    <button class="button button-dense" @click="editingPlayerIndex = i">
+                                    <button class="button button-shadow button-dense" @click="editingPlayerIndex = i">
                                         edit
                                     </button>
                                 </div>
                             </div>
                         </li>
                     </ul>
-                    <button :disabled="gamePlayers.length >= maxPlayers" @click="addPlayer" class="button w-full">
+                    <button :disabled="gamePlayers.length >= maxPlayers" @click="addPlayer" class="button button-shadow w-full">
                         <span v-if="gamePlayers.length >= maxPlayers">
                             No more players
                         </span>

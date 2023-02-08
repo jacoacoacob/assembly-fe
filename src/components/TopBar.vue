@@ -22,15 +22,19 @@ const isTurnEndable = computed(() => {
     }
 });
 
+function endTurn() {
+    switch (gameState.currentState) {
+        case "new_game": return;
+        case "place_tokens": return placeTokensState.endTurn();
+        case "play": return playState.endTurn();
+    }
+}
+
 function commitOrEndTurn() {
     if (moveToken.canCommit) {
         moveToken.commit();
     } else if (isTurnEndable) {
-        switch (gameState.currentState) {
-            case "new_game": return;
-            case "place_tokens": return placeTokensState.endTurn();
-            case "play": return playState.endTurn();
-        }
+        endTurn();
     }
 }
 </script>
@@ -61,10 +65,10 @@ function commitOrEndTurn() {
         <div class="space-x-4">
             <button
                 v-if="gameState.currentState === 'play'"
-                class="button button-dense"
+                class="button button-shadow button-dense"
                 :class="{
-                    'bg-green-300': moveToken.canCommit,
-                    'bg-yellow-300': isTurnEndable,
+                    'shadow-green-500 active:shadow-green-500': moveToken.canCommit,
+                    'shadow-orange-400 active:shadow-orange-400': isTurnEndable,
                 }"
                 :disabled="(!moveToken.canCommit && !isTurnEndable) || boardView !== 'game'"
                 @click="commitOrEndTurn "
@@ -79,6 +83,19 @@ function commitOrEndTurn() {
                 </template>
                 <template v-else>
                     make a move
+                </template>
+            </button>
+            <button
+                v-else
+                class="button button-shadow button-dense"
+                :disabled="!isTurnEndable || boardView !== 'game'"
+                @click="endTurn"
+            >
+                <template v-if="isTurnEndable">
+                    finish turn <span class="text-xs font-mono">[space]</span>
+                </template>
+                <template v-else>
+                    place a token on the board
                 </template>
             </button>
         </div>

@@ -8,12 +8,12 @@ import { RouterLink } from 'vue-router';
         <nav>
             <ul class="space-y-6 flex flex-col items-center">
                 <li class="w-full">
-                    <RouterLink class="button w-full" to="new-game">
+                    <RouterLink class="button button-shadow w-full" to="new-game">
                         New Game
                     </RouterLink>
                 </li>
                 <li class="w-full">
-                    <RouterLink class="button w-full" to="saved-games">
+                    <RouterLink class="button button-shadow w-full" to="saved-games">
                         Saved Games
                     </RouterLink>
                 </li>

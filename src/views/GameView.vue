@@ -26,14 +26,13 @@ function onWindowKeydown(event: KeyboardEvent) {
     if (boardView.value === "game") {
         const { currentState } = gameState;
         if (event.code === "Space") {
-            if (moveToken.canCommit) {
-                switch (currentState) {
-                    case "play": return playState.commitMove();
-                }
-            } else {
-                switch (currentState) {
-                    case "place_tokens": return placeTokensState.endTurn();
-                    case "play": return playState.endTurn();
+            if (currentState === "place_tokens") {
+                return placeTokensState.endTurn();
+            }
+            if (currentState === "play") {
+                switch (moveToken.canCommit) {
+                    case true: return playState.commitMove();
+                    case false: return playState.endTurn();
                 }
             }
         }

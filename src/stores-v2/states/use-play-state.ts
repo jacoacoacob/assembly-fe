@@ -1,13 +1,10 @@
 import { sumDict } from "@/utils/sum";
 import { defineStore } from "pinia";
-import { computed, ref } from "vue";
+import { computed } from "vue";
 import { useEventsStore } from "../events.store";
 import { useGameDataStore } from "../game-data.store";
 import { usePlayersStore } from "../players.store";
 import { useScoresStore } from "../scores.store";
-import { useTilesStore } from "../tiles.store";
-import { useTokensStore } from "../tokens.store";
-import { useScoring } from "../../composables/use-scoring";
 import { usePlayerMovesStore, type MoveKind } from "../player-moves.store";
 import { useMoveTokenStore } from "../move-token.store";
 import { useMoveDetail } from "@/composables/use-move-details";

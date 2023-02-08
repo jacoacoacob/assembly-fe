@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 
-import { useMoveTokenStore } from '@/stores-v2/move-token.store';
 import { usePlayerMovesStore } from '@/stores-v2/player-moves.store';
 import { usePlayState } from '@/stores-v2/states/use-play-state';
 import { useScoresStore } from '@/stores-v2/scores.store';
@@ -12,9 +11,7 @@ const playerMoves = usePlayerMovesStore();
 const scores = useScoresStore();
 const players = usePlayersStore();
 
-const currentTilePoints = computed(() => scores.tileScoresTotals[players.viewedPlayer.id]);
 const tileScoresDelta = computed(() => scores.tileScoresTotalsDelta[players.viewedPlayer.id]);
-
 const isViewingActivePlayer = computed(() => players.activePlayerIndex === players.viewedPlayerIndex);
 
 </script>

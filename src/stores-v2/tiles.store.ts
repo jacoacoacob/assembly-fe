@@ -40,6 +40,30 @@ const useTilesStore = defineStore("tiles", () => {
 
     const tileTokenGraph = computed(() => makeTileTokenGraph(gameData.tiles, gameData.tokens));
 
+    const liveTileTokenGraph = computed(() => {
+        const { hoveredTileIndex, candidateId } = moveToken;
+        if (typeof hoveredTileIndex === "number") {
+            return makeTileTokenGraph(
+                gameData.tiles,
+                Object.entries(gameData.tokens).reduce(
+                    (accum: Game["tokens"], [tokenId, token]) => {
+                        if (tokenId === candidateId) {
+                            accum[tokenId] = {
+                                ...token,
+                                tileIndex: hoveredTileIndex,
+                            }
+                        } else {
+                            accum[tokenId] = token;
+                        }
+                        return accum;
+                    },
+                    {}
+                )
+            )
+        }
+        return tileTokenGraph.value;
+    })
+
     const tileAdjacencyList = computed((): TileAdjacencyList => {
         const { rows, cols } = gameData.grid;
 
@@ -137,7 +161,7 @@ const useTilesStore = defineStore("tiles", () => {
         }, [])
     );
 
-    return { openInPlayTiles, inPlayTiles, tileTokenGraph, tileAdjacencyList, tileDistanceGraph };
+    return { openInPlayTiles, inPlayTiles, tileTokenGraph, liveTileTokenGraph, tileAdjacencyList, tileDistanceGraph };
 });
 
 export { useTilesStore, makeTileTokenGraph };

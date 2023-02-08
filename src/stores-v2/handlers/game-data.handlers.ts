@@ -3,7 +3,6 @@ import type { Game } from "../game-data.types";
 import type { Event } from "../events.types";
 import { useGameDataStore } from "../game-data.store";
 import { useScoresStore } from "../scores.store";
-import { useScoring } from "../../composables/use-scoring";
 
 type E<Name extends string, Data = {}> = Event<"game_data", Name, Data>;
 
@@ -18,7 +17,6 @@ type GameDataEvent =
 function gameDataEventHandlers() {
     const gameData = useGameDataStore();
     const scores = useScoresStore();
-    const scoring = useScoring();
 
     return eventHandlers<"game_data", GameDataEvent>({
         set_name(name) {
@@ -35,7 +33,7 @@ function gameDataEventHandlers() {
         },
         set_players(players) {
             gameData.players = players;
-            scores.pointTotals = scoring.initPlayerPoints();
+            scores.pointTotals = scores.initPlayerPoints();
         },
         move_token({ tokenId, tileIndex }) {
             gameData.moveToken(tokenId, tileIndex);

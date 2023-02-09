@@ -11,10 +11,6 @@ import { useMoveTokenStore } from "./move-token.store";
 import { useMoveDetail } from "@/composables/use-move-details";
 
 
-type TilePlayerTokenValues = Record<Player["id"], number>[];
-type TilePlayerScores = TilePlayerTokenValues;
-
-
 const useScoresStore = defineStore("scores", () => {
     const gameData = useGameDataStore();
     const tiles = useTilesStore();
@@ -34,7 +30,7 @@ const useScoresStore = defineStore("scores", () => {
 
     const tilePlayerTokenValues = computed(() => tiles.liveTileTokenGraph.map(
         (node) => node.tileTokenIds.reduce(
-            (accum: TilePlayerTokenValues[number], tokenId) => {
+            (accum: PlayerPoints, tokenId) => {
                 const token = gameData.tokens[tokenId];
                 if (typeof accum[token.playerId] === "undefined") {
                     accum[token.playerId] = 0;
@@ -46,7 +42,7 @@ const useScoresStore = defineStore("scores", () => {
         )
     ));
 
-    const tileScores = computed(() => tilePlayerTokenValues.value.map(
+    const tileScores = computed((): PlayerPoints[] => tilePlayerTokenValues.value.map(
         (playerTokenValues, tileIndex) => {
             const tile = gameData.tiles[tileIndex];
             const tileTokenValues = sum(
@@ -54,7 +50,7 @@ const useScoresStore = defineStore("scores", () => {
             );
             const tileCapacityModifier = Math.floor((tile.capacity - tileTokenValues) / 2);
             return Object.entries(playerTokenValues).reduce(
-                (accum: TilePlayerScores[number], [playerId, playerTokenTotal], i, arr) => {
+                (accum: PlayerPoints, [playerId, playerTokenTotal], i, arr) => {
                     if (arr.length === 1) {
                         accum[playerId] -= 1;
                     } else {
@@ -108,7 +104,17 @@ const useScoresStore = defineStore("scores", () => {
         )
     });
 
-    return { setRoundInitialTileScores, pointTotals, tileScoresTotals, tileScoresTotalsDelta, committedMovesCost, currentMoveCost, initPlayerPoints };
+    return {
+        setRoundInitialTileScores,
+        pointTotals,
+        tilePlayerTokenValues,
+        tileScores,
+        tileScoresTotals,
+        tileScoresTotalsDelta,
+        committedMovesCost,
+        currentMoveCost,
+        initPlayerPoints
+    };
 });
 
 export { useScoresStore };

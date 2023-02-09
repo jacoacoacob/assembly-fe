@@ -1,7 +1,9 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 
 import GameToken from './GameToken.vue';
+import TileScorePopover from './TileScorePopover.vue';
+
 import type { Tile } from "@/stores-v2/game-data.types";
 import { useGameDataStore } from '@/stores-v2/game-data.store';
 import { useTilesStore } from '@/stores-v2/tiles.store';
@@ -31,7 +33,7 @@ const className = computed(() => {
         return "invisible";
     }
     if (isMoveOrigin) {
-        return "bg-white border-cyan-400 ring-2 ring-cyan-500 z-50";
+        return "bg-white border-cyan-400 ring-2 ring-cyan-500 z-40";
     }
     if (!isOpen) {
         return "border-slate-400 bg-slate-400"
@@ -41,6 +43,8 @@ const className = computed(() => {
     }
     return "bg-slate-200"
 });
+
+const openPopover = ref(-1);
 </script>
 
 <template>
@@ -54,9 +58,13 @@ const className = computed(() => {
         @drop="drag.onTileDrop"
     >
         <div>
-            {{ tile.capacity }}
+            <TileScorePopover
+                @click="openPopover = tileIndex"
+                :isOpen="openPopover === tileIndex"
+                :tileIndex="tileIndex"
+            />
         </div>
-        <div class="absolute top-0 left-0  w-full h-full">
+        <div class="absolute top-0 left-0 w-full h-full">
             <GameToken
                 v-for="token in tileContents"
                 :key="token.id"

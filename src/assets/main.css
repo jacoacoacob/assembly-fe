@@ -24,18 +24,21 @@
             rounded
             inline-block
             text-center
+            disabled:border-slate-400
             disabled:text-slate-500;
     }
     .button-shadow {
-        @apply shadow-[3px_3px_black] active:shadow-[2px_2px_black] disabled:shadow-slate-500;
+        @apply 
+        shadow-[3px_3px_black]
+        active:shadow-[2px_2px_black]
+        disabled:shadow-slate-500 disabled:shadow-[3px_3px_black];
     }
     .button:disabled {
         @apply cursor-not-allowed ;
         color: theme("colors.slate.500");
-        box-shadow: 3px 3px theme("colors.slate.500");
     }
     .button-text {
-        @apply shadow-none border-none;
+        @apply shadow-none border-transparent;
     }
     .button-dense {
         @apply px-2 py-1;

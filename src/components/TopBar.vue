@@ -60,15 +60,16 @@ function commitOrEndTurn() {
             >
                 Rules
             </button>
-
         </div>
         <div class="space-x-4">
             <button
                 v-if="gameState.currentState === 'play'"
-                class="button button-shadow button-dense"
+                class="button button-dense button-shadow disabled:text-black"
                 :class="{
-                    'shadow-green-500 active:shadow-green-500': moveToken.canCommit,
-                    'shadow-orange-400 active:shadow-orange-400': isTurnEndable,
+                // 'shadow-green-500 active:shadow-green-500': moveToken.canCommit,
+                // 'shadow-orange-400 active:shadow-orange-400': isTurnEndable,
+                    'bg-emerald-100': moveToken.canCommit,
+                    'bg-yellow-100': isTurnEndable,
                 }"
                 :disabled="(!moveToken.canCommit && !isTurnEndable) || boardView !== 'game'"
                 @click="commitOrEndTurn "

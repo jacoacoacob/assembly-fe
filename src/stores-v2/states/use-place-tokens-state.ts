@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import { computed } from "vue";
-import { selectRandomFrom } from "@/utils/rand";
+import { selectRandomFrom, shuffle } from "@/utils/rand";
 import { useEventsStore } from "../events.store";
 import { useGameDataStore } from "../game-data.store";
 import { usePlayersStore } from "../players.store";
@@ -53,6 +53,7 @@ const usePlaceTokensState = defineStore("place-tokens-state", () => {
             ["game_state:set_state", "play"],
             ["tiles:set_in_play_tiles", gameData.tiles.map((_, i) => i)],
             ["tokens:set_in_play_token_ids", Object.keys(gameData.tokens)],
+            ["players:shuffle_order", shuffle(players.playerOrder)],
             ["scores:set_point_totals", scores.tileScoresTotals],
             ["scores:set_initial_round_tile_scores", scores.tileScoresTotals]
         );

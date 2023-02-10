@@ -14,13 +14,13 @@ const PLAYER_COLOR_OPTIONS = {
 const usePlayersStore = defineStore("players", () => {
     const gameData = useGameDataStore();
 
-    const _playerOrder = ref<Player["id"][]>([]);
+    const playerOrder = ref<Player["id"][]>([]);
 
     function setPlayerOrder(playerIds: Player["id"][]) {
-        _playerOrder.value = playerIds;
+        playerOrder.value = playerIds;
     }
 
-    const playerList = computed(() => _playerOrder.value.map(
+    const playerList = computed(() => playerOrder.value.map(
         (playerId) => gameData.players[playerId]
     ));
 
@@ -54,6 +54,7 @@ const usePlayersStore = defineStore("players", () => {
         setPlayerOrder,
         nextPlayer,
         playerList,
+        playerOrder,
     };
 });
 

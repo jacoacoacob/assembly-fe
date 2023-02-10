@@ -31,10 +31,15 @@ function selectRandomFrom<Data>(list: Data[], count: number) {
     return rv;
 }
 
-function shuffle<Data>(list: Data[], count = 8) {
+function shuffle<Data>(list: Data[]) {
     const list_ = Array.from(list);
-    for (let i = 0; i < count; i++) {
-        list_.sort((a, b) => Math.random() > 0.5 ? -1 : 1);
+    while (true) {
+        for (let i = 0; i < list.length * 2; i++) {
+            list_.sort(() => Math.random() > 0.5 ? -1 : 1);
+        }
+        if (list_.every((item) => list_.indexOf(item) !== list.indexOf(item))) {
+            break;
+        }
     }
     return list_;
 }

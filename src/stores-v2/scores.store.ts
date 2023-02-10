@@ -27,8 +27,8 @@ const useScoresStore = defineStore("scores", () => {
     }
 
     function initPlayerPoints(): PlayerPoints {
-        return players.playerList.reduce(
-            (accum: PlayerPoints, player) => ({ ...accum, [player.id]: 0 }),
+        return Object.keys(gameData.players).reduce(
+            (accum: PlayerPoints, playerId) => ({ ...accum, [playerId]: 0 }),
             {}
         );
     }

@@ -24,7 +24,7 @@ const usePlayState = defineStore("play-state", () => {
     });
 
     const isLastTurnInRound = computed(
-        () => players.activePlayerIndex === gameData.players.length - 1
+        () => players.activePlayerIndex === players.playerList.length - 1
     );
 
     const currentAction = computed((): MoveKind | null => {

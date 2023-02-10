@@ -33,7 +33,10 @@ const playerNameValidator = createInputValidator("name", 1, 32);
 const existingGames = listGames();
 
 const gameName = ref("");
-const gamePlayers = ref<Player[]>([]);
+const gamePlayers = ref<Record<Player["id"], Player>>({});
+const gamePlayersList = computed(() =>
+    Object.keys(gamePlayers.value).map((playerId) => gamePlayers.value[playerId])
+);
 
 const gameNameErrors = computed(() => {
     const errors = gameNameValidator(gameName.value);
@@ -51,7 +54,9 @@ const maxPlayers = 5;
 const editingPlayerIndex = ref(-1);
 
 const availableColors = computed(() => {
-    const claimedColors = gamePlayers.value.map(player => player.color).filter((_, i) => i !== editingPlayerIndex.value);
+    const claimedColors = gamePlayersList.value
+        .map((player) => gamePlayers.value[player.id].color)
+        .filter((_, i) => i !== editingPlayerIndex.value)
     return Object.keys(PLAYER_COLOR_OPTIONS).filter(color => !claimedColors.includes(color as PlayerColor))
 })
 
@@ -69,7 +74,7 @@ onBeforeRouteLeave((to) => {
             gameFormError.value = "Please enter a valid name for this game.";
             return false;
         }
-        if (gamePlayers.value.length < 2) {
+        if (gamePlayersList.value.length < 2) {
             gameFormError.value = "You need between 2 and 5 players to start.";
             return false;
         }
@@ -94,11 +99,13 @@ watchEffect(() => {
 function addPlayer() {
     if (playerNameErrors.value.length === 0) {
         const player: Player = { id: randId(8), name: "", color: availableColors.value[0] as PlayerColor };
-        if (gamePlayers.value.some(p => p.id === player.id)) {
+        // if (gamePlayers.value.some(p => p.id === player.id)) {
+        if (gamePlayers.value[player.id]) {
             addPlayer();
         } else {
-            gamePlayers.value.push(player);
-            editingPlayerIndex.value = gamePlayers.value.length - 1;
+            gamePlayers.value[player.id] = player;
+            // gamePlayers.value.push(player);
+            editingPlayerIndex.value = gamePlayersList.value.length - 1;
         }
     }
 }   
@@ -127,8 +134,8 @@ function savePlayer() {
                 </div>
                 <div class="space-y-4">
                     <h2 class="text-lg font-bold">Players</h2>
-                    <ul v-if="gamePlayers.length" class="space-y-4">
-                        <li v-for="player, i in gamePlayers" :key="i">
+                    <ul v-if="gamePlayersList.length" class="space-y-4">
+                        <li v-for="player, i in gamePlayersList" :key="i">
                             <form v-if="editingPlayerIndex === i" @submit.prevent="savePlayer" class="flex flex-col space-y-2">
                                 <div class="flex flex-col flex-1">
                                     <label for="player-color" class="text-sm mx-2 font-sans mb-1">Color</label>
@@ -155,7 +162,8 @@ function savePlayer() {
                                     <button class="order-2 button button-shadow button-dense ml-2" type="submit">
                                         Save
                                     </button>
-                                    <button class="order-1 button button-text button-dense text-red-500" @click="gamePlayers.splice(i, 1)">
+                                    <!-- <button class="order-1 button button-text button-dense text-red-500" @click="gamePlayers.splice(i, 1)"> -->
+                                    <button class="order-1 button button-text button-dense text-red-500" @click="() => delete gamePlayers[player.id]">
                                         Remove
                                     </button>
                                 </div>
@@ -175,8 +183,8 @@ function savePlayer() {
                             </div>
                         </li>
                     </ul>
-                    <button :disabled="gamePlayers.length >= maxPlayers" @click="addPlayer" class="button button-shadow w-full">
-                        <span v-if="gamePlayers.length >= maxPlayers">
+                    <button :disabled="gamePlayersList.length >= maxPlayers" @click="addPlayer" class="button button-shadow w-full">
+                        <span v-if="gamePlayersList.length >= maxPlayers">
                             No more players
                         </span>
                         <span v-else>

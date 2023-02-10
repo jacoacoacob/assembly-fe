@@ -9,11 +9,13 @@ import { useTilesStore } from "./tiles.store";
 import { usePlayerMovesStore } from "./player-moves.store";
 import { useMoveTokenStore } from "./move-token.store";
 import { useMoveDetail } from "@/composables/use-move-details";
+import { usePlayersStore } from "./players.store";
 
 
 const useScoresStore = defineStore("scores", () => {
     const gameData = useGameDataStore();
     const tiles = useTilesStore();
+    const players = usePlayersStore();
     const playerMoves = usePlayerMovesStore();
     const moveToken = useMoveTokenStore();
 
@@ -25,7 +27,10 @@ const useScoresStore = defineStore("scores", () => {
     }
 
     function initPlayerPoints(): PlayerPoints {
-        return Object.fromEntries(gameData.players.map((player) => [player.id, 0]))
+        return players.playerList.reduce(
+            (accum: PlayerPoints, player) => ({ ...accum, [player.id]: 0 }),
+            {}
+        );
     }
 
     const tilePlayerTokenValues = computed(() => tiles.liveTileTokenGraph.map(
@@ -48,7 +53,7 @@ const useScoresStore = defineStore("scores", () => {
             const tileTokenValues = sum(
                 tiles.liveTileTokenGraph[tileIndex].tileTokenIds.map((tokenId) => gameData.tokens[tokenId].value)
             );
-            const tileCapacityModifier = Math.floor((tile.capacity - tileTokenValues) / 2);
+            const tileCapacityModifier = Math.round((tile.capacity - tileTokenValues) / 2);
             return Object.entries(playerTokenValues).reduce(
                 (accum: PlayerPoints, [playerId, playerTokenTotal], i, arr) => {
                     if (arr.length === 1) {
@@ -74,25 +79,17 @@ const useScoresStore = defineStore("scores", () => {
                 const { tileTokenValuesSum } = tiles.tileTokenGraph[tileIndex];
                 const tokenValueTotals = Object.keys(tilePlayerTokenValues.value[tileIndex]).reduce(
                     (accum: TileScoreExplanation["tokenValueTotals"], playerId) => {
-                        const player = gameData.players.find((p => p.id === playerId));
-                        accum.push({
-                            player: player?.name ?? "",
-                            total: tilePlayerTokenValues.value[tileIndex][playerId],
-                        });
+                        accum[playerId] = tilePlayerTokenValues.value[tileIndex][playerId];
                         return accum;
                     },
-                    []
+                    {}
                 );
                 const playerScores = Object.entries(tilePlayerPoints).reduce(
                     (accum: TileScoreExplanation["playerScores"], [playerId, playerScore]) => {
-                        const player = gameData.players.find((p => p.id === playerId));
-                        accum.push({
-                            player: player?.name ?? "",
-                            total: playerScore,
-                        });
+                        accum[playerId] = playerScore;
                         return accum;
                     },
-                    []
+                    {}
                 );
                 accum.push({
                     tokenValueTotals,
@@ -133,7 +130,7 @@ const useScoresStore = defineStore("scores", () => {
     });
 
     const tileScoresTotalsDelta = computed(() => {
-        return gameData.players.reduce(
+        return players.playerList.reduce(
             (accum: Record<Player["id"], number>, player) => {
                 accum[player.id] = tileScoresTotals.value[player.id] - roundInitialTileScores.value[player.id];
                 return accum;

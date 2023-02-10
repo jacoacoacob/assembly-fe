@@ -6,9 +6,10 @@ interface TileScoreExplanation {
     capacity: number;
     tileTokenValuesSum: number;
     remainder: number;
-    // tokenValueTotals: Record<string, number>;
-    tokenValueTotals: { player: string; total: number }[];
-    playerScores: { player: string; total: number }[];
+    tokenValueTotals: Record<string, number>;
+    // tokenValueTotals: { player: string; total: number }[];
+    playerScores: Record<string, number>;
+    // playerScores: { player: string; total: number }[];
 }
 
 export type { PlayerPoints, TileScoreExplanation };

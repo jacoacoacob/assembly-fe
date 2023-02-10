@@ -1,11 +1,12 @@
 import { defineStore } from "pinia";
 
-import { randId, randFromRange } from "@/utils/rand";
+import { randId, randFromRange, shuffle } from "@/utils/rand";
 import type {  Game, Player, Token } from "../game-data.types";
 import type { PlayerTokenIds } from "../tokens.types";
 import { useEventsStore } from "../events.store";
 import { useTokensStore } from "../tokens.store";
 import { nextTick } from "vue";
+import { usePlayersStore } from "../players.store";
 
 function getStagedTokenIds(playerTokensIds: PlayerTokenIds): Token["id"][] {
     return Object.entries(playerTokensIds).reduce((accum: Token["id"][], [playerId, playerTokenIds]) => {
@@ -21,7 +22,8 @@ function getStagedTokenIds(playerTokensIds: PlayerTokenIds): Token["id"][] {
     }, []);
 }
 
-function createTokens(players: Player[]): Game["tokens"] {
+// function createTokens(players: Player[]): Game["tokens"] {
+function createTokens(players: Record<Player["id"], Player>): Game["tokens"] {
     const tokenValues = Array.from(Array(4)).map((_, i) => i + 1);
 
     const tokens: Game["tokens"] = {};
@@ -34,7 +36,7 @@ function createTokens(players: Player[]): Game["tokens"] {
         return token;
     }
 
-    players.forEach((player) => {
+    Object.values(players).forEach((player) => {
         for (let i = 0; i < 5; i++) {
             tokenValues.forEach(tokenValue => {
                 const token = generateToken(player.id, tokenValue, -1);
@@ -61,13 +63,19 @@ const useNewGameState = defineStore("new-game-state", () => {
     const events = useEventsStore();
     const tokens = useTokensStore();
 
-    function createGame(name: string, players: Player[]) {
+    // function createGame(name: string, players: Player[]) {
+    function createGame(name: string, players: Record<Player["id"], Player>) {
         events.sendMany(
             ["game_data:set_name", name],
             ["game_data:set_players", players],
             ["game_data:set_tokens", createTokens(players)],
             ["game_data:set_grid", createGrid(6, 9, 90)],
-            ["game_data:set_tiles", createTiles(6, 9, players.length < 4 ? [5, 10] : [6, 12])],
+            ["game_data:set_tiles", createTiles(
+                6,
+                9,
+                Object.keys(players).length < 4 ? [5, 10] : [6, 12]
+            )],
+            ["players:shuffle_order", shuffle(Object.keys(players))],
             ["tiles:set_in_play_tiles", [10, 13, 16, 37, 40, 43]],
             ["game_state:set_state", "place_tokens"]
         );

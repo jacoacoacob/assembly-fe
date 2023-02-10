@@ -8,7 +8,6 @@ import PlayerMoves from './PlayerMoves.vue';
 import { inject, type Ref } from 'vue';
 
 const gameState = useGameStateStore();
-const gameData = useGameDataStore();
 const players = usePlayersStore();
 const scores = useScoresStore();
 
@@ -20,7 +19,7 @@ const boardView = inject<Ref<"game" | "rules">>("boardView");
         <div v-if="boardView === 'rules'" class="absolute top-0 left-0 bg-slate-100 opacity-50 h-full w-full z-40"></div>
         <div class="space-y-5 flex flex-col h-full" :aria-hidden="boardView !== 'game'">
             <ul class="space-y-2">
-                <li v-for="player, i in gameData.players" :key="player.id">
+                <li v-for="player, i in players.playerList" :key="player.id">
                     <button
                         :tabindex="boardView !== 'game' ? -1 : undefined"
                         class="button button-dense button-outline bg-transparent flex justify-between w-full"

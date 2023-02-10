@@ -45,7 +45,8 @@ type GameEvent =
 interface Game {
     name: string;
     history: GameEvent[];
-    players: Player[];
+    // players: Player[];
+    players: Record<Player["id"], Player>;
     ts_updated: string;
     grid: Grid;
     tokens: Record<Token["id"], Token>;

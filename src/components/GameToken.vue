@@ -45,14 +45,16 @@ const style = computed((): StyleValue => {
     }
 });
 
-const player = computed(() => gameData.players.find(player => player.id === token.value.playerId));
+// const player = computed(() => gameData.players.find(player => player.id === token.value.playerId));
+const playerColor = computed(() => gameData.players[token.value.playerId].color);
 
 const className = computed(() => {
     const candidateToken = gameData.tokens[moveToken.candidateId] || {};
     const cn: Record<string, boolean> = {};
     cn["border-dashed border-2 shadow-xl"] = candidateToken.id === token.value.id;
     cn["bg-transparent text-slate-600"] = !isInPlay;
-    cn[PLAYER_COLOR_OPTIONS[player.value?.color as PlayerColor]] = isInPlay.value;
+    // cn[PLAYER_COLOR_OPTIONS[player.value?.color as PlayerColor]] = isInPlay.value;
+    cn[PLAYER_COLOR_OPTIONS[playerColor.value]] = isInPlay.value;
     cn["h-8 w-8"] = token.value.tileIndex > -1;
     cn["h-6 w-6 text-sm"] = token.value.tileIndex === -1
     return cn;

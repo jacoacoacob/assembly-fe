@@ -5,7 +5,9 @@ import { usePlayersStore } from "../players.store";
 
 type E<Name extends string, Data = {}> = Event<"players", Name, Data>;
 
-type PlayersEvent = E<"next">;
+type PlayersEvent =
+    E<"shuffle_order", string[]> |
+    E<"next">;
 
 function playersEventHandlers() {
     const players = usePlayersStore();
@@ -16,6 +18,9 @@ function playersEventHandlers() {
             playerMoves.committedMoves = [];
             players.nextPlayer();
         },
+        shuffle_order(playerIds) {
+            players.setPlayerOrder(playerIds)
+        }
     });
 }
 

@@ -1,6 +1,7 @@
 import { defineStore } from "pinia";
 import { computed, ref } from "vue";
 import { useGameDataStore } from "./game-data.store";
+import type { Player } from "./game-data.types";
 
 const PLAYER_COLOR_OPTIONS = {
     green: "bg-green-500",
@@ -13,11 +14,21 @@ const PLAYER_COLOR_OPTIONS = {
 const usePlayersStore = defineStore("players", () => {
     const gameData = useGameDataStore();
 
+    const _playerOrder = ref<Player["id"][]>([]);
+
+    function setPlayerOrder(playerIds: Player["id"][]) {
+        _playerOrder.value = playerIds;
+    }
+
+    const playerList = computed(() => _playerOrder.value.map(
+        (playerId) => gameData.players[playerId]
+    ));
+
     const viewedPlayerIndex = ref(0);
-    const viewedPlayer = computed(() => gameData.players[viewedPlayerIndex.value]);
+    const viewedPlayer = computed(() => playerList.value[viewedPlayerIndex.value]);
 
     const activePlayerIndex = ref(0);
-    const activePlayer = computed(() => gameData.players[activePlayerIndex.value]);
+    const activePlayer = computed(() => playerList.value[activePlayerIndex.value]);
 
     function setViewedPlayer(index: number) {
         viewedPlayerIndex.value = index;
@@ -28,7 +39,7 @@ const usePlayersStore = defineStore("players", () => {
     }
 
     function nextPlayer() {
-        activePlayerIndex.value = activePlayerIndex.value + 1 >= gameData.players.length
+        activePlayerIndex.value = activePlayerIndex.value + 1 >= playerList.value.length
             ? 0
             : activePlayerIndex.value + 1;
     }
@@ -40,7 +51,9 @@ const usePlayersStore = defineStore("players", () => {
         viewedPlayerIndex,
         viewActivePlayer,
         setViewedPlayer,
+        setPlayerOrder,
         nextPlayer,
+        playerList,
     };
 });
 

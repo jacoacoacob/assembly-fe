@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 import { computed, ref } from "vue";
 
-import type { Game, Tile, Token } from "./game-data.types";
+import type { Game, Player, Tile, Token } from "./game-data.types";
 import { useGameDataStore } from "./game-data.store";
 import { useMoveTokenStore } from "./move-token.store";
 import { useMoveValidationStore } from "./move-validation.store";
@@ -9,6 +9,7 @@ import { useMoveValidationStore } from "./move-validation.store";
 interface TileTokenGraphNode {
     tileTokenIds: Token["id"][];
     tileTokenValuesSum: number;
+    tilePlayerIds: Player["id"][];
 }
 
 type TileTokenGraph = TileTokenGraphNode[];
@@ -19,6 +20,7 @@ function makeTileTokenGraph(tiles: Game["tiles"], tokens: Game["tokens"]): TileT
     const graph: TileTokenGraphNode[] = tiles.map(() => ({
         tileTokenIds: [],
         tileTokenValuesSum: 0,
+        tilePlayerIds: [],
     }));
     const tokenValues = Object.values(tokens);
     for (let i = 0; i < tokenValues.length; i++) {
@@ -26,6 +28,9 @@ function makeTileTokenGraph(tiles: Game["tiles"], tokens: Game["tokens"]): TileT
         if (token.tileIndex > -1) {
             graph[token.tileIndex].tileTokenIds.push(token.id);
             graph[token.tileIndex].tileTokenValuesSum += token.value;
+            if (!graph[token.tileIndex].tilePlayerIds.includes(token.playerId)) {
+                graph[token.tileIndex].tilePlayerIds.push(token.playerId);
+            }
         }
     }
     return graph;

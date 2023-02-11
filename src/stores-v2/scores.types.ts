@@ -3,13 +3,13 @@ import type { Player } from "./game-data.types";
 type PlayerPoints = Record<Player["id"], number>;
 
 interface TileScoreExplanation {
-    capacity: number;
+    tileCapacity: number;
+    tileCapacityRemainder: number;
     tileTokenValuesSum: number;
-    remainder: number;
-    tokenValueTotals: Record<string, number>;
-    // tokenValueTotals: { player: string; total: number }[];
-    playerScores: Record<string, number>;
-    // playerScores: { player: string; total: number }[];
+    tilePlayerIds: Player["id"][];
+    tokenValueTotals: Record<Player["id"], number>;
+    playerScores: Record<Player["id"], number>;
+
 }
 
 export type { PlayerPoints, TileScoreExplanation };

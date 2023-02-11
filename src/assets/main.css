@@ -8,10 +8,6 @@
     }
 }
 
-@layer utilities {
-
-}
-
 @layer components {
     .button {
         @apply 

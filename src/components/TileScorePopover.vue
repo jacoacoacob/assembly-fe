@@ -11,33 +11,47 @@ import {
 import { useGameDataStore } from "@/stores-v2/game-data.store";
 import { useScoresStore } from "@/stores-v2/scores.store";
 import { PLAYER_COLOR_OPTIONS, usePlayersStore } from "@/stores-v2/players.store";
+import type { Player } from "@/stores-v2/game-data.types";
+import { useTilesStore } from "@/stores-v2/tiles.store";
 
 const gameData = useGameDataStore();
 const players = usePlayersStore();
 const scores = useScoresStore();
+const tiles = useTilesStore();
 
 const props = defineProps<{
     tileIndex: number;
     isOpen: boolean;
 }>();
 
-const explanation = computed(() => scores.tileScoresExplanation[props.tileIndex]);
+const tilePlayerPoints = computed(() => {
+    const { tilePlayerIds } = tiles.tileTokenGraph[props.tileIndex];
+    return Object.keys(scores.tileScores[props.tileIndex]).reduce(
+        (accum: Record<Player["id"], number>, playerId) => {
+            if (tilePlayerIds.includes(playerId)) {
+                accum[playerId] = scores.tileScores[props.tileIndex][playerId];
+            }
+            return accum;
+        },
+        {}
+    );
+});
 
 const explainedPlayerId = ref<string>("");
 
 const explainedPlayer = computed(() => {
     return {
         name: gameData.players[explainedPlayerId.value]?.name,
-        score: explanation.value.playerScores[explainedPlayerId.value],
-        tokenValue: explanation.value.tokenValueTotals[explainedPlayerId.value],
+        score: tilePlayerPoints.value[explainedPlayerId.value],
     }
 });
 
 watchEffect(() => {
-    if (explanation.value.tilePlayerIds.includes(players.viewedPlayer.id)) {
+    const { tilePlayerIds } = tiles.tileTokenGraph[props.tileIndex];
+    if (tilePlayerIds.includes(players.viewedPlayer.id)) {
         explainedPlayerId.value = players.viewedPlayer.id;
-    } else if (explanation.value.tilePlayerIds.length > 0) {
-        explainedPlayerId.value = explanation.value.tilePlayerIds[0];
+    } else if (tilePlayerIds.length > 0) {
+        explainedPlayerId.value = tilePlayerIds[0];
     }
 });
 
@@ -47,7 +61,7 @@ watchEffect(() => {
     <Popover v-slot="{ open }: { open: boolean; }">
         <div class="relative" :class="{ 'z-20': open, 'z-10': !open }">
             <PopoverButton class="cursor-pointer p-1 rounded z-10">
-                {{ explanation.tileCapacity }}
+                {{ gameData.tiles[tileIndex].capacity }}
             </PopoverButton>
             <Transition
                 enter-active-class="transition duration-75 ease-out"
@@ -57,11 +71,11 @@ watchEffect(() => {
                 leave-from-class="translate-y-0 opacity-100"
                 leave-to-class="translate-y-1 opacity-0"
             >
-                <PopoverPanel class="absolute z-10 bg-slate-50 shadow-lg rounded text-sm w-72 max-h-[28rem] overflow-auto">
+                <PopoverPanel class="absolute z-10 bg-slate-50 shadow-lg rounded text-sm w-56 max-h-[28rem] overflow-auto">
                     <div class="bg-slate-50 p-4 sticky top-0">
                         <RadioGroup v-model="explainedPlayerId" class="space-y-2">
                             <RadioGroupOption
-                                v-for="score, playerId in explanation.playerScores"
+                                v-for="score, playerId in tilePlayerPoints"
                                 :key="playerId"
                                 :value="playerId"
                                 v-slot="{ checked }: { checked: boolean }"
@@ -88,11 +102,40 @@ watchEffect(() => {
                                 tile will add <span class="font-semibold">{{ explainedPlayer.score }}</span>
                                 points to <span class="font-semibold">{{ explainedPlayer.name }}</span>'s score.
                             </p>
+                            <!-- <h4 class="italic">How does scoring work</h4>
+                            <p>
+                                In this game, as in the rest of life, survival isn't a winner takes all brawl
+                                but a constant negotiation in relationship with others.
+                            </p>
+                            <p>
+                                Players earn points for each tile in which they have tokens.
+                            </p>
                             <p v-if="explanation.tilePlayerIds.length === 1">
-                                If a tile contains tokens of only one player, that player will be lose 1 point.
+                                If a tile contains only one player's tokens, that player will lose 1 point.
                             </p>
                             <div v-else class="space-y-2 w-full">
                                 <p>
+                                    If you have 
+                                    
+                                    score points by being in relationship
+                                    If a tile contains tokens belonging to two or more players, each player will
+                                    earn points. The points earned by <span class="font-semibold">{{ explainedPlayer.name }}</span>,
+                                    are calculated using the following steps.
+
+                                    Points are earned
+                                </p>
+
+                                <ol class="list-disc pl-3">
+                                    <li>
+                                        Sum the total value of each player's tokens:
+                                        <ul class="list-disc pl-3">
+                                            <li v-for="score, playerId in explanation.tokenValueTotals" :key="playerId">
+                                                {{ gameData.players[playerId].name }} {{ score }}
+                                            </li>
+                                        </ul>
+                                    </li>
+                                </ol> -->
+                                <!-- <p>
                                     If a tile contains the tokens of two or more players, each player's points
                                     will be calculated as follows.
                                 </p>
@@ -130,7 +173,8 @@ watchEffect(() => {
                                         from <span class="font-semibold">{{ explainedPlayer.name }}</span>'s and then 
                                         add the <code class="p-1 text-xs bg-slate-200 rounded break-words">tile_capacity_modifier</code>.
                                     </li>
-                                </ol>
+                                </ol> -->
+
                                 <!-- <p>
                                     This is calculated by first, subtracting the total value of each other player's tokens on this tile
                                     from the total value of <span class="font-semibold">{{ explainedPlayer.name }}</span>'s tokens
@@ -151,7 +195,7 @@ watchEffect(() => {
                                     </li>
                                 </ol> -->
 
-                            </div>
+                            <!-- </div> -->
                         </div>
 
                     </div>
@@ -160,3 +204,17 @@ watchEffect(() => {
         </div>
     </Popover>
 </template>
+
+/*
+
+
+1. find the sum of each player's token values
+2. for each player in the tile
+    - compare player
+
+for each player in tile:
+    1. calculate each player's 
+
+tile_capacity_modifier
+
+*/

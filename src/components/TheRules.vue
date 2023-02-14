@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, inject, type StyleValue } from 'vue';
 
 import { useGameDataStore } from '@/stores-v2/game-data.store';
 import { useGameStateStore } from '@/stores-v2/game-state.store';
@@ -7,26 +7,26 @@ import { useGameStateStore } from '@/stores-v2/game-state.store';
 const gameData = useGameDataStore();
 const gameState = useGameStateStore();
 
-const style = computed(() => ({
-    width: `${gameData.grid.cols * gameData.grid.tileSize}px`,
-    height: `${gameData.grid.rows * gameData.grid.tileSize}px`
-}));
+// const style = computed(() => ({
+//     width: `${gameData.grid.cols * gameData.grid.tileSize}px`,
+//     height: `${gameData.grid.rows * gameData.grid.tileSize}px`
+// }));
+const boardStyle = inject<{ board: StyleValue, tile: StyleValue }>("boardStyle");
+
 
 const className = computed(() => ({
     "border-2": gameState.currentState === "place_tokens",
 }));
 </script>
 
+<!-- :class="{ 'border border-slate-500': gameState.currentState === 'play' }" -->
 <template>
     <div
-        class="border border-slate-500 box-content"
+        class="border-2 border-slate-500 box-content"
         :class="className"
-        :style="style"
+        :style="boardStyle?.board"
     >
-        <div
-            class="p-2 h-full flex space-x-4"
-            :class="{ 'border border-slate-500': gameState.currentState === 'play' }"
-        >
+        <div class="p-2 h-full flex space-x-4">
             <section class="space-y-4">
                 <h1 class="font-bold text-slate-700">
                     Contents

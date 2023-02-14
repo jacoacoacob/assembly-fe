@@ -33,15 +33,15 @@ const className = computed(() => {
         return "invisible";
     }
     if (isMoveOrigin) {
-        return "bg-white border-cyan-400 ring-2 ring-cyan-500 z-40";
+        return "bg-white ring-4 ring-teal-500 z-40";
     }
     if (!isOpen) {
         return "border-slate-400 bg-slate-400"
     }
     if (isHovered) {
-        return "bg-white";
+        return "bg-white ring-2 ring-slate-500";
     }
-    return "bg-slate-200"
+    return "bg-slate-100"
 });
 
 const openPopover = ref(-1);

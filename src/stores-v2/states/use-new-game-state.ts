@@ -1,11 +1,12 @@
 import { defineStore } from "pinia";
 
-import { randId, randFromRange, shuffle } from "@/utils/rand";
+import { randId, randFromRange, shuffle, selectRandomFrom } from "@/utils/rand";
 import type {  Game, Player, Token } from "../game-data.types";
 import type { PlayerTokenIds } from "../tokens.types";
 import { useEventsStore } from "../events.store";
 import { useTokensStore } from "../tokens.store";
 import { nextTick } from "vue";
+import { useGameDataStore } from "../game-data.store";
 
 function getStagedTokenIds(playerTokensIds: PlayerTokenIds): Token["id"][] {
     return Object.entries(playerTokensIds).reduce((accum: Token["id"][], [playerId, playerTokenIds]) => {
@@ -58,23 +59,25 @@ function createTiles(rows: number, cols: number, capacityRange: [number, number]
 }
 
 const useNewGameState = defineStore("new-game-state", () => {
+    const gameData = useGameDataStore();
     const events = useEventsStore();
     const tokens = useTokensStore();
 
     function createGame(name: string, players: Record<Player["id"], Player>) {
+        const tiles = createTiles(
+            6,
+            9,
+            Object.keys(players).length < 4 ? [5, 10] : [6, 12]
+        );
         events.sendMany(
             ["game_data:set_name", name],
             ["game_data:set_players", players],
             ["game_data:set_tokens", createTokens(players)],
             ["game_data:set_grid", createGrid(6, 9, 90)],
-            ["game_data:set_tiles", createTiles(
-                6,
-                9,
-                Object.keys(players).length < 4 ? [5, 10] : [6, 12]
-            )],
+            ["game_data:set_tiles", tiles],
             ["players:shuffle_order", shuffle(Object.keys(players))],
             // ["tiles:set_in_play_tiles", [10, 13, 16, 37, 40, 43]],
-            ["tiles:set_in_play_tiles", [10, 13, 16, 37, 40, 43]],
+            ["tiles:set_in_play_tiles", selectRandomFrom(tiles.map((_, i) => i), 6)],
             ["game_state:set_state", "place_tokens"]
         );
         nextTick(() => {

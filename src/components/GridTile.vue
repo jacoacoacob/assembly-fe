@@ -25,17 +25,14 @@ const tileContents = computed(() =>
 ));
 
 const className = computed(() => {
-    const isVisible = tiles.inPlayTiles.includes(props.tileIndex);
+    const isInPlay = tiles.inPlayTiles.includes(props.tileIndex);
     const isOpen = tiles.openInPlayTiles.includes(props.tileIndex);
     const isHovered = moveToken.hoveredTileIndex === props.tileIndex;
     const isMoveOrigin = moveToken.candidateOriginTileIndex === props.tileIndex;
-    if (!isVisible) {
-        return "invisible";
-    }
     if (isMoveOrigin) {
         return "bg-white ring-4 ring-teal-500 z-40";
     }
-    if (!isOpen) {
+    if (!isOpen || !isInPlay) {
         return "border-slate-400 bg-slate-400"
     }
     if (isHovered) {

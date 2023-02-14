@@ -4,6 +4,7 @@ import { useGameStateStore } from "@/stores-v2/game-state.store";
 import { useMoveTokenStore } from "@/stores-v2/move-token.store";
 import { usePlaceTokensState } from "@/stores-v2/states/use-place-tokens-state";
 import { usePlayState } from "@/stores-v2/states/use-play-state";
+import { useTilesStore } from "@/stores-v2/tiles.store";
 
 function getTileIndex(event: DragEvent) {
     let current = event.target as HTMLElement;
@@ -20,6 +21,7 @@ function useDrag() {
     const gameState = useGameStateStore();
     const gameData = useGameDataStore();
     const moveToken = useMoveTokenStore();
+    const tiles = useTilesStore();
 
     const placeTokensState = usePlaceTokensState();
     const playState = usePlayState();
@@ -67,6 +69,13 @@ function useDrag() {
     }
 
     function onTileDrop(event: DragEvent) {
+        const hoveredTileIndex = moveToken.hoveredTileIndex ?? 0
+        if (
+            hoveredTileIndex > -1 &&
+            !tiles.inPlayTiles.includes(hoveredTileIndex)
+        ) {
+            return;
+        }
         event.preventDefault();
         switch (gameState.currentState) {
             case "place_tokens": return placeTokensState.dropToken();

@@ -50,11 +50,11 @@ const useMoveValidationStore = defineStore("move-validation", () => {
         if (dest === -1) {
             return true;
         }
-        const tile = gameData.tiles[dest];
+        const tileCapacity = tiles.seasonalTileCapacities[dest];
         const { tileTokenValuesSum, tileTokenIds } = tiles.tileTokenGraph[dest];
         return (
             tileTokenIds.length < 4 &&
-            tileTokenValuesSum + token.value <= tile.capacity
+            tileTokenValuesSum + token.value <= tileCapacity
         )
     }
 

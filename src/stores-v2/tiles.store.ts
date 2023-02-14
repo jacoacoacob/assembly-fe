@@ -5,6 +5,7 @@ import type { Game, Player, Tile, Token } from "./game-data.types";
 import { useGameDataStore } from "./game-data.store";
 import { useMoveTokenStore } from "./move-token.store";
 import { useMoveValidationStore } from "./move-validation.store";
+import { useSeasonsStore } from "./seasons.store";
 
 interface TileTokenGraphNode {
     tileTokenIds: Token["id"][];
@@ -38,10 +39,20 @@ function makeTileTokenGraph(tiles: Game["tiles"], tokens: Game["tokens"]): TileT
 
 const useTilesStore = defineStore("tiles", () => {
     const gameData = useGameDataStore();
+    const seasons = useSeasonsStore();
     const moveToken = useMoveTokenStore();
     const validation = useMoveValidationStore();
 
     const inPlayTiles = ref<number[]>([]);
+
+    const seasonalTileCapacities = computed(() => gameData.tiles.map((tile, tileIndex) => {
+        const tileRow = Math.floor(tileIndex / gameData.grid.cols);
+        switch (seasons.current[tileRow]) {
+            case "cold": return tile.capacity - 2;
+            case "mild": return tile.capacity;
+            case "warm": return tile.capacity + 2;
+        }
+    }));
 
     const tileTokenGraph = computed(() => makeTileTokenGraph(gameData.tiles, gameData.tokens));
 
@@ -152,6 +163,7 @@ const useTilesStore = defineStore("tiles", () => {
     const openInPlayTiles = computed(() =>
         inPlayTiles.value.reduce((accum: number[], tileIndex) => {
             const tile = gameData.tiles[tileIndex];
+            const tileCapacity = seasonalTileCapacities.value[tileIndex]
             const { tileTokenIds, tileTokenValuesSum } = tileTokenGraph.value[tileIndex];
             if (moveToken.candidateId) {
                 if (moveToken.candidateOriginTileIndex === tileIndex) {
@@ -159,14 +171,14 @@ const useTilesStore = defineStore("tiles", () => {
                 } else if (validation.isValidMove(moveToken.candidateId, tileIndex)) {
                     accum.push(tileIndex);
                 }
-            } else if (tileTokenIds.length < 4 && tileTokenValuesSum < tile.capacity) {
+            } else if (tileTokenIds.length < 4 && tileTokenValuesSum < tileCapacity) {
                 accum.push(tileIndex);
             }
             return accum;
         }, [])
     );
 
-    return { openInPlayTiles, inPlayTiles, tileTokenGraph, liveTileTokenGraph, tileAdjacencyList, tileDistanceGraph };
+    return { openInPlayTiles, inPlayTiles, tileTokenGraph, liveTileTokenGraph, tileAdjacencyList, tileDistanceGraph, seasonalTileCapacities };
 });
 
 export { useTilesStore, makeTileTokenGraph };

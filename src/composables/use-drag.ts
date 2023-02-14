@@ -70,10 +70,7 @@ function useDrag() {
 
     function onTileDrop(event: DragEvent) {
         const hoveredTileIndex = moveToken.hoveredTileIndex ?? 0
-        if (
-            hoveredTileIndex > -1 &&
-            !tiles.inPlayTiles.includes(hoveredTileIndex)
-        ) {
+        if (hoveredTileIndex > -1 && !tiles.inPlayTiles.includes(hoveredTileIndex)) {
             return;
         }
         event.preventDefault();

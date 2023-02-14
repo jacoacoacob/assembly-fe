@@ -36,7 +36,6 @@ const useEventsStore = defineStore("events", () => {
         scores: scoresEventHandlers(),
         player_moves: playerMovesEventHandlers(),
         seasons: seasonsEventHandlers(),
-
     };
     
     function handleEvent<Domain extends EventDomain, E extends Event<Domain, string>>(event: GameEvent) {

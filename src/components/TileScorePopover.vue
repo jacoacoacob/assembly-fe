@@ -61,7 +61,7 @@ watchEffect(() => {
     <Popover v-slot="{ open }: { open: boolean; }">
         <div class="relative" :class="{ 'z-20': open, 'z-10': !open }">
             <PopoverButton class="cursor-pointer p-1 rounded z-10">
-                {{ gameData.tiles[tileIndex].capacity }}
+                {{ tiles.seasonalTileCapacities[tileIndex] }}
             </PopoverButton>
             <Transition
                 enter-active-class="transition duration-75 ease-out"

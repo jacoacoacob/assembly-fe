@@ -32,7 +32,7 @@ const seasonColors: Record<Season, string> = {
     >   
         <div class="absolute h-full w-full">
             <div
-                v-for="season, i in seasons.seasons"
+                v-for="season, i in seasons.current"
                 :key="i"
                 :class="`${seasonColors[season]}`"
                 class="flex-1 h-1/6"

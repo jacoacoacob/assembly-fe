@@ -4,14 +4,14 @@ import { eventHandlers } from "@/utils/event-handlers";
 
 type E<Name extends string, Data = {}> = Event<"seasons", Name, Data>;
 
-type SeasonsEvent = E<"shift">;
+type SeasonsEvent = E<"next">;
 
 function seasonsEventHandlers() {
     const seasons = useSeasonsStore();
 
     return eventHandlers<"seasons", SeasonsEvent>({
-        shift() {
-            seasons.shift();
+        next() {
+            seasons.next();
         },
     });
 }

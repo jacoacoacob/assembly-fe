@@ -49,12 +49,11 @@ const useScoresStore = defineStore("scores", () => {
 
     const tileScores = computed((): PlayerPoints[] => tilePlayerTokenValues.value.map(
         (playerTokenValues, tileIndex) => {
-            const tile = gameData.tiles[tileIndex];
             const tileTokenValues = sum(
                 tiles.liveTileTokenGraph[tileIndex].tileTokenIds.map((tokenId) => gameData.tokens[tokenId].value)
             );
-            // const tileCapacityModifier = Math.floor((tile.capacity - tileTokenValues) / 2);
-            const tileCapacityModifier = Math.floor((tile.capacity - tileTokenValues) / 2);
+            const tileCapacity = tiles.seasonalTileCapacities[tileIndex];
+            const tileCapacityModifier = Math.floor((tileCapacity - tileTokenValues) / 2);
             return Object.entries(playerTokenValues).reduce(
                 (accum: PlayerPoints, [playerId, playerTokenTotal], i, arr) => {
                     if (arr.length === 1) {

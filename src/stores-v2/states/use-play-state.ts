@@ -8,6 +8,7 @@ import { useScoresStore } from "../scores.store";
 import { usePlayerMovesStore, type MoveKind } from "../player-moves.store";
 import { useMoveTokenStore } from "../move-token.store";
 import { useMoveDetail } from "@/composables/use-move-details";
+import { shuffle } from "@/utils/rand";
 
 
 const usePlayState = defineStore("play-state", () => {
@@ -68,8 +69,10 @@ const usePlayState = defineStore("play-state", () => {
                     scores.pointTotals,
                     scores.tileScoresTotals
                 )],
-                ["scores:set_initial_round_tile_scores", scores.tileScoresTotals]
-            )
+                ["scores:set_initial_round_tile_scores", scores.tileScoresTotals],
+                ["players:shuffle_order", shuffle(players.playerOrder)],
+                ["seasons:next"],
+            );
         }
         events.send("players:next");
         players.viewActivePlayer();

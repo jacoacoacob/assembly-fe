@@ -7,6 +7,7 @@ import { useGameDataStore } from "./game-data.store";
 import type { Token } from "./game-data.types";
 import { useGameStateStore } from "./game-state.store";
 import { useMoveValidationStore } from "./move-validation.store";
+import type { CommittedMove } from "./player-moves.store";
 import { usePlayersStore } from "./players.store";
 import { useScoresStore } from "./scores.store";
 import { useTilesStore } from "./tiles.store";
@@ -28,12 +29,15 @@ const useMoveTokenStore = defineStore("move-token", () => {
     const gameData = useGameDataStore();
     const events = useEventsStore();
     const scores = useScoresStore();
+    const tiles = useTilesStore();
     const players = usePlayersStore();
     const validation = useMoveValidationStore();
 
     const hoveredTileIndex = ref<number | null>(null);
     
     const movingTokenId = ref<Token["id"]>("");
+    
+    const resolvesOverload = ref(false);
     
     const candidateId = ref<Token["id"]>("");
     const candidateOriginTileIndex = ref<Token["tileIndex"] | null>(null);
@@ -82,6 +86,9 @@ const useMoveTokenStore = defineStore("move-token", () => {
             // it can be recorded in the commit and used to calculate the cost
             // of moving the token.
             candidateOriginTileIndex.value = token.tileIndex;
+            // track whether or not this move is resolving an overloaded tile
+            const playerOverloads = tiles.getPlayerOverloads(token.playerId);
+            resolvesOverload.value = playerOverloads.includes(token.tileIndex);
         }
         movingTokenId.value = tokenId;
         candidateId.value = tokenId;
@@ -127,10 +134,10 @@ const useMoveTokenStore = defineStore("move-token", () => {
     function commit(){
         if (canCommit.value) {
             const candidateToken = gameData.tokens[candidateId.value];
-            const move = {
+            const move: CommittedMove = {
                 origin: candidateOriginTileIndex.value as number,
                 dest: candidateDestTileIndex.value as number,
-                tokenValue: candidateToken.value
+                tokenValue: candidateToken.value,
             };
             events.sendMany(
                 ["game_data:move_token", {
@@ -140,11 +147,11 @@ const useMoveTokenStore = defineStore("move-token", () => {
                 ["player_moves:commit", move],
             );
             if (gameState.currentState === "play") {
-                const { cost } = useMoveDetail(move);
+                const { cost, kind } = useMoveDetail(move);
                 events.send("scores:set_point_totals", sumDict(
                     scores.pointTotals,
                     {
-                        [players.activePlayer.id]: cost,
+                        [players.activePlayer.id]: kind === "remove_token" && resolvesOverload.value ? 0 : cost,
                     }
                 ))
             }
@@ -154,7 +161,7 @@ const useMoveTokenStore = defineStore("move-token", () => {
         candidateDestTileIndex.value = null;
     }
 
-    return { pickup, drop, commit, canCommit, cost, distance, isValid, movingTokenId, candidateId, hoveredTileIndex, candidateOriginTileIndex, candidateDestTileIndex };
+    return { pickup, drop, commit, canCommit, cost, distance, isValid, resolvesOverload, movingTokenId, candidateId, hoveredTileIndex, candidateOriginTileIndex, candidateDestTileIndex };
     
 });
 

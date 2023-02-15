@@ -31,7 +31,7 @@ function selectRandomFrom<Data>(list: Data[], count: number) {
     return rv;
 }
 
-function shuffle<Data>(list: Data[]) {
+function shuffleFull<Data>(list: Data[]) {
     const list_ = Array.from(list);
     while (true) {
         for (let i = 0; i < list.length * 2; i++) {
@@ -44,4 +44,12 @@ function shuffle<Data>(list: Data[]) {
     return list_;
 }
 
-export { randFromRange, randId, selectRandomFrom, shuffle };
+function shuffle<Data>(list: Data[]) {
+    const list_ = Array.from(list);
+    for (let i = 0; i < list.length * 2; i++) {
+        list_.sort(() => Math.random() > 0.5 ? -1 : 1);
+    }
+    return list_;
+}
+
+export { randFromRange, randId, selectRandomFrom, shuffle, shuffleFull };

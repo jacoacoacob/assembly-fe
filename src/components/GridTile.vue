@@ -27,8 +27,13 @@ const tileContents = computed(() =>
 const className = computed(() => {
     const isInPlay = tiles.inPlayTiles.includes(props.tileIndex);
     const isOpen = tiles.openInPlayTiles.includes(props.tileIndex);
+    const isOverloaded =
+        tiles.tileTokenGraph[props.tileIndex].tileTokenValuesSum > tiles.seasonalTileCapacities[props.tileIndex];
     const isHovered = moveToken.hoveredTileIndex === props.tileIndex;
     const isMoveOrigin = moveToken.candidateOriginTileIndex === props.tileIndex;
+    if (isOverloaded) {
+        return "bg-slate-100 ring-2 ring-red-500";
+    }
     if (isMoveOrigin) {
         return "bg-white ring-4 ring-teal-500 z-40";
     }

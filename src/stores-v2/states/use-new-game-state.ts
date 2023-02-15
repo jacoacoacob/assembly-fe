@@ -76,11 +76,14 @@ const useNewGameState = defineStore("new-game-state", () => {
             ["game_data:set_grid", createGrid(6, 9, 90)],
             ["game_data:set_tiles", tiles],
             ["players:shuffle_order", shuffle(Object.keys(players))],
-            ["tiles:set_in_play_tiles", selectRandomFrom(tiles.map((_, i) => i), 6)],
+           
             ["game_state:set_state", "place_tokens"]
         );
         nextTick(() => {
-            events.send("tokens:set_in_play_token_ids", getStagedTokenIds(tokens.playerTokenIds));
+            events.sendMany(
+                ["tokens:set_in_play_token_ids", getStagedTokenIds(tokens.playerTokenIds)],
+                ["tiles:set_in_play_tiles", selectRandomFrom(tiles.map((_, i) => i), 6)],
+            );
         });
     }
 

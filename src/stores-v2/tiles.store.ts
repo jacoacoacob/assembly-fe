@@ -162,7 +162,6 @@ const useTilesStore = defineStore("tiles", () => {
 
     const openInPlayTiles = computed(() =>
         inPlayTiles.value.reduce((accum: number[], tileIndex) => {
-            const tile = gameData.tiles[tileIndex];
             const tileCapacity = seasonalTileCapacities.value[tileIndex]
             const { tileTokenIds, tileTokenValuesSum } = tileTokenGraph.value[tileIndex];
             if (moveToken.candidateId) {
@@ -177,8 +176,34 @@ const useTilesStore = defineStore("tiles", () => {
             return accum;
         }, [])
     );
+    
+    /**
+     * 
+     * @returns the indeces of overloaded tiles that contain tokens belonging to a given player.
+     */
+    function getPlayerOverloads(playerId: string) {
+        return seasonalTileCapacities.value.reduce(
+            (accum: number[], tileCapacity, tileIndex) => {
+                const { tileTokenValuesSum, tilePlayerIds } = tileTokenGraph.value[tileIndex];
+                if (tileTokenValuesSum > tileCapacity && tilePlayerIds.includes(playerId)) {
+                    accum.push(tileIndex);
+                }
+                return accum;
+            },
+            []
+        );
+    }
 
-    return { openInPlayTiles, inPlayTiles, tileTokenGraph, liveTileTokenGraph, tileAdjacencyList, tileDistanceGraph, seasonalTileCapacities };
+    return {
+        openInPlayTiles,
+        getPlayerOverloads,
+        inPlayTiles,
+        tileTokenGraph,
+        liveTileTokenGraph,
+        tileAdjacencyList,
+        tileDistanceGraph,
+        seasonalTileCapacities
+    };
 });
 
 export { useTilesStore, makeTileTokenGraph };

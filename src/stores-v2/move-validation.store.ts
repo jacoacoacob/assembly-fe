@@ -67,6 +67,17 @@ const useMoveValidationStore = defineStore("move-validation", () => {
             return _checkTileCapacity(token, dest);
         }
         if (gameState.currentState === "play") {
+            const playerOverloads = tiles.getPlayerOverloads(token.playerId);
+            if (playerOverloads.length > 0) {
+                return (
+                    playerOverloads.includes(origin) &&
+                    _checkCost(token, origin, dest) &&
+                    _checkTileCapacity(token, dest)
+                )
+                // is player moving from overload &&
+                // is cost acceptable && 
+                // is dest tile capacity okay
+            }
             return (
                 _checkTileCapacity(token, dest) &&
                 _checkCost(token, origin, dest)

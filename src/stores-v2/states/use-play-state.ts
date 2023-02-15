@@ -1,6 +1,7 @@
-import { sumDict } from "@/utils/sum";
 import { defineStore } from "pinia";
 import { computed } from "vue";
+
+import { sumDict } from "@/utils/sum";
 import { useEventsStore } from "../events.store";
 import { useGameDataStore } from "../game-data.store";
 import { usePlayersStore } from "../players.store";
@@ -9,7 +10,6 @@ import { usePlayerMovesStore, type MoveKind } from "../player-moves.store";
 import { useMoveTokenStore } from "../move-token.store";
 import { useMoveDetail } from "@/composables/use-move-details";
 import { shuffle } from "@/utils/rand";
-
 
 const usePlayState = defineStore("play-state", () => {
     const gameData = useGameDataStore();
@@ -21,32 +21,26 @@ const usePlayState = defineStore("play-state", () => {
     const moveToken = useMoveTokenStore();
 
     const isTurnEndable = computed(() => {
-        return !moveToken.canCommit && playerMoves.committedMoves.length > 0;
+        return (
+            !moveToken.canCommit &&
+            playerMoves.committedMoves.length > 0 &&
+            scores.pointTotals[players.activePlayer.id] > 0
+        );
     });
 
     const isLastTurnInRound = computed(
         () => players.activePlayerIndex === players.playerList.length - 1
     );
 
-    const currentAction = computed((): MoveKind | null => {
-        if (moveToken.candidateId) {
-            const origin = moveToken.candidateOriginTileIndex;
-            const dest = moveToken.hoveredTileIndex ?? moveToken.candidateDestTileIndex;
-            if (origin === -1) {
-                return "place_token"
-            } else if (dest === -1) {
-                return "remove_token";
-            } else {
-                return "move_token";
-            }
-        }
-        return null;
-    });
-
     const currentMove = computed(() => {
         if (moveToken.candidateId) {
-            const origin = moveToken.candidateOriginTileIndex as number;
-            const dest = moveToken.hoveredTileIndex ?? moveToken.candidateDestTileIndex as number;
+            const {
+                candidateDestTileIndex,
+                candidateOriginTileIndex,
+                hoveredTileIndex
+             } = moveToken;
+            const origin = candidateOriginTileIndex as number;
+            const dest = hoveredTileIndex ?? candidateDestTileIndex as number;
             const tokenValue = gameData.tokens[moveToken.candidateId].value;
             return useMoveDetail({ origin, dest, tokenValue });
         }
@@ -92,7 +86,7 @@ const usePlayState = defineStore("play-state", () => {
         moveToken.drop();
     }
 
-    return { pickupToken, dropToken, commitMove, endTurn, isTurnEndable, helpMessage, currentAction, currentMove };
+    return { pickupToken, dropToken, commitMove, endTurn, isTurnEndable, helpMessage, currentMove };
 });
 
 export { usePlayState };

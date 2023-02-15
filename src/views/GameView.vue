@@ -67,6 +67,22 @@ onMounted(() => {
     }
 });
 
+/*
+
+- When a tile becomes overloaded (tokenValueSum > tileCapacity), the first player with tokens in it during
+the round must either move their tokens elsewhere on the board or remove them entirely until they either
+have no more tokens remaining on the tile or the tile becomes not overloaded. Removing a token from the
+board because of being caught in an overloaded tile WILL NOT result in token value points back to the
+player who removed it.
+
+- During their turn, if a player's points are at or below 0, they must remove tokens from the board until
+their points raise above 0 before they can end their turn. If they run out of onboard tokens before 
+bringing their points above 0, they are elliminated and the game ends. Everyone loses.
+
+- If no player gets all of their tokens onto the board before X rounds ellapse, the game ends. Everyone
+loses.
+
+*/
 </script>
 
 <template>

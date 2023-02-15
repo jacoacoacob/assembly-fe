@@ -17,7 +17,7 @@ function moveCost(cost: number) {
     return `${cost}`;
 }
 
-function kind(move: CommittedMove): MoveKind {
+function moveKind(move: CommittedMove): MoveKind {
     const { origin, dest } = move;
     if (origin === -1) {
         return "place_token";
@@ -40,13 +40,14 @@ interface MoveDetails {
 function moveMapper(validation: ReturnType<typeof useMoveValidationStore>) {
     return (move: CommittedMove): MoveDetails => {
         const { origin, dest, tokenValue } = move;
+        const kind = moveKind(move);
         const cost = validation.getCost(tokenValue, origin, dest);
         return {
             origin,
             dest,
             cost,
+            kind,
             costDisplay: moveCost(cost),
-            kind: kind(move),
             detail: `
                 You moved a token from ${tokenLocation(origin)} to ${tokenLocation(dest)}.
                 During scoring at the end of this round, this move will contribute ${moveCost(cost)}

@@ -8,6 +8,7 @@ import { usePlayersStore } from "../players.store";
 import { useScoresStore } from "../scores.store";
 import { usePlayerMovesStore, type MoveKind } from "../player-moves.store";
 import { useMoveTokenStore } from "../move-token.store";
+import { useTilesStore } from "../tiles.store";
 import { useMoveDetail } from "@/composables/use-move-details";
 import { shuffle } from "@/utils/rand";
 
@@ -16,13 +17,16 @@ const usePlayState = defineStore("play-state", () => {
     const events = useEventsStore();
     const scores = useScoresStore();
     const players = usePlayersStore();
+    const tiles = useTilesStore();
     const playerMoves = usePlayerMovesStore();
     
     const moveToken = useMoveTokenStore();
 
     const isTurnEndable = computed(() => {
+        const playerOverloads = tiles.getPlayerOverloads(players.activePlayer.id);
         return (
             !moveToken.canCommit &&
+            playerOverloads.length === 0 &&
             playerMoves.committedMoves.length > 0 &&
             scores.pointTotals[players.activePlayer.id] > 0
         );
@@ -37,12 +41,13 @@ const usePlayState = defineStore("play-state", () => {
             const {
                 candidateDestTileIndex,
                 candidateOriginTileIndex,
-                hoveredTileIndex
+                hoveredTileIndex,
+                resolvesOverload
              } = moveToken;
             const origin = candidateOriginTileIndex as number;
             const dest = hoveredTileIndex ?? candidateDestTileIndex as number;
             const tokenValue = gameData.tokens[moveToken.candidateId].value;
-            return useMoveDetail({ origin, dest, tokenValue });
+            return useMoveDetail({ origin, dest, tokenValue, resolvesOverload });
         }
     })
 

@@ -6,11 +6,19 @@ import { usePlaceTokensState } from '@/stores-v2/states/use-place-tokens-state';
 import { usePreferencesStore } from '@/stores-v2/preferences.store';
 import { usePlayState } from '@/stores-v2/states/use-play-state';
 import { useMoveTokenStore } from '@/stores-v2/move-token.store';
+import { useTilesStore } from '@/stores-v2/tiles.store';
+import { usePlayersStore } from '@/stores-v2/players.store';
 
 const gameState = useGameStateStore();
+const tiles = useTilesStore();
+const players = usePlayersStore();
 const placeTokensState = usePlaceTokensState();
 const playState = usePlayState();
 const moveToken = useMoveTokenStore();
+
+const playerOverloads = computed(() =>
+    tiles.getPlayerOverloads(players.activePlayer.id)
+);
 
 const boardView = inject<Ref<"rules" | "game">>("boardView");
 
@@ -81,6 +89,9 @@ function commitOrEndTurn() {
                 <template v-else-if="isTurnEndable">
                     finish turn
                     <span class="text-xs font-mono">[space]</span>
+                </template>
+                <template v-else-if="playerOverloads.length > 0">
+                    resolve overloads
                 </template>
                 <template v-else>
                     make a move

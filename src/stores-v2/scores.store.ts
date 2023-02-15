@@ -2,7 +2,7 @@ import { defineStore } from "pinia";
 import { computed, ref } from "vue";
 
 import { sum } from "@/utils/sum";
-import type { PlayerPoints, TileScoreExplanation } from "./scores.types";
+import type { PlayerPoints } from "./scores.types";
 import { useGameDataStore } from "./game-data.store";
 import type { Player } from "./game-data.types";
 import { useTilesStore } from "./tiles.store";
@@ -72,41 +72,6 @@ const useScoresStore = defineStore("scores", () => {
         }
     ));
 
-    // const tileScoresExplanation = computed((): TileScoreExplanation[] =>
-    //     tileScores.value.reduce(
-    //         (accum: TileScoreExplanation[], tilePlayerPoints, tileIndex) => {
-    //             const tile = gameData.tiles[tileIndex];
-    //             const { tileTokenValuesSum, tilePlayerIds } = tiles.tileTokenGraph[tileIndex];
-    //             const tokenValueTotals = Object.keys(tilePlayerTokenValues.value[tileIndex]).reduce(
-    //                 (accum: TileScoreExplanation["tokenValueTotals"], playerId) => {
-    //                     accum[playerId] = tilePlayerTokenValues.value[tileIndex][playerId];
-    //                     return accum;
-    //                 },
-    //                 {}
-    //             );
-    //             const playerScores = Object.entries(tilePlayerPoints).reduce(
-    //                 (accum: TileScoreExplanation["playerScores"], [playerId, playerScore]) => {
-    //                     if (tilePlayerIds.includes(playerId)) {
-    //                         accum[playerId] = playerScore;
-    //                     }
-    //                     return accum;
-    //                 },
-    //                 {}
-    //             );
-    //             accum.push({
-    //                 tokenValueTotals,
-    //                 playerScores,
-    //                 tileTokenValuesSum,
-    //                 tilePlayerIds,
-    //                 tileCapacity: tile.capacity,
-    //                 tileCapacityRemainder: tile.capacity - tileTokenValuesSum,
-    //             });
-    //             return accum;
-    //         },
-    //         []
-    //     )
-    // );
-
     const tileScoresTotals = computed((): PlayerPoints => tileScores.value.reduce(
         (accum: PlayerPoints, tilePlayerPoints) => {
             Object.entries(tilePlayerPoints).forEach(([playerId, playerScore]) => {
@@ -120,10 +85,12 @@ const useScoresStore = defineStore("scores", () => {
 
     const currentMoveCost = computed(() => {
         if (moveToken.candidateId) {
-            const origin = moveToken.candidateOriginTileIndex as number;
-            const dest = moveToken.hoveredTileIndex ?? moveToken.candidateDestTileIndex as number;
-            const tokenValue = gameData.tokens[moveToken.candidateId].value;
-            const { cost } = useMoveDetail({ origin, dest, tokenValue });
+            const { cost } = useMoveDetail({
+                dest: moveToken.hoveredTileIndex ?? moveToken.candidateDestTileIndex as number,
+                tokenValue: gameData.tokens[moveToken.candidateId].value,
+                origin: moveToken.candidateOriginTileIndex as number,
+                resolvesOverload: moveToken.resolvesOverload
+            });
             return cost;
         }
     });
@@ -147,7 +114,6 @@ const useScoresStore = defineStore("scores", () => {
         pointTotals,
         tilePlayerTokenValues,
         tileScores,
-        // tileScoresExplanation,
         tileScoresTotals,
         tileScoresTotalsDelta,
         committedMovesCost,

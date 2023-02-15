@@ -57,7 +57,7 @@ const useMoveTokenStore = defineStore("move-token", () => {
         const dest = hoveredTileIndex.value ?? candidateDestTileIndex.value as number;
         if (typeof origin === "number" && typeof dest === "number") {
             const token = gameData.tokens[candidateId.value];
-            return validation.getCost(token.value, origin, dest);
+            return validation.getCost(token.value, origin, dest, resolvesOverload.value);
         }
         return null;
     });
@@ -138,6 +138,7 @@ const useMoveTokenStore = defineStore("move-token", () => {
                 origin: candidateOriginTileIndex.value as number,
                 dest: candidateDestTileIndex.value as number,
                 tokenValue: candidateToken.value,
+                resolvesOverload: resolvesOverload.value,
             };
             events.sendMany(
                 ["game_data:move_token", {

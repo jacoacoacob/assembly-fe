@@ -24,11 +24,15 @@ const useMoveValidationStore = defineStore("move-validation", () => {
         return tiles.tileDistanceGraph[origin][dest];
     }
 
-    function getCost(tokenValue: number, origin: number, dest: number) {
+    // function getCost(tokenValue: number, origin: number, dest: number) {
+    function getCost(tokenValue: number, origin: number, dest: number, resolvesOverload: boolean) {
         if (origin === -1 && dest === -1) {
             return 0;
         }
         if (dest === -1) {
+            if (resolvesOverload) {
+                return 0;
+            }
             return tokenValue;
         }
         if (origin === -1) {
@@ -37,12 +41,12 @@ const useMoveValidationStore = defineStore("move-validation", () => {
         return -(Math.ceil(tokenValue / 2) * getDistance(origin, dest));
     }
 
-    function _checkCost(token: Token, origin: number, dest: number) {
+    function _checkCost(token: Token, origin: number, dest: number, resolvesOverload: boolean) {
         if (dest === -1) {
             return true;
         }
         const playerPoints = scores.pointTotals[token.playerId];
-        const cost = getCost(token.value, origin, dest);
+        const cost = getCost(token.value, origin, dest, resolvesOverload);
         return playerPoints + cost > 0;
     }
 
@@ -71,7 +75,7 @@ const useMoveValidationStore = defineStore("move-validation", () => {
             if (playerOverloads.length > 0) {
                 return (
                     playerOverloads.includes(origin) &&
-                    _checkCost(token, origin, dest) &&
+                    _checkCost(token, origin, dest, moveToken.resolvesOverload) &&
                     _checkTileCapacity(token, dest)
                 )
                 // is player moving from overload &&
@@ -80,7 +84,7 @@ const useMoveValidationStore = defineStore("move-validation", () => {
             }
             return (
                 _checkTileCapacity(token, dest) &&
-                _checkCost(token, origin, dest)
+                _checkCost(token, origin, dest, moveToken.resolvesOverload)
             )
         }
         return false;

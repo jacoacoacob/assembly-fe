@@ -10,8 +10,8 @@ function tokenLocation(index: number) {
     return `tile number ${index + 1}`;
 }
 
-function moveCost(cost: number) {
-    if (cost > 0) {
+function formatCost(cost: number) {
+    if (cost >= 0) {
         return `+${cost}`;
     }
     return `${cost}`;
@@ -39,18 +39,19 @@ interface MoveDetails {
 
 function moveMapper(validation: ReturnType<typeof useMoveValidationStore>) {
     return (move: CommittedMove): MoveDetails => {
-        const { origin, dest, tokenValue } = move;
+        const { origin, dest, tokenValue, resolvesOverload } = move;
         const kind = moveKind(move);
-        const cost = validation.getCost(tokenValue, origin, dest);
+        const cost = validation.getCost(tokenValue, origin, dest, resolvesOverload);
+        const costDisplay = formatCost(cost);
         return {
             origin,
             dest,
             cost,
             kind,
-            costDisplay: moveCost(cost),
+            costDisplay,
             detail: `
                 You moved a token from ${tokenLocation(origin)} to ${tokenLocation(dest)}.
-                During scoring at the end of this round, this move will contribute ${moveCost(cost)}
+                During scoring at the end of this round, this move will contribute ${costDisplay}
                 to your earned points.`
         }
     }

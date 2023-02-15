@@ -20,6 +20,7 @@ interface CommittedMove {
     origin: number;
     dest: number;
     tokenValue: number;
+    resolvesOverload: boolean;
 }
 
 const usePlayerMovesStore = defineStore("player-moves", () => {

@@ -69,20 +69,25 @@ const useNewGameState = defineStore("new-game-state", () => {
             9,
             Object.keys(players).length < 4 ? [3, 8] : [4, 9]
         );
+        const grid = createGrid(6, 9, 90);
         events.sendMany(
             ["game_data:set_name", name],
             ["game_data:set_players", players],
             ["game_data:set_tokens", createTokens(players)],
-            ["game_data:set_grid", createGrid(6, 9, 90)],
+            ["game_data:set_grid", grid],
             ["game_data:set_tiles", tiles],
             ["players:shuffle_order", shuffle(Object.keys(players))],
-           
             ["game_state:set_state", "place_tokens"]
         );
         nextTick(() => {
+            const tileIndeces = tiles.map((_, i) => i);
             events.sendMany(
                 ["tokens:set_in_play_token_ids", getStagedTokenIds(tokens.playerTokenIds)],
-                ["tiles:set_in_play_tiles", selectRandomFrom(tiles.map((_, i) => i), 6)],
+                ["tiles:set_in_play_tiles", [
+                    ...selectRandomFrom(tileIndeces.slice(0,             grid.cols * 2), 2),
+                    ...selectRandomFrom(tileIndeces.slice(grid.cols * 2, grid.cols * 4), 2),
+                    ...selectRandomFrom(tileIndeces.slice(grid.cols * 4, grid.cols * 6), 2),
+                ]],
             );
         });
     }

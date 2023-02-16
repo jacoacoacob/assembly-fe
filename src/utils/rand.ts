@@ -22,7 +22,7 @@ function selectRandomFrom<Data>(list: Data[], count: number) {
     let i = 0;
     while (i < count) {
         const value = list[randFromRange(0, list.length)];
-        if (rv.includes(value)) {
+        if (rv.includes(value) || typeof value !== "number") {
             continue;
         }
         rv.push(value);

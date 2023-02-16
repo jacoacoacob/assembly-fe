@@ -106,7 +106,7 @@ const useMoveTokenStore = defineStore("move-token", () => {
             console.warn(`[useMoveStore::drop] No token found with id "${tokenId}"`);
             return;
         }
-        if (!hoveredTileIndex.value) {
+        if (hoveredTileIndex.value === null) {
             return;
         }
         const destTileIndex = hoveredTileIndex.value;

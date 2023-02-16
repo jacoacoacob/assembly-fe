@@ -42,7 +42,7 @@ const useMoveValidationStore = defineStore("move-validation", () => {
                 case 4: return -(tokenValue * 5);
             }
         }
-        return -(Math.ceil(tokenValue / 2) * getDistance(origin, dest));
+        return -(Math.ceil(tokenValue / 2) * getDistance(origin, dest) * 2);
     }
 
     function _checkCost(token: Token, origin: number, dest: number, resolvesOverload: boolean) {

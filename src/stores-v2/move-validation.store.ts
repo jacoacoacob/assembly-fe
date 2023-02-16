@@ -24,7 +24,6 @@ const useMoveValidationStore = defineStore("move-validation", () => {
         return tiles.tileDistanceGraph[origin][dest];
     }
 
-    // function getCost(tokenValue: number, origin: number, dest: number) {
     function getCost(tokenValue: number, origin: number, dest: number, resolvesOverload: boolean) {
         if (origin === -1 && dest === -1) {
             return 0;
@@ -78,9 +77,6 @@ const useMoveValidationStore = defineStore("move-validation", () => {
                     _checkCost(token, origin, dest, moveToken.resolvesOverload) &&
                     _checkTileCapacity(token, dest)
                 )
-                // is player moving from overload &&
-                // is cost acceptable && 
-                // is dest tile capacity okay
             }
             return (
                 _checkTileCapacity(token, dest) &&

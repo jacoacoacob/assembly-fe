@@ -14,6 +14,70 @@ const frames: [Season, Season, Season, Season, Season, Season][] = [
     ],
     [
         "warm",
+        "warm",
+        "warm",
+        "mild",
+        "mild",
+        "cold",
+    ],
+    [
+        "warm",
+        "warm",
+        "warm",
+        "warm",
+        "mild",
+        "mild",
+    ],
+    [
+        "warm",
+        "warm",
+        "warm",
+        "mild",
+        "mild",
+        "cold",
+    ],
+    [
+        "warm",
+        "warm",
+        "mild",
+        "mild",
+        "cold",
+        "cold",
+    ],
+    [
+        "warm",
+        "mild",
+        "mild",
+        "cold",
+        "cold",
+        "cold",
+    ],
+    [
+        "mild",
+        "mild",
+        "cold",
+        "cold",
+        "cold",
+        "cold",
+    ],
+    [
+        "warm",
+        "mild",
+        "mild",
+        "cold",
+        "cold",
+        "cold",
+    ],
+    [
+        "warm",
+        "warm",
+        "mild",
+        "mild",
+        "cold",
+        "cold",
+    ],
+    [
+        "warm",
         "mild",
         "mild",
         "mild",
@@ -34,6 +98,70 @@ const frames: [Season, Season, Season, Season, Season, Season][] = [
         "mild",
         "mild",
         "mild",
+        "warm",
+    ],
+    [
+        "cold",
+        "cold",
+        "mild",
+        "mild",
+        "warm",
+        "warm",
+    ],
+    [
+        "cold",
+        "cold",
+        "cold",
+        "mild",
+        "mild",
+        "warm",
+    ],
+    [
+        "cold",
+        "cold",
+        "cold",
+        "cold",
+        "mild",
+        "mild",
+    ],
+    [
+        "cold",
+        "cold",
+        "cold",
+        "mild",
+        "mild",
+        "warm",
+    ],
+    [
+        "cold",
+        "cold",
+        "mild",
+        "mild",
+        "warm",
+        "warm",
+    ],
+    [
+        "cold",
+        "mild",
+        "mild",
+        "warm",
+        "warm",
+        "warm",
+    ],
+    [
+        "mild",
+        "mild",
+        "warm",
+        "warm",
+        "warm",
+        "warm",
+    ],
+    [
+        "cold",
+        "mild",
+        "mild",
+        "warm",
+        "warm",
         "warm",
     ],
     [
@@ -72,19 +200,19 @@ const frames: [Season, Season, Season, Season, Season, Season][] = [
 
 const useSeasonsStore = defineStore("seasons", () => {
 
-    const _currentIndex = ref(0);
+    const currentIndex = ref(0);
 
-    const current = computed(() => frames[_currentIndex.value])
+    const current = computed(() => frames[currentIndex.value])
 
     function next() {
-        if (_currentIndex.value < frames.length - 1) {
-            _currentIndex.value += 1;
+        if (currentIndex.value < frames.length - 1) {
+            currentIndex.value += 1;
         } else {
-            _currentIndex.value = 0;
+            currentIndex.value = 0;
         }
     }
 
-    return { current, next };
+    return { current, currentIndex, next };
 });
 
 export { useSeasonsStore };

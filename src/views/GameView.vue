@@ -1,15 +1,15 @@
 <script setup lang="ts">
 import { onMounted, ref, provide, computed, type StyleValue } from 'vue';
 
-import TheBoard from '@/components/TheBoard.vue';
+import GameBoard from '@/components/GameBoard.vue';
 import TheSidePanel from '@/components/TheSidePanel.vue';
 import TopBar from '@/components/TopBar.vue';
+import GameRules from '@/components/GameRules.vue';
 
 import { usePlaceTokensState } from '@/stores-v2/states/use-place-tokens-state';
 import { useGameStateStore } from '@/stores-v2/game-state.store';
 import { usePlayersStore } from '@/stores-v2/players.store';
 import { usePlayState } from '@/stores-v2/states/use-play-state';
-import TheRules from '@/components/TheRules.vue';
 import { useMoveTokenStore } from '@/stores-v2/move-token.store';
 import { useGameDataStore } from '@/stores-v2/game-data.store';
 
@@ -85,12 +85,13 @@ loses.
 */
 </script>
 
+<GameRules v-if="boardView === 'rules'" />
 <template>
     <div class="px-8 w-full space-x-6 flex">
         <div class="space-y-6 ">
             <TopBar />
-            <TheBoard v-if="boardView === 'game'" />
-            <TheRules v-if="boardView === 'rules'" />
+            <GameBoard v-if="boardView === 'game'" />
+            <GameRules v-if="boardView === 'rules'" />
         </div>
         <TheSidePanel class="flex-1 w-full" />
     </div>

@@ -67,7 +67,7 @@ const useNewGameState = defineStore("new-game-state", () => {
         const tiles = createTiles(
             6,
             9,
-            Object.keys(players).length < 4 ? [5, 10] : [6, 12]
+            Object.keys(players).length < 4 ? [3, 8] : [4, 9]
         );
         events.sendMany(
             ["game_data:set_name", name],

@@ -12,12 +12,14 @@ import { usePlayersStore } from '@/stores-v2/players.store';
 import { usePlayState } from '@/stores-v2/states/use-play-state';
 import { useMoveTokenStore } from '@/stores-v2/move-token.store';
 import { useGameDataStore } from '@/stores-v2/game-data.store';
+import { useTilesStore } from '@/stores-v2/tiles.store';
 
 const placeTokensState = usePlaceTokensState();
 const gameData = useGameDataStore();
 const playState = usePlayState();
 const gameState = useGameStateStore();
 const players = usePlayersStore();
+const tiles = useTilesStore();
 const moveToken = useMoveTokenStore();
 
 const boardView = ref<"rules" | "game">("game");
@@ -95,4 +97,7 @@ loses.
         </div>
         <TheSidePanel class="flex-1 w-full" />
     </div>
+    <!-- <pre>
+{{ tiles.degredation }}
+    </pre> -->
 </template>

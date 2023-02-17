@@ -6,11 +6,11 @@ import { useEventsStore } from "../events.store";
 import { useGameDataStore } from "../game-data.store";
 import { usePlayersStore } from "../players.store";
 import { useScoresStore } from "../scores.store";
-import { usePlayerMovesStore, type MoveKind } from "../player-moves.store";
+import { usePlayerMovesStore } from "../player-moves.store";
 import { useMoveTokenStore } from "../move-token.store";
 import { useTilesStore } from "../tiles.store";
 import { useMoveDetail } from "@/composables/use-move-details";
-import { shuffle } from "@/utils/rand";
+import { headToTail } from "@/utils/head-to-tail";
 
 const usePlayState = defineStore("play-state", () => {
     const gameData = useGameDataStore();
@@ -69,7 +69,8 @@ const usePlayState = defineStore("play-state", () => {
                     scores.tileScoresTotals
                 )],
                 ["scores:set_initial_round_tile_scores", scores.tileScoresTotals],
-                ["players:shuffle_order", shuffle(players.playerOrder)],
+                ["players:shuffle_order", headToTail(players.playerOrder)],
+                ["tiles:record_degrading_tiles"],
                 ["seasons:next"],
             );
         }

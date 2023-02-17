@@ -2,7 +2,7 @@
 import { computed, ref } from 'vue';
 
 import GameToken from './GameToken.vue';
-import TileScorePopover from './TileScorePopover.vue';
+import TileInfoPopover from './TileInfoPopover.vue';
 
 import type { Tile } from "@/stores-v2/game-data.types";
 import { useGameDataStore } from '@/stores-v2/game-data.store';
@@ -60,11 +60,7 @@ const openPopover = ref(-1);
         @drop="drag.onTileDrop"
     >
         <div>
-            <TileScorePopover
-                @click="openPopover = tileIndex"
-                :isOpen="openPopover === tileIndex"
-                :tileIndex="tileIndex"
-            />
+            <TileInfoPopover :tileIndex="tileIndex" @click="openPopover = tileIndex" />
         </div>
         <div class="absolute top-0 left-0 w-full h-full">
             <GameToken

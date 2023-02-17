@@ -37,6 +37,48 @@ function makeTileTokenGraph(tiles: Game["tiles"], tokens: Game["tokens"]): TileT
     return graph;
 }
 
+/**
+ * 
+ * 
+ * At the end of each round, subtract 1 from each solo-occupied tile's capacity.
+ * 
+ * When a tile becomes not solo-occupied, add 1 to its capacity each round until
+ * its capacity has returned to its pre-degraded value.
+ * 
+ */
+function useTileDegredation() {
+    const degradingTiles = ref<number[]>([]);
+    const recoveringTiles = ref<number[]>([]);
+
+    const tileCapacityModifiers = ref<Record<number, number>>({});
+
+    function tick(currentDegradingTiles: number[]) {
+        recoveringTiles.value = recoveringTiles.value.concat(
+            degradingTiles.value.filter((tileIndex) => !currentDegradingTiles.includes(tileIndex))
+        );
+
+        degradingTiles.value = currentDegradingTiles.reduce((accum: number[], tileIndex) => {
+            if (typeof tileCapacityModifiers.value[tileIndex] !== "number") {
+                tileCapacityModifiers.value[tileIndex] = 0;
+            }
+            tileCapacityModifiers.value[tileIndex] += 1;
+            return accum.concat(tileIndex);
+        }, []);
+
+        recoveringTiles.value = recoveringTiles.value.reduce((accum: number[], tileIndex) => {
+            tileCapacityModifiers.value[tileIndex] -= 1;
+            if (tileCapacityModifiers.value[tileIndex] > 0) {
+                accum.push(tileIndex);
+            } else {
+                delete tileCapacityModifiers.value[tileIndex];
+            }
+            return accum;
+        }, []);
+    }
+    
+    return { tick, degradingTiles, recoveringTiles, tileCapacityModifiers };
+}
+
 const useTilesStore = defineStore("tiles", () => {
     const gameData = useGameDataStore();
     const seasons = useSeasonsStore();
@@ -45,12 +87,14 @@ const useTilesStore = defineStore("tiles", () => {
 
     const inPlayTiles = ref<number[]>([]);
 
+    const degredation = useTileDegredation();
+
     const seasonalTileCapacities = computed(() => gameData.tiles.map((tile, tileIndex) => {
         const tileRow = Math.floor(tileIndex / gameData.grid.cols);
         switch (seasons.current[tileRow]) {
-            case "cold": return tile.capacity - 2;
-            case "mild": return tile.capacity;
-            case "warm": return tile.capacity + 2;
+            case "cold": return (tile.capacity - (degredation.tileCapacityModifiers.value[tileIndex] ?? 0)) - 2;
+            case "mild": return (tile.capacity - (degredation.tileCapacityModifiers.value[tileIndex] ?? 0));
+            case "warm": return (tile.capacity - (degredation.tileCapacityModifiers.value[tileIndex] ?? 0)) + 2;
         }
     }));
 
@@ -195,6 +239,7 @@ const useTilesStore = defineStore("tiles", () => {
     }
 
     return {
+        degredation,
         openInPlayTiles,
         getPlayerOverloads,
         inPlayTiles,

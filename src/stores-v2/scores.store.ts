@@ -11,7 +11,6 @@ import { useMoveTokenStore } from "./move-token.store";
 import { useMoveDetail } from "@/composables/use-move-details";
 import { usePlayersStore } from "./players.store";
 
-
 const useScoresStore = defineStore("scores", () => {
     const gameData = useGameDataStore();
     const tiles = useTilesStore();
@@ -53,7 +52,7 @@ const useScoresStore = defineStore("scores", () => {
                 tiles.liveTileTokenGraph[tileIndex].tileTokenIds.map((tokenId) => gameData.tokens[tokenId].value)
             );
             const tileCapacity = tiles.seasonalTileCapacities[tileIndex];
-            const tileCapacityModifier = Math.floor((tileCapacity - tileTokenValues) / 2);
+            const tileCapacityModifier = Math.round((tileCapacity - tileTokenValues) / 2);
             return Object.entries(playerTokenValues).reduce(
                 (accum: PlayerPoints, [playerId, playerTokenTotal], i, arr) => {
                     if (arr.length === 1) {
@@ -61,9 +60,11 @@ const useScoresStore = defineStore("scores", () => {
                     } else {
                         arr.forEach(([playerId_, playerTokenTotal_]) => {
                             if (playerId !== playerId_) {
-                                accum[playerId] += playerTokenTotal - playerTokenTotal_ + tileCapacityModifier;
+                                // accum[playerId] += playerTokenTotal - playerTokenTotal_ + tileCapacityModifier;
+                                accum[playerId] += playerTokenTotal - playerTokenTotal_;
                             }
                         });
+                        accum[playerId] += tileCapacityModifier;
                     }
                     return accum;
                 },

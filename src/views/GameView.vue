@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { onMounted, ref, provide, computed, type StyleValue } from 'vue';
+import { onMounted, ref, provide, computed, watch, watchEffect, type StyleValue } from 'vue';
 
 import GameBoard from '@/components/GameBoard.vue';
+import SettingsDialog from '@/components/SettingsDialog.vue';
 import TheSidePanel from '@/components/TheSidePanel.vue';
 import TopBar from '@/components/TopBar.vue';
 import GameRules from '@/components/GameRules.vue';
@@ -13,6 +14,7 @@ import { usePlayState } from '@/stores-v2/states/use-play-state';
 import { useMoveTokenStore } from '@/stores-v2/move-token.store';
 import { useGameDataStore } from '@/stores-v2/game-data.store';
 import { useTilesStore } from '@/stores-v2/tiles.store';
+import { useKonamiCode } from "@/composables/use-konami-code";
 
 const placeTokensState = usePlaceTokensState();
 const gameData = useGameDataStore();
@@ -21,6 +23,8 @@ const gameState = useGameStateStore();
 const players = usePlayersStore();
 const tiles = useTilesStore();
 const moveToken = useMoveTokenStore();
+
+const konami = useKonamiCode();
 
 const boardView = ref<"rules" | "game">("game");
 
@@ -45,6 +49,7 @@ provide("boardStyle", computed(() => {
 }));
 
 function onWindowKeydown(event: KeyboardEvent) {
+    konami.recordKeyPress(event.code);
     if (boardView.value === "game") {
         const { currentState } = gameState;
         if (event.code === "Space") {
@@ -97,6 +102,9 @@ loses.
         </div>
         <TheSidePanel class="flex-1 w-full" />
     </div>
+    <SettingsDialog :open="konami.didKonami.value" @close="konami.reset" />
+
+
     <!-- <pre>
 {{ tiles.degredation }}
     </pre> -->

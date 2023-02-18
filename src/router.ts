@@ -9,6 +9,7 @@ import { loadGameHistory } from "./api/game-api";
 import { useEventsStore } from "./stores-v2/events.store";
 import { useGameDataStore, initialState } from "./stores-v2/game-data.store";
 import { useGameStateStore } from "./stores-v2/game-state.store";
+import { useSettingsStore } from "./stores-v2/settings.store";
 
 interface Breadcrumb {
     name: string | ((params: RouteParams) => string);
@@ -85,9 +86,16 @@ const router = createRouter({
             component: GameView,
             beforeEnter(to) {
                 const events = useEventsStore(pinia);
+                const settings = useSettingsStore();
+
+                settings.$subscribe((_mutation, _state) => {
+                    settings.save();
+                });
+
                 const gameHistory = loadGameHistory(to.params.name as string);
                 if (gameHistory) {
                     events.loadHistory(gameHistory);
+                    settings.load();
                 }
             },
             meta: {

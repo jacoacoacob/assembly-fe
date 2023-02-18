@@ -2,6 +2,7 @@ import { defineStore } from "pinia";
 import { ref } from "vue";
 
 import { load, save } from "@/storage";
+import { useGameDataStore } from "./game-data.store";
 
 const SETTINGS_NAMESPACE = "settings";
 
@@ -29,13 +30,15 @@ const useSettingsStore = defineStore("settings", {
     }),
     actions: {
         load() {
-            const data = load<Settings>("", SETTINGS_NAMESPACE);
+            const gameData = useGameDataStore();
+            const data = load<Settings>(gameData.name, SETTINGS_NAMESPACE);
             if (data) {
                 this.$patch(data);
             }
         },
         save() {
-            save<Settings>("", this.$state, SETTINGS_NAMESPACE);
+            const gameData = useGameDataStore();
+            save<Settings>(gameData.name, this.$state, SETTINGS_NAMESPACE);
         },
     }
 });

@@ -15,13 +15,13 @@ import { useMoveTokenStore } from '@/stores-v2/move-token.store';
 import { useGameDataStore } from '@/stores-v2/game-data.store';
 import { useTilesStore } from '@/stores-v2/tiles.store';
 import { useKonamiCode } from "@/composables/use-konami-code";
+import { useSettingsStore } from '@/stores-v2/settings.store';
 
 const placeTokensState = usePlaceTokensState();
 const gameData = useGameDataStore();
 const playState = usePlayState();
 const gameState = useGameStateStore();
 const players = usePlayersStore();
-const tiles = useTilesStore();
 const moveToken = useMoveTokenStore();
 
 const konami = useKonamiCode();

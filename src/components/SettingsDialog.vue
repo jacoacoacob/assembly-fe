@@ -18,18 +18,18 @@ const settings = useSettingsStore();
 
 <template>
     <Dialog class="absolute top-0 z-10 w-full h-full flex justify-center items-center">
-        <DialogPanel class="w-full max-w-md transform overflow-auto max-h-[80%] border rounded bg-white p-6 text-left align-middle shadow-xl transition-all space-y-4">
-            <button class="absolute right-3 top-3 button button-dense" @click="$emit('close')">
+        <DialogPanel class="w-full max-w-md transform overflow-auto max-h-[80%] border rounded bg-white p-4 text-left align-middle shadow-xl transition-all space-y-4">
+            <button class="absolute right-4 top-4 button button-dense" @click="$emit('close')">
                 close
             </button>
-            <DialogTitle class="font-bold text-lg">Settings</DialogTitle>
+            <DialogTitle class="font-bold text-xl my-0 py-0">Settings</DialogTitle>
             <DialogDescription>
                 Turn some knobs and flick some switches :)
             </DialogDescription>
             <div class="space-y-8">
                 <section class="space-y-4 flex flex-col">
-                    <h3 class="font-semibold">
-                        Seasonal Tile Capacity Modifers
+                    <h3 class="font-semibold text-lg">
+                        Season Modifiers
                     </h3>
                     <p>Adjust the amounts that seasons modify tile capacity values.</p>
                     <AppInput
@@ -49,7 +49,7 @@ const settings = useSettingsStore();
                     />
                 </section>
                 <section class="space-y-4 flex flex-col">
-                    <h3 class="font-semibold">
+                    <h3 class="font-semibold text-lg">
                         Tile Degradation
                     </h3>
                     <div class="text-sm">

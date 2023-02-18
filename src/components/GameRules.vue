@@ -42,8 +42,14 @@ const className = computed(() => ({
                         In this game, as in the rest of life, survival isn't a winner take all brawl
                         but a constant negotiation in relationship with others.
                     </p>
+                    <p>
+                        Each player's goal is to move all of their tokens onto the board. Earning points
+                        is key to success but players must be careful to ensure that their pursuit of points
+                        doesn't knock any other player out of the game. It's game over if this happens and
+                        everyone loses.
+                    </p>
                     <!-- <p>
-                        
+
                     </p>
                     <p>
                         To succeed, players must maintain and grow their point total as the rounds 
@@ -66,6 +72,19 @@ const className = computed(() => ({
                         If no player completes 3 consecutive rounds with all tokens on the board before
                         X rounds have ellapsed, the game is over and everyone loses.
                     </p> -->
+                </GameRulesSection>
+
+                <GameRulesSection heading="Materials">
+                    <p>
+                        Each player controls 20 <span class="font-semibold">tokens</span>. Each
+                        token displays a number in its center. This is its 
+                        <span class="font-semibold">token value</span>.
+                    </p>
+                    <p>
+                        Throughout the game, players will move their tokens between their <span class="font-semibold">token reserve</span>
+                        (off of the board) and the <span class="font-semibold">tiles</span> (on the board). Each tile displays a number
+                        in its center. This is its <span class="font-semibold">tile capacity</span>.
+                    </p>
                 </GameRulesSection>
 
                 <!-- <GameRulesSection heading="Materials">

@@ -103,9 +103,4 @@ loses.
         <TheSidePanel class="flex-1 w-full" />
     </div>
     <SettingsDialog :open="konami.didKonami.value" @close="konami.reset" />
-
-
-    <!-- <pre>
-{{ tiles.degredation }}
-    </pre> -->
 </template>

@@ -11,7 +11,7 @@ const props = defineProps<{
     focusOnMount?: boolean;
     errors?: string[];
     label?: string;
-    modelValue?: string;
+    modelValue?: string | number;
 }>();
 
 const emit = defineEmits(["update:modelValue"]);

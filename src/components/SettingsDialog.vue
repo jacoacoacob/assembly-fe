@@ -31,18 +31,19 @@ const settings = useSettingsStore();
                     <h3 class="font-semibold">
                         Seasonal Tile Capacity Modifers
                     </h3>
+                    <p>Adjust the amounts that seasons modify tile capacity values.</p>
                     <AppInput
-                        label="Warm"
+                        label="warm season (green)"
                         type="number"
                         v-model.number="settings.seasonalTileCapacityModifiers.warm"
                     />
                     <AppInput
-                        label="Mild"
+                        label="mild season (orange)"
                         type="number"
                         v-model.number="settings.seasonalTileCapacityModifiers.mild"
                     />
                     <AppInput
-                        label="Cold"
+                        label="cold season (blue)"
                         type="number"
                         v-model.number="settings.seasonalTileCapacityModifiers.cold"
                     />
@@ -51,14 +52,13 @@ const settings = useSettingsStore();
                     <h3 class="font-semibold">
                         Tile Degradation
                     </h3>
-                    <p>Adjust the rates at which tile capacities degrade and recover.</p>
                     <div class="text-sm">
                         <Disclosure v-slot="{ open }: { open: boolean }">
                             <DisclosureButton
                                 class="button button-dense button-text"
                                 :class="`bg-slate-${open ? '200' : '100'}`"
                             >
-                                What is "tile degradation"?
+                                What is this?
                             </DisclosureButton>
                             <DisclosurePanel class=" text-slate-600 space-y-2 bg-slate-100 p-2">
                                 <p>
@@ -76,14 +76,14 @@ const settings = useSettingsStore();
                             </DisclosurePanel>
                         </Disclosure>
                     </div>
-
+                    <p>Adjust the rates at which tile capacities degrade and recover.</p>
                     <AppInput
-                        label="Degration Rate"
+                        label="degration rate"
                         type="number"
                         v-model.number="settings.degradationRate"
                     />
                     <AppInput
-                        label="Recovery Rate"
+                        label="recovery rate"
                         type="number"
                         v-model.number="settings.recoveryRate"
                     />

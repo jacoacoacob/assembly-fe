@@ -3,7 +3,6 @@ import { computed, inject, type Ref } from 'vue';
 
 import { useGameStateStore } from '@/stores-v2/game-state.store';
 import { usePlaceTokensState } from '@/stores-v2/states/use-place-tokens-state';
-import { usePreferencesStore } from '@/stores-v2/preferences.store';
 import { usePlayState } from '@/stores-v2/states/use-play-state';
 import { useMoveTokenStore } from '@/stores-v2/move-token.store';
 import { useTilesStore } from '@/stores-v2/tiles.store';
@@ -74,8 +73,6 @@ function commitOrEndTurn() {
                 v-if="gameState.currentState === 'play'"
                 class="button button-dense button-shadow disabled:text-black"
                 :class="{
-                // 'shadow-green-500 active:shadow-green-500': moveToken.canCommit,
-                // 'shadow-orange-400 active:shadow-orange-400': isTurnEndable,
                     'bg-emerald-100': moveToken.canCommit,
                     'bg-yellow-100': isTurnEndable,
                 }"

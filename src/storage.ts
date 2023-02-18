@@ -18,8 +18,8 @@ function load<Data>(key: string, namespace?: string): Data | null {
     return null;
 }
 
-function save(key: string, obj: object, namespace?: string) {
-    localStorage.setItem((namespace ?? NAMESPACE) + key, JSON.stringify(obj));
+function save<Data>(key: string, data: Data, namespace?: string) {
+    localStorage.setItem((namespace ?? NAMESPACE) + key, JSON.stringify(data));
 }
 
 function remove(key: string) {

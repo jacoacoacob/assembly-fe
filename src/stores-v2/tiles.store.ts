@@ -6,6 +6,7 @@ import { useGameDataStore } from "./game-data.store";
 import { useMoveTokenStore } from "./move-token.store";
 import { useMoveValidationStore } from "./move-validation.store";
 import { useSeasonsStore } from "./seasons.store";
+import { useSettingsStore } from "./settings.store";
 
 interface TileTokenGraphNode {
     tileTokenIds: Token["id"][];
@@ -47,6 +48,8 @@ function makeTileTokenGraph(tiles: Game["tiles"], tokens: Game["tokens"]): TileT
  * 
  */
 function useTileDegredation() {
+    const settings = useSettingsStore();
+
     const degradingTiles = ref<number[]>([]);
     const recoveringTiles = ref<number[]>([]);
 
@@ -61,12 +64,12 @@ function useTileDegredation() {
             if (typeof tileCapacityModifiers.value[tileIndex] !== "number") {
                 tileCapacityModifiers.value[tileIndex] = 0;
             }
-            tileCapacityModifiers.value[tileIndex] += 1;
+            tileCapacityModifiers.value[tileIndex] += settings.degradationRate;
             return accum.concat(tileIndex);
         }, []);
 
         recoveringTiles.value = recoveringTiles.value.reduce((accum: number[], tileIndex) => {
-            tileCapacityModifiers.value[tileIndex] -= 1;
+            tileCapacityModifiers.value[tileIndex] -= settings.recoveryRate;
             if (tileCapacityModifiers.value[tileIndex] > 0) {
                 accum.push(tileIndex);
             } else {
@@ -84,6 +87,7 @@ const useTilesStore = defineStore("tiles", () => {
     const seasons = useSeasonsStore();
     const moveToken = useMoveTokenStore();
     const validation = useMoveValidationStore();
+    const settings = useSettingsStore();
 
     const inPlayTiles = ref<number[]>([]);
 
@@ -91,11 +95,10 @@ const useTilesStore = defineStore("tiles", () => {
 
     const seasonalTileCapacities = computed(() => gameData.tiles.map((tile, tileIndex) => {
         const tileRow = Math.floor(tileIndex / gameData.grid.cols);
-        switch (seasons.current[tileRow]) {
-            case "cold": return (tile.capacity - (degredation.tileCapacityModifiers.value[tileIndex] ?? 0)) - 2;
-            case "mild": return (tile.capacity - (degredation.tileCapacityModifiers.value[tileIndex] ?? 0));
-            case "warm": return (tile.capacity - (degredation.tileCapacityModifiers.value[tileIndex] ?? 0)) + 2;
-        }
+        const season = seasons.current[tileRow]
+        const seasonalModifier = settings.seasonalTileCapacityModifiers[season];
+        const degradationModifier = degredation.tileCapacityModifiers.value[tileIndex] ?? 0;
+        return tile.capacity - degradationModifier + seasonalModifier;
     }));
 
     const tileTokenGraph = computed(() => makeTileTokenGraph(gameData.tiles, gameData.tokens));

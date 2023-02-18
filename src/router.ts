@@ -41,7 +41,6 @@ const router = createRouter({
             name: "new-game",
             component: NewGameView,
             beforeEnter() {
-                console.log("/new-game beforeEnter")
                 const gameData = useGameDataStore(pinia);
                 const gameState = useGameStateStore(pinia);
                 gameData.name = "";
@@ -85,7 +84,6 @@ const router = createRouter({
             name: "game",
             component: GameView,
             beforeEnter(to) {
-                console.log("/game/:name? beforeEnter")
                 const events = useEventsStore(pinia);
                 const gameHistory = loadGameHistory(to.params.name as string);
                 if (gameHistory) {

@@ -46,7 +46,6 @@ const className = computed(() => {
     return "bg-slate-100"
 });
 
-const openPopover = ref(-1);
 </script>
 
 <template>
@@ -59,9 +58,7 @@ const openPopover = ref(-1);
         @dragover="drag.onTileDragOver"
         @drop="drag.onTileDrop"
     >
-        <div>
-            <TileInfoPopover :tileIndex="tileIndex" @click="openPopover = tileIndex" />
-        </div>
+        <TileInfoPopover :tileIndex="tileIndex" />
         <div class="absolute top-0 left-0 w-full h-full">
             <GameToken
                 v-for="token in tileContents"
@@ -69,5 +66,12 @@ const openPopover = ref(-1);
                 :tokenId="token.id"
             />
         </div>
+        <div
+            class="absolute top-0 right-0 w-2 h-2"
+            :class="{
+                'bg-pink-400': tiles.degredation.degradingTiles.includes(tileIndex),
+                'bg-teal-300': tiles.degredation.recoveringTiles.includes(tileIndex),
+            }"
+        ></div>
     </div>
 </template>

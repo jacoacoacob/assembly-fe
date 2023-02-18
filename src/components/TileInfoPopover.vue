@@ -19,10 +19,7 @@ const players = usePlayersStore();
 const scores = useScoresStore();
 const tiles = useTilesStore();
 
-const props = defineProps<{
-    tileIndex: number;
-    // isOpen: boolean;
-}>();
+const props = defineProps<{ tileIndex: number; }>();
 
 const tilePlayerPoints = computed(() => {
     const { tilePlayerIds } = tiles.tileTokenGraph[props.tileIndex];

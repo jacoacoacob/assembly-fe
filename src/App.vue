@@ -3,16 +3,16 @@ import { onMounted } from 'vue';
 import { RouterView } from 'vue-router';
 import AppLayout from './components/AppLayout.vue';
 
-import { usePreferencesStore } from './stores-v2/preferences.store';
+import { useSettingsStore } from './stores-v2/settings.store';
 
-const prefs = usePreferencesStore();
+const settings = useSettingsStore();
 
-prefs.$subscribe((_mutation, _state) => {
-  prefs.saveLocal();
+settings.$subscribe((_mutation, _state) => {
+  settings.save();
 })
 
 onMounted(() => {
-  prefs.loadLocal();
+  settings.load();
 });
 </script>
 

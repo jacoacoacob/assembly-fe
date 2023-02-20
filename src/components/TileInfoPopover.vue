@@ -92,24 +92,25 @@ watchEffect(() => {
                             </RadioGroupOption>
                         </RadioGroup>
                     </div>
-                    <div class="space-y-6 px-4 pb-4">
-                        <div class="space-y-2">
-                            <p>
-                                If the tokens in this tile remain as they are at the end of the round, this
-                                tile will add <span class="font-semibold">{{ explainedPlayer.score }}</span>
-                                points to <span class="font-semibold">{{ explainedPlayer.name }}</span>'s score.
-                            </p>
-                            <p v-if="tiles.degredation.degradingTiles.includes(tileIndex)">
-                                Also, this is a degrading tile. It has so far lost
-                                <span class="font-semibold">{{ tiles.degredation.tileCapacityModifiers[tileIndex] }}</span> 
-                                capacity.
-                            </p>
-                            <p v-if="tiles.degredation.recoveringTiles.includes(tileIndex)">
-                                Also, this tile is recovering from degradation. It will recover its full capacity
-                                after <span class="font-semibold">{{ tiles.degredation.tileCapacityModifiers[tileIndex] }}</span>
-                                more round completions.
-                            </p>
-                        </div>
+                    <div class="space-y-2 px-4 pb-4">
+                        <p v-if="explainedPlayerId">
+                            If the tokens in this tile remain as they are at the end of the round, this
+                            tile will add <span class="font-semibold">{{ explainedPlayer.score }}</span>
+                            points to <span class="font-semibold">{{ explainedPlayer.name }}</span>'s score.
+                        </p>
+                        <p v-else>
+                            No players have tokens in this tile.
+                        </p>
+                        <p v-if="tiles.degredation.degradingTiles.includes(tileIndex)">
+                            Also, this is a degrading tile. It has so far lost
+                            <span class="font-semibold">{{ tiles.degredation.tileCapacityModifiers[tileIndex] }}</span> 
+                            capacity.
+                        </p>
+                        <p v-if="tiles.degredation.recoveringTiles.includes(tileIndex)">
+                            Also, this tile is recovering from degradation. It will recover its full capacity
+                            after <span class="font-semibold">{{ tiles.degredation.tileCapacityModifiers[tileIndex] }}</span>
+                            more round completions.
+                        </p>
                     </div>
                 </PopoverPanel>
             </Transition>

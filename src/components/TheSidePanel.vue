@@ -18,7 +18,7 @@ const boardView = inject<Ref<"game" | "rules">>("boardView");
     <div class="bg-slate-100 border-2 border-slate-500 p-4 relative max-w-[300px]" v-if="players.viewedPlayer">
         <div v-if="boardView === 'rules'" class="absolute top-0 left-0 bg-slate-100 opacity-50 h-full w-full z-40"></div>
         <div class="space-y-5 flex flex-col h-full" :aria-hidden="boardView !== 'game'">
-            <ul class="space-y-2">
+            <TransitionGroup tag="ul" name="reorder" class="space-y-2">
                 <li v-for="player, i in players.playerList" :key="player.id">
                     <button
                         :tabindex="boardView !== 'game' ? -1 : undefined"
@@ -40,7 +40,7 @@ const boardView = inject<Ref<"game" | "rules">>("boardView");
                         </div>
                     </button>
                 </li>
-            </ul>
+            </TransitionGroup>
             <div class="space-y-2">
                 <h3 class="text-lg"><span class="font-semibold">{{ players.viewedPlayer.name }}</span>'s tokens</h3>
                 <div v-if="players.viewedPlayer">
@@ -51,3 +51,25 @@ const boardView = inject<Ref<"game" | "rules">>("boardView");
         </div>
     </div>
 </template>
+
+<style scoped>
+/* 1. declare transition */
+.reorder-move,
+.reorder-enter-active,
+.reorder-leave-active {
+  transition: all 0.5s cubic-bezier(0.55, 0, 0.1, 1);
+}
+
+/* 2. declare enter from and leave to state */
+.reorder-enter-from,
+.reorder-leave-to {
+  opacity: 0;
+  transform: scaleY(0.01) translate(30px, 0);
+}
+
+/* 3. ensure leaving items are taken out of layout flow so that moving
+      animations can be calculated correctly. */
+.reorder-leave-active {
+  position: absolute;
+}
+</style>

@@ -74,7 +74,8 @@ const isDraggable = computed(() => {
     }
     if (gameState.currentState === "play") {
         const candidateToken = gameData.tokens[moveToken.candidateId];
-        if (candidateToken && candidateToken.tileIndex > -1) {
+        // if (candidateToken && candidateToken.tileIndex > -1) {
+        if (candidateToken) {
             return (
                 isInPlay &&
                 isActivePlayerToken &&

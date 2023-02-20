@@ -24,9 +24,9 @@ const className = computed(() => ({
                 <h1 class="font-bold text-slate-700">
                     Contents
                 </h1>
-                <nav class="flex flex-col space-y-2 w-32">
+                <nav class="flex flex-col space-y-3 w-32 font-semibold text-sm">
                     <a href="#introduction">Introduction</a>
-                    <a href="#materials">Terms and Concepts</a>
+                    <a href="#the-pieces">The Pieces</a>
                     <a href="#setup">Setup</a>
                     <a href="#gameplay">Gameplay</a>
                 </nav>
@@ -50,7 +50,7 @@ const className = computed(() => ({
                     </p>
                 </GameRulesSection>
 
-                <GameRulesSection heading="Terms and Concepts">
+                <GameRulesSection heading="The Pieces">
                     <p>
                         Each player controls 20 <span class="font-semibold">tokens</span>. Each
                         token displays a number in its center. This is its 
@@ -62,6 +62,22 @@ const className = computed(() => ({
                         the <span class="font-semibold">tiles</span> (on the board). Each tile 
                         displays a number in its center. This is its 
                         <span class="font-semibold">tile capacity</span>.
+                    </p>
+                    <p>
+                        Gameplay is broken into rounds during which each player must take at least one
+                        <span class="font-semibold">action</span>. 
+                        
+                        With one exception, each action will
+                        either 
+                    </p>
+                    <p>
+                        Gameplay is broken into rounds during which each player each player must
+                        take at least one <span class="font-semibold">action</span>. An action
+                        involves moving a token from one tile to another (<span class="italic">move token</span>),
+                        moving a token from the token reserve and placing it on a tile
+                        (<span class="italic">place token</span>), or removing a token from a tile
+                        and putting it back into the token reserve (<span class="italic">remove token</span>).
+                        When a player 
                     </p>
                 </GameRulesSection>
 

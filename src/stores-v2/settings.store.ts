@@ -24,7 +24,7 @@ const useSettingsStore = defineStore("settings", {
         seasonalTileCapacityModifiers: {
             warm: 2,
             mild: 0,
-            cold: -2,
+            cold: -4,
         },
         degradationRate: 1,
         recoveryRate: 1,

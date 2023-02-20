@@ -11,7 +11,7 @@ import { useGameDataStore } from "../game-data.store";
 function getStagedTokenIds(playerTokensIds: PlayerTokenIds): Token["id"][] {
     return Object.entries(playerTokensIds).reduce((accum: Token["id"][], [playerId, playerTokenIds]) => {
         const playerTokens: Token["id"][] = [];
-        while (playerTokens.length < 6) {
+        while (playerTokens.length < 4) {
             const tokenId = playerTokenIds[randFromRange(0, playerTokenIds.length - 1)];
             if (playerTokens.includes(tokenId)) {
                 continue;
@@ -36,7 +36,7 @@ function createTokens(players: Record<Player["id"], Player>): Game["tokens"] {
     }
 
     Object.values(players).forEach((player) => {
-        for (let i = 0; i < 5; i++) {
+        for (let i = 0; i < 4; i++) {
             tokenValues.forEach(tokenValue => {
                 const token = generateToken(player.id, tokenValue, -1);
                 tokens[token.id] = token;
@@ -67,7 +67,8 @@ const useNewGameState = defineStore("new-game-state", () => {
         const tiles = createTiles(
             6,
             9,
-            Object.keys(players).length < 4 ? [3, 8] : [4, 9]
+            [5, 10]
+            // Object.keys(players).length < 4 ? [3, 8] : [4, 9]
         );
         const grid = createGrid(6, 9, 90);
         events.sendMany(

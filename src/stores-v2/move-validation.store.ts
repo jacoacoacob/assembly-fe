@@ -54,12 +54,18 @@ const useMoveValidationStore = defineStore("move-validation", () => {
         return playerPoints + cost > 0;
     }
 
-    function _checkTileCapacity(token: Token, dest: number) {
+    function _checkTileCapacity(token: Token, origin: number, dest: number) {
         if (dest === -1) {
             return true;
         }
         const tileCapacity = tiles.seasonalTileCapacities[dest];
         const { tileTokenValuesSum, tileTokenIds } = tiles.tileTokenGraph[dest];
+        if (origin === -1) {
+            return (
+                tileTokenIds.length < 3 &&
+                tileTokenValuesSum + token.value <= tileCapacity
+            )
+        }
         return (
             tileTokenIds.length < 4 &&
             tileTokenValuesSum + token.value <= tileCapacity
@@ -72,7 +78,7 @@ const useMoveValidationStore = defineStore("move-validation", () => {
             ? moveToken.candidateOriginTileIndex as number
             : token.tileIndex;
         if (gameState.currentState === "place_tokens") {
-            return _checkTileCapacity(token, dest);
+            return _checkTileCapacity(token, origin, dest);
         }
         if (gameState.currentState === "play") {
             const playerOverloads = tiles.getPlayerOverloads(token.playerId);
@@ -80,11 +86,11 @@ const useMoveValidationStore = defineStore("move-validation", () => {
                 return (
                     playerOverloads.includes(origin) &&
                     _checkCost(token, origin, dest, moveToken.resolvesOverload) &&
-                    _checkTileCapacity(token, dest)
+                    _checkTileCapacity(token, origin, dest)
                 )
             }
             return (
-                _checkTileCapacity(token, dest) &&
+                _checkTileCapacity(token, origin, dest) &&
                 _checkCost(token, origin, dest, moveToken.resolvesOverload)
             )
         }

@@ -4,6 +4,8 @@ import {
     DialogTitle,
     DialogDescription,
     DialogPanel,
+    RadioGroup,
+    RadioGroupOption,
     Disclosure,
     DisclosureButton,
     DisclosurePanel,
@@ -87,6 +89,50 @@ const settings = useSettingsStore();
                         type="number"
                         v-model.number="settings.recoveryRate"
                     />
+                </section>
+                <section class="space-y-4 flex flex-col">
+                    <h3 class="font-semibold text-lg">
+                        Player Order
+                    </h3>
+                    <p>
+                        Choose how player turn order changes (or doesn't) each round.
+                    </p>
+                    <RadioGroup v-model="settings.playerSortMethod" class="space-y-1">
+                        <RadioGroupOption v-slot="{ checked }: { checked: boolean }" value="rotate">
+                            <div
+                                class="rounded p-2 border cursor-pointer"
+                                :class="{ 'bg-slate-800 text-white': checked }"
+                            >
+                                <h4 class="font-semibold">Rotate</h4>
+                                <p class="text-sm" :class="`text-slate-${checked ? '400' : '600'}`">
+                                    player order shifts one position, from back to front, during each
+                                    round-completion.
+                                </p>
+                            </div>                                
+                        </RadioGroupOption>
+                        <RadioGroupOption v-slot="{ checked }: { checked: boolean }" value="shuffle">
+                            <div
+                                class="rounded p-2 border cursor-pointer"
+                                :class="{ 'bg-slate-800 text-white': checked }"
+                            >
+                                <h4 class="font-semibold">Random</h4>
+                                <p class="text-sm" :class="`text-slate-${checked ? '400' : '600'}`">
+                                    player order is shuffled randomly during each round-completion.
+                                </p>
+                            </div>                            
+                        </RadioGroupOption>
+                        <RadioGroupOption v-slot="{ checked }: { checked: boolean }" value="static">
+                            <div
+                                class="rounded p-2 border cursor-pointer"
+                                :class="{ 'bg-slate-800 text-white': checked }"
+                            >
+                                <h4 class="font-semibold">Static</h4>
+                                <p class="text-sm" :class="`text-slate-${checked ? '400' : '600'}`">
+                                    player order stays the same from round to round.
+                                </p>
+                            </div>                            
+                        </RadioGroupOption>
+                    </RadioGroup>
                 </section>
             </div>
         </DialogPanel>

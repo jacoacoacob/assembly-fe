@@ -15,6 +15,7 @@ interface Settings {
     };
     degradationRate: number;
     recoveryRate: number;
+    playerSortMethod: "shuffle" | "static" | "rotate"; 
 }
 
 const useSettingsStore = defineStore("settings", {
@@ -27,6 +28,7 @@ const useSettingsStore = defineStore("settings", {
         },
         degradationRate: 1,
         recoveryRate: 1,
+        playerSortMethod: "rotate",
     }),
     actions: {
         load() {

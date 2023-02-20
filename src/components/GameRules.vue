@@ -26,9 +26,9 @@ const className = computed(() => ({
                 </h1>
                 <nav class="flex flex-col space-y-2 w-32">
                     <a href="#introduction">Introduction</a>
-                    <!-- <a href="#points">Points</a>
+                    <a href="#materials">Terms and Concepts</a>
+                    <a href="#setup">Setup</a>
                     <a href="#gameplay">Gameplay</a>
-                    <a href="#points-and-scoring">Points and Scoring</a> -->
                 </nav>
             </section>
             <section class="flex flex-col space-y-6 overflow-auto px-4 flex-1">
@@ -39,53 +39,50 @@ const className = computed(() => ({
 
                 <GameRulesSection heading="Introduction">
                     <p>
-                        In this game, as in the rest of life, survival isn't a winner take all brawl
-                        but a constant negotiation in relationship with others.
+                        In this game, as in the rest of life, survival isn't a winner take all
+                        brawl but a constant negotiation in relationship with others.
                     </p>
                     <p>
-                        Each player's goal is to move all of their tokens onto the board. Earning points
-                        is key to success but players must be careful to ensure that their pursuit of points
-                        doesn't knock any other player out of the game. It's game over if this happens and
-                        everyone loses.
+                        Your goal is to get all of your tokens onto the board. Earning points
+                        is key to success but be careful that your pursuit of points doesn't 
+                        knock any other player out of the game. If this happens, it's game over
+                        and everyone loses!
                     </p>
-                    <!-- <p>
-
-                    </p>
-                    <p>
-                        To succeed, players must maintain and grow their point total as the rounds 
-                        progress. This will require careful collaboration with other players to maintain
-                        an ecosystem where all players
-                        Here, each player's running point total acts as a proxy for 
-                        
-                        are a proxy for 
-                        At the heart of gameplay is the maintenance of your points. If your points 
-                    </p>
-                    <p>
-                        If any player completes 3 consecutive rounds with all of their tokens on the 
-                        board, the game is over and everyone wins.
-                    </p>
-                    <p>
-                        If any player ends a turn with all of their tokens removed from the board, the
-                        game is over and everyone loses.
-                    </p>
-                    <p>
-                        If no player completes 3 consecutive rounds with all tokens on the board before
-                        X rounds have ellapsed, the game is over and everyone loses.
-                    </p> -->
                 </GameRulesSection>
 
-                <GameRulesSection heading="Materials">
+                <GameRulesSection heading="Terms and Concepts">
                     <p>
                         Each player controls 20 <span class="font-semibold">tokens</span>. Each
                         token displays a number in its center. This is its 
                         <span class="font-semibold">token value</span>.
                     </p>
                     <p>
-                        Throughout the game, players will move their tokens between their <span class="font-semibold">token reserve</span>
-                        (off of the board) and the <span class="font-semibold">tiles</span> (on the board). Each tile displays a number
-                        in its center. This is its <span class="font-semibold">tile capacity</span>.
+                        Throughout the game, players will move their tokens between their 
+                        <span class="font-semibold">token reserve</span> (off of the board) and 
+                        the <span class="font-semibold">tiles</span> (on the board). Each tile 
+                        displays a number in its center. This is its 
+                        <span class="font-semibold">tile capacity</span>.
                     </p>
                 </GameRulesSection>
+
+                <GameRulesSection heading="Setup">
+                    <p>
+                        During setup, 6 tokens are randomly selected from each players' token reserve
+                        to be placed onto the board.
+
+                        Players take turns placing these tokens one at a time onto open tiles. 
+                        
+                        When they are finished, the game moves into normal 
+                        <span class="font-semibold">gameplay</span>.
+                    </p>
+                </GameRulesSection>
+
+                <GameRulesSection heading="Gameplay">
+                    <p>
+                        ...
+                    </p>
+                </GameRulesSection>
+
 
                 <!-- <GameRulesSection heading="Materials">
                     The 

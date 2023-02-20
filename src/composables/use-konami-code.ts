@@ -23,24 +23,18 @@ function useKonamiCode() {
     const _keyCodeQueue = ref<string[]>([]);
 
     function _checkDidKonami() {
-        let validSequenceLength = 0;
+        let nValidChars = 0;
 
         for (let i = 0; i < _keyCodeQueue.value.length; i++) {
             const current = _keyCodeQueue.value[i];
-            
-            if (validSequenceLength === 0) {
-                if (current === SEQUENCE[0]) {
-                    validSequenceLength += 1;
-                }
-            } else {
-                if (current === SEQUENCE[validSequenceLength]) {
-                    validSequenceLength += 1;
-                } else {
-                    validSequenceLength = 0;
-                }
-            }
 
-            if (validSequenceLength === SEQUENCE.length) {
+            if (current === SEQUENCE[nValidChars]) {
+                nValidChars += 1;
+            } else {
+                nValidChars = 0;
+            }
+            
+            if (nValidChars === SEQUENCE.length) {
                 return true;
             }
         }

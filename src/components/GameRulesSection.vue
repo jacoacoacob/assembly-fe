@@ -4,10 +4,10 @@ defineProps<{ heading: string }>();
 
 <template>
     <div
-        class="space-y-2"
+        class="space-y-4"
         :id="heading.replace(/\s{2,}/g, ' ').replace(/\s/g, '-').toLowerCase()"
     >
-        <h2 class="font-semibold text-lg">
+        <h2 class="font-semibold text-2xl">
             {{ heading }}
         </h2>
         <slot></slot>

@@ -6,6 +6,7 @@ import type { TilesEvent } from "./handlers/tiles.handlers";
 import type { ScoresEvent } from "./handlers/scores.handlers";
 import type { PlayerMovesEvent } from "./handlers/player-moves.handlers";
 import type { SeasonsEvent } from "./handlers/seasons.handlers";
+import type { RoundsEvent } from "./handlers/round.handlers";
 
 type PlayerColor = "green" | "blue" | "orange" | "red" | "violet";
 
@@ -42,6 +43,7 @@ type GameEvent =
     TilesEvent |
     PlayerMovesEvent |
     SeasonsEvent |
+    RoundsEvent |
     ScoresEvent;
 
 interface Game {

@@ -52,7 +52,7 @@ const className = computed(() => ({
 
                 <GameRulesSection heading="The Pieces">
                     <p>
-                        Each player controls 20 <span class="font-semibold">tokens</span>. Each
+                        Each player controls 16 <span class="font-semibold">tokens</span>. Each
                         token displays a number in its center. This is its 
                         <span class="font-semibold">token value</span>.
                     </p>

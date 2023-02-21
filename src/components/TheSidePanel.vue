@@ -1,15 +1,18 @@
 <script setup lang="ts">
+import { inject, type Ref } from 'vue';
+
 import TokenReserve from './TokenReserve.vue';
-import { useGameDataStore } from '@/stores-v2/game-data.store';
+import PlayerMoves from './PlayerMoves.vue';
+
 import { usePlayersStore, PLAYER_COLOR_OPTIONS } from '@/stores-v2/players.store';
 import { useScoresStore } from '@/stores-v2/scores.store';
 import { useGameStateStore } from '@/stores-v2/game-state.store';
-import PlayerMoves from './PlayerMoves.vue';
-import { inject, type Ref } from 'vue';
+import { useRoundsStore } from '@/stores-v2/rounds.store';
 
 const gameState = useGameStateStore();
 const players = usePlayersStore();
 const scores = useScoresStore();
+const rounds = useRoundsStore();
 
 const boardView = inject<Ref<"game" | "rules">>("boardView");
 </script>
@@ -18,6 +21,9 @@ const boardView = inject<Ref<"game" | "rules">>("boardView");
     <div class="bg-slate-100 border-2 border-slate-500 p-4 relative max-w-[300px]" v-if="players.viewedPlayer">
         <div v-if="boardView === 'rules'" class="absolute top-0 left-0 bg-slate-100 opacity-50 h-full w-full z-40"></div>
         <div class="space-y-5 flex flex-col h-full" :aria-hidden="boardView !== 'game'">
+            <div class="font-semibold text-end">
+                Round {{ rounds.currentRound }}
+            </div>
             <TransitionGroup tag="ul" name="reorder" class="space-y-2">
                 <li v-for="player, i in players.playerList" :key="player.id">
                     <button
@@ -42,10 +48,7 @@ const boardView = inject<Ref<"game" | "rules">>("boardView");
                 </li>
             </TransitionGroup>
             <div class="space-y-2">
-                <h3 class="text-lg"><span class="font-semibold">{{ players.viewedPlayer.name }}</span>'s tokens</h3>
-                <div v-if="players.viewedPlayer">
-                    <TokenReserve :playerId="players.viewedPlayer.id" />
-                </div>
+                <TokenReserve v-if="players.viewedPlayer" :playerId="players.viewedPlayer.id" />
             </div>
             <PlayerMoves v-if="gameState.currentState === 'play'"  />
         </div>

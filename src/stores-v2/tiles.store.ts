@@ -241,10 +241,20 @@ const useTilesStore = defineStore("tiles", () => {
         );
     }
 
+    function getDegradingTiles() {
+        return tileTokenGraph.value.reduce((accum: number[], { tilePlayerIds }, tileIndex) => {
+            if (tilePlayerIds.length === 1) {
+                accum.push(tileIndex);
+            }
+            return accum;
+        }, [])
+    }
+
     return {
         degredation,
         openInPlayTiles,
         getPlayerOverloads,
+        getDegradingTiles,
         inPlayTiles,
         tileTokenGraph,
         liveTileTokenGraph,

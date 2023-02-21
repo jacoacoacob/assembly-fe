@@ -1,5 +1,4 @@
  import { createRouter, createWebHistory, type RouteParams, type RouterLinkProps } from "vue-router";
- import { pinia } from "./pinia";
 
 import SavedGamesView from "@/views/SavedGamesView.vue";
 import NewGameView from "@/views/NewGameView.vue";
@@ -7,9 +6,8 @@ import WelcomeView from "@/views/WelcomeView.vue";
 import GameView from "@/views/GameView.vue";
 import { loadGameHistory } from "./api/game-api";
 import { useEventsStore } from "./stores-v2/events.store";
-import { useGameDataStore, initialState } from "./stores-v2/game-data.store";
-import { useGameStateStore } from "./stores-v2/game-state.store";
 import { useSettingsStore } from "./stores-v2/settings.store";
+import { useResetGame } from "./composables/use-reset-game";
 
 interface Breadcrumb {
     name: string | ((params: RouteParams) => string);
@@ -41,17 +39,6 @@ const router = createRouter({
             path: "/new-game",
             name: "new-game",
             component: NewGameView,
-            beforeEnter() {
-                const gameData = useGameDataStore(pinia);
-                const gameState = useGameStateStore(pinia);
-                gameData.name = "";
-                gameData.history = [];
-                gameData.grid = { rows: 0, cols: 0, tileSize: 0 };
-                gameData.tokens = {}
-                gameData.tiles = [];
-                gameData.ts_updated = new Date().toISOString();
-                gameState.currentState = "new_game";
-            },
             meta: {
                 breadcrumbs: [
                     {
@@ -85,8 +72,12 @@ const router = createRouter({
             name: "game",
             component: GameView,
             beforeEnter(to) {
-                const events = useEventsStore(pinia);
+                const events = useEventsStore();
                 const settings = useSettingsStore();
+
+                const resetGame = useResetGame();
+
+                resetGame();
 
                 settings.$subscribe((_mutation, _state) => {
                     settings.save();

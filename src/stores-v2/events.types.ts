@@ -6,6 +6,7 @@ type EventDomain =
     "players" |
     "scores" |
     "seasons" |
+    "rounds" |
     "game_state" |
     "player_moves";
 

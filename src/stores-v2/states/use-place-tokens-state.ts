@@ -9,6 +9,7 @@ import { useTokensStore } from "../tokens.store";
 import { usePlayerMovesStore } from "../player-moves.store";
 import { useMoveTokenStore } from "../move-token.store";
 import { useScoresStore } from "../scores.store";
+import { useMoveValidationStore } from "../move-validation.store";
 
 const usePlaceTokensState = defineStore("place-tokens-state", () => {
     const gameData = useGameDataStore();
@@ -18,6 +19,7 @@ const usePlaceTokensState = defineStore("place-tokens-state", () => {
     const tiles = useTilesStore();
     const scores = useScoresStore();
     const playerMoves = usePlayerMovesStore();
+    const validation = useMoveValidationStore();
 
     const moveToken = useMoveTokenStore();
 
@@ -52,11 +54,12 @@ const usePlaceTokensState = defineStore("place-tokens-state", () => {
         events.sendMany(
             ["game_state:set_state", "play"],
             ["tiles:set_in_play_tiles", gameData.tiles.map((_, i) => i)],
-            ["tiles:record_degrading_tiles"],
+            ["tiles:set_degrading_tiles", tiles.getDegradingTiles()],
             ["tokens:set_in_play_token_ids", Object.keys(gameData.tokens)],
             ["players:shuffle_order", shuffle(players.playerOrder)],
             ["scores:set_point_totals", scores.tileScoresTotals],
-            ["scores:set_initial_round_tile_scores", scores.tileScoresTotals]
+            ["scores:set_initial_round_tile_scores", scores.tileScoresTotals],
+            ["rounds:next"],
         );
     }
 
@@ -66,7 +69,6 @@ const usePlaceTokensState = defineStore("place-tokens-state", () => {
         }
         moveToken.commit()
         events.sendMany(["players:next"]);
-        console.log("after players:next")
         players.viewActivePlayer();
         if (_isPlacementComplete()) {
             _startPlayState();
@@ -76,7 +78,12 @@ const usePlaceTokensState = defineStore("place-tokens-state", () => {
                 tiles.inPlayTiles.concat(
                     selectRandomFrom(
                         gameData.tiles.map((_, i) => i).filter(
-                            (tileIndex) => !tiles.openInPlayTiles.includes(tileIndex)
+                            (tileIndex) => (
+                                !tiles.openInPlayTiles.includes(tileIndex) &&
+                                tokens.inPlayReservePlayerTokenIds[players.activePlayer.id].some(
+                                    (tokenId) => validation.isValidMove(tokenId, tileIndex)
+                                )
+                            )
                         ),
                         2
                     )

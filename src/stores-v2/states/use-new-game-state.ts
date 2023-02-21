@@ -8,18 +8,29 @@ import { useTokensStore } from "../tokens.store";
 import { nextTick } from "vue";
 import { useGameDataStore } from "../game-data.store";
 
-function getStagedTokenIds(playerTokensIds: PlayerTokenIds): Token["id"][] {
-    return Object.entries(playerTokensIds).reduce((accum: Token["id"][], [playerId, playerTokenIds]) => {
-        const playerTokens: Token["id"][] = [];
-        while (playerTokens.length < 4) {
-            const tokenId = playerTokenIds[randFromRange(0, playerTokenIds.length - 1)];
-            if (playerTokens.includes(tokenId)) {
-                continue;
-            }
-            playerTokens.push(tokenId);
-        } 
-        return accum.concat(playerTokens);
-    }, []);
+function getStagedTokenIds(tokens: Game["tokens"], playerTokensIds: PlayerTokenIds): Token["id"][] {
+    return Object.values(playerTokensIds).reduce(
+        (accum: Token["id"][], playerTokensIds) => [
+            ...accum,
+            ...[1,2,3,4].map(
+                (tokenValue) => playerTokensIds.find(
+                    (tokenId) => tokens[tokenId].value === tokenValue
+                ) as string
+            )
+        ],
+        []
+    );
+    // return Object.entries(playerTokensIds).reduce((accum: Token["id"][], [, playerTokenIds]) => {
+    //     const playerTokens: Token["id"][] = [];
+    //     while (playerTokens.length < 4) {
+    //         const tokenId = playerTokenIds[randFromRange(0, playerTokenIds.length - 1)];
+    //         if (playerTokens.includes(tokenId)) {
+    //             continue;
+    //         }
+    //         playerTokens.push(tokenId);
+    //     } 
+    //     return accum.concat(playerTokens);
+    // }, []);
 }
 
 function createTokens(players: Record<Player["id"], Player>): Game["tokens"] {
@@ -59,22 +70,17 @@ function createTiles(rows: number, cols: number, capacityRange: [number, number]
 }
 
 const useNewGameState = defineStore("new-game-state", () => {
-    const gameData = useGameDataStore();
     const events = useEventsStore();
     const tokens = useTokensStore();
 
     function createGame(name: string, players: Record<Player["id"], Player>) {
-        const tiles = createTiles(
-            6,
-            9,
-            [5, 10]
-            // Object.keys(players).length < 4 ? [3, 8] : [4, 9]
-        );
+        const tiles = createTiles(6, 9, [5, 10]);
         const grid = createGrid(6, 9, 90);
+        const gameTokens = createTokens(players);
         events.sendMany(
             ["game_data:set_name", name],
             ["game_data:set_players", players],
-            ["game_data:set_tokens", createTokens(players)],
+            ["game_data:set_tokens", gameTokens],
             ["game_data:set_grid", grid],
             ["game_data:set_tiles", tiles],
             ["players:shuffle_order", shuffle(Object.keys(players))],
@@ -83,7 +89,7 @@ const useNewGameState = defineStore("new-game-state", () => {
         nextTick(() => {
             const tileIndeces = tiles.map((_, i) => i);
             events.sendMany(
-                ["tokens:set_in_play_token_ids", getStagedTokenIds(tokens.playerTokenIds)],
+                ["tokens:set_in_play_token_ids", getStagedTokenIds(gameTokens, tokens.playerTokenIds)],
                 ["tiles:set_in_play_tiles", [
                     ...selectRandomFrom(tileIndeces.slice(0,             grid.cols * 2), 2),
                     ...selectRandomFrom(tileIndeces.slice(grid.cols * 2, grid.cols * 4), 2),

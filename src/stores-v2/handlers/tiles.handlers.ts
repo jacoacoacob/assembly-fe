@@ -5,7 +5,7 @@ import { eventHandlers } from "@/utils/event-handlers";
 type E<Name extends string, Data = {}> = Event<"tiles", Name, Data>;
 
 type TilesEvent =
-    E<"record_degrading_tiles"> |
+    E<"set_degrading_tiles", number[]> |
     E<"set_in_play_tiles", number[]>;
 
 function tilesEventHandlers() {
@@ -15,15 +15,8 @@ function tilesEventHandlers() {
         set_in_play_tiles(tileIndeces) {
             tiles.inPlayTiles = tileIndeces;
         },
-        record_degrading_tiles() {
-            tiles.degredation.tick(
-                tiles.tileTokenGraph.reduce((accum: number[], { tilePlayerIds }, tileIndex) => {
-                    if (tilePlayerIds.length === 1) {
-                        accum.push(tileIndex);
-                    }
-                    return accum;
-                }, [])
-            )
+        set_degrading_tiles(tileIndeces) {
+            tiles.degredation.tick(tileIndeces);
         }
     });
 }

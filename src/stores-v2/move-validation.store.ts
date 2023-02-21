@@ -60,16 +60,10 @@ const useMoveValidationStore = defineStore("move-validation", () => {
         }
         const tileCapacity = tiles.seasonalTileCapacities[dest];
         const { tileTokenValuesSum, tileTokenIds } = tiles.tileTokenGraph[dest];
-        if (origin === -1) {
-            return (
-                tileTokenIds.length < 3 &&
-                tileTokenValuesSum + token.value <= tileCapacity
-            )
-        }
         return (
-            tileTokenIds.length < 4 &&
+            tileTokenIds.length < (origin === -1 ? 3 : 4) &&
             tileTokenValuesSum + token.value <= tileCapacity
-        )
+        );
     }
 
     function isValidMove(tokenId: string, dest: number) {

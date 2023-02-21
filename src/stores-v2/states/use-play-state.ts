@@ -10,7 +10,6 @@ import { usePlayerMovesStore } from "../player-moves.store";
 import { useMoveTokenStore } from "../move-token.store";
 import { useTilesStore } from "../tiles.store";
 import { useMoveDetail } from "@/composables/use-move-details";
-import { headToTail } from "@/utils/head-to-tail";
 import { useUpdatePlayerOrder } from "@/composables/use-player-order";
 
 const usePlayState = defineStore("play-state", () => {
@@ -20,7 +19,6 @@ const usePlayState = defineStore("play-state", () => {
     const players = usePlayersStore();
     const tiles = useTilesStore();
     const playerMoves = usePlayerMovesStore();
-    
     const moveToken = useMoveTokenStore();
 
     const updatePlayerOrder = useUpdatePlayerOrder();
@@ -73,7 +71,8 @@ const usePlayState = defineStore("play-state", () => {
                 )],
                 ["scores:set_initial_round_tile_scores", scores.tileScoresTotals],
                 ["players:shuffle_order", updatePlayerOrder()],
-                ["tiles:record_degrading_tiles"],
+                ["tiles:set_degrading_tiles", tiles.getDegradingTiles()],
+                ["rounds:next"],
                 ["seasons:next"],
             );
         }

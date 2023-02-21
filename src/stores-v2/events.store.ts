@@ -12,8 +12,9 @@ import { tilesEventHandlers, type TilesEventHandlers } from "./handlers/tiles.ha
 import { scoresEventHandlers, type ScoresEventHandlers } from "./handlers/scores.handlers";
 import { playerMovesEventHandlers, type PlayerMovesEventHandlers } from "./handlers/player-moves.handlers";
 import { seasonsEventHandlers, type SeasonsEventHandlers } from "./handlers/seasons.handlers";
+import { roundsEventHandlers, type RoundsEventHandlers } from "./handlers/round.handlers";
 
-type StoreEventHandler =
+type EventsStoreHandler =
     GameDataEventHandlers |
     TokensEventHandlers |
     PlayersEventHandlers |
@@ -21,13 +22,14 @@ type StoreEventHandler =
     ScoresEventHandlers |
     PlayerMovesEventHandlers |
     SeasonsEventHandlers |
+    RoundsEventHandlers |
     TilesEventHandlers;
 
 const useEventsStore = defineStore("events", () => {
 
     const gameData = useGameDataStore();
     
-    const handlers: Record<EventDomain, StoreEventHandler> = {
+    const handlers: Record<EventDomain, EventsStoreHandler> = {
         game_data: gameDataEventHandlers(),
         tokens: tokensEventHandlers(),
         players: playersEventHandlers(),
@@ -36,6 +38,7 @@ const useEventsStore = defineStore("events", () => {
         scores: scoresEventHandlers(),
         player_moves: playerMovesEventHandlers(),
         seasons: seasonsEventHandlers(),
+        rounds: roundsEventHandlers(),
     };
     
     function handleEvent<Domain extends EventDomain, E extends Event<Domain, string>>(event: GameEvent) {

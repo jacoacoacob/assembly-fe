@@ -32,6 +32,7 @@ const className = computed(() => ({
                         </h2>
                         <ul class="pl-4 space-y-2">
                             <li><a href="#things-to-know_tokens">tokens</a></li>
+                            <li><a href="#things-to-know_token-value">token value</a></li>
                             <li><a href="#things-to-know_tiles">tiles</a></li>
                             <li><a href="#things-to-know_tile-capacity">tile capacity</a></li>
                             <li><a href="#things-to-know_tile-scoring">tile scoring</a></li>
@@ -72,7 +73,7 @@ const className = computed(() => ({
                             </p>
                         </section>
                         <section class="space-y-2">
-                            <h3 id="things-to-know_tokens" class="text-lg font-bold">
+                            <h3 id="things-to-know_token-value" class="text-lg font-bold">
                                 Token value
                             </h3>
                             <p>
@@ -93,8 +94,9 @@ const className = computed(() => ({
                                 Tile capacity
                             </h3>
                             <p>
-                                Each tile displays a number in its center. This is its <i>capacity</i>.
-                                It is generated at random and will fluctuate depending on the season.
+                                Each tile displays a number in its center. This is its <i>tile capacity</i>.
+                                It is randomly generated at the beginning of the game and will fluctuate 
+                                depending on the season.
                             </p>
                             <p>
                                 A tile may contain any combination of between 0 and 4 tokens as long 

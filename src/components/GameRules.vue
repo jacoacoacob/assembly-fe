@@ -26,23 +26,17 @@ const className = computed(() => ({
                 </h1>
                 <nav class="flex flex-col space-y-3 w-32 font-semibold text-sm">
                     <a href="#introduction">Introduction</a>
-                    <a href="#things-to-know">Things to know</a>
                     <nav class="space-y-2">
                         <h2>
-                            <a href="#tiles">Tiles</a>
+                            <a href="#things-to-know">Things to know</a>
                         </h2>
                         <ul class="pl-4 space-y-2">
-                            <li>
-                                <a href="#tile-capacity">Capacity</a>
-                            </li>
-                            <li>
-                                <a href="#tile-scoring">Scoring</a>
-                            </li>
+                            <li><a href="#things-to-know_tokens">tokens</a></li>
+                            <li><a href="#things-to-know_tiles">tiles</a></li>
+                            <li><a href="#things-to-know_tile-capacity">tile capacity</a></li>
+                            <li><a href="#things-to-know_tile-scoring">tile scoring</a></li>
                         </ul>
                     </nav>
-
-                    <a href="#setup">Setup</a>
-                    <a href="#gameplay">Gameplay</a>
                 </nav>
             </section>
             <section class="flex flex-col space-y-8 overflow-auto px-4 flex-1">
@@ -57,27 +51,59 @@ const className = computed(() => ({
                         brawl but a constant negotiation in relationship with others.
                     </p>
                     <p>
-                        Your goal is to get all of your tokens onto the board. Earning points
+                        ...
+                        <!-- Your goal is to get all of your tokens onto the board. Earning points
                         is key to success but be careful that your pursuit of points doesn't 
                         knock any other player out of the game. If this happens, it's game over
-                        and everyone loses!
+                        and everyone loses! -->
                     </p>
                 </GameRulesSection>
 
-                <GameRulesSection heading="Tiles">
-                    <div class="space-y-8">
-                        <section class="space-y-4">
-                            <h3 id="tile-capacity" class="text-lg font-bold">
-                                Capacity
+                <GameRulesSection heading="Things to know">
+                    <div class="space-y-6">
+                        <section class="space-y-2">
+                            <h3 id="things-to-know_tokens" class="text-lg font-bold">
+                                Tokens
                             </h3>
                             <p>
-                                Each tile displays a number in its center. This is its <dfn>capacity</dfn>.
-                                It is generated at random and will fluctuate depending on the season.
+                                Each player will controls 16 tokens. These are the round things which are
+                                color coded by player and can be moved between the token reserve and tiles
+                                on the board.
                             </p>
                         </section>
-                        <section class="space-y-4">
-                            <h3 id="tile-scoring" class="text-lg font-bold">
-                                Scoring
+                        <section class="space-y-2">
+                            <h3 id="things-to-know_tokens" class="text-lg font-bold">
+                                Token value
+                            </h3>
+                            <p>
+                                Each token displays a number in its center ranging from 1 to 4. This is its
+                                <i>token value</i>.
+                            </p>
+                        </section>
+                        <section class="space-y-2">
+                            <h3 id="things-to-know_tiles" class="text-lg font-bold">
+                                Tiles
+                            </h3>
+                            <p>
+                                The board is made up of a 6X9 grid of tiles.
+                            </p>
+                        </section>
+                        <section class="space-y-2">
+                            <h3 id="things-to-know_tile-capacity" class="text-lg font-bold">
+                                Tile capacity
+                            </h3>
+                            <p>
+                                Each tile displays a number in its center. This is its <i>capacity</i>.
+                                It is generated at random and will fluctuate depending on the season.
+                            </p>
+                            <p>
+                                A tile may contain any combination of between 0 and 4 tokens as long 
+                                as the sum of the token values does not exceed the tile's capacity.
+                            </p>
+                        </section>
+                        <section class="space-y-2">
+                            <h3 id="things-to-know_tile-scoring" class="text-lg font-bold">
+                                Tile scoring
                             </h3>
                             <p>
                                 During round-completion, points are calculated for each player in every
@@ -90,7 +116,7 @@ const className = computed(() => ({
                             </p>
                             <p>
                                 In tiles containing tokens belonging to 2 or more players, points are
-                                calculated for each player using thing following steps.
+                                calculated for each of those players using thing following steps.
                             </p>
                             <ol class="space-y-1 list-decimal pl-4">
                                 <li>
@@ -112,17 +138,16 @@ const className = computed(() => ({
                             <div class="bg-slate-200 p-2 rounded">
                                 <h5 class="font-bold inline text-slate-600">Tip</h5>:
                                 <em>
-                                    You can click the <i class="font-semibold">tile capacity</i> display in each tile to see
-                                    details about that tile including the scoring for any player with 
-                                    tokens in it.
+                                    You can click the <i class="font-semibold">tile capacity</i> display
+                                    in each tile to see details about that tile including the scoring 
+                                    for any player with tokens in it.
                                 </em>
                             </div>
                         </section>
                     </div>
-
                 </GameRulesSection>
 
-                <GameRulesSection heading="Things to know">
+                <!-- <GameRulesSection heading="Things to know">
                     <p>
                         In Assemblage, each player controls 16 
                         <dfn>tokens</dfn>.
@@ -224,7 +249,7 @@ const className = computed(() => ({
                             action.
                         </p>
                     </div>
-                </GameRulesSection>
+                </GameRulesSection> -->
 
 
                 <!-- <GameRulesSection heading="Materials">

@@ -60,7 +60,6 @@ const useScoresStore = defineStore("scores", () => {
                     } else {
                         arr.forEach(([playerId_, playerTokenTotal_]) => {
                             if (playerId !== playerId_) {
-                                // accum[playerId] += playerTokenTotal - playerTokenTotal_ + tileCapacityModifier;
                                 accum[playerId] += playerTokenTotal - playerTokenTotal_;
                             }
                         });

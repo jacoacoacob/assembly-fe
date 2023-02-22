@@ -4,7 +4,7 @@ defineProps<{ heading: string }>();
 
 <template>
     <div
-        class="space-y-4"
+        class="space-y-4 game-rules-section"
         :id="heading.replace(/\s{2,}/g, ' ').replace(/\s/g, '-').toLowerCase()"
     >
         <h2 class="font-semibold text-2xl">
@@ -13,3 +13,9 @@ defineProps<{ heading: string }>();
         <slot></slot>
     </div>
 </template>
+
+<style>
+.game-rules-section dfn {
+    @apply font-semibold;
+}
+</style>

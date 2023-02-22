@@ -35,7 +35,7 @@ const seasonColors: Record<Season, string> = {
                 v-for="season, i in seasons.current"
                 :key="i"
                 :class="`${seasonColors[season]}`"
-                class="flex-1 h-1/6"
+                class="flex-1 h-1/6 transition-colors duration-300"
             ></div>
         </div>
         <GridTile

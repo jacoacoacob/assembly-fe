@@ -26,12 +26,26 @@ const className = computed(() => ({
                 </h1>
                 <nav class="flex flex-col space-y-3 w-32 font-semibold text-sm">
                     <a href="#introduction">Introduction</a>
-                    <a href="#the-pieces">The Pieces</a>
+                    <a href="#things-to-know">Things to know</a>
+                    <nav class="space-y-2">
+                        <h2>
+                            <a href="#tiles">Tiles</a>
+                        </h2>
+                        <ul class="pl-4 space-y-2">
+                            <li>
+                                <a href="#tile-capacity">Capacity</a>
+                            </li>
+                            <li>
+                                <a href="#tile-scoring">Scoring</a>
+                            </li>
+                        </ul>
+                    </nav>
+
                     <a href="#setup">Setup</a>
                     <a href="#gameplay">Gameplay</a>
                 </nav>
             </section>
-            <section class="flex flex-col space-y-6 overflow-auto px-4 flex-1">
+            <section class="flex flex-col space-y-8 overflow-auto px-4 flex-1">
                 <h1 class="font-bold flex flex-col self-center">
                     <span class="text-3xl text-center">Assemblage</span>
                     <span class="text-xl text-center text-slate-700">a game of mutual survival</span>
@@ -50,11 +64,70 @@ const className = computed(() => ({
                     </p>
                 </GameRulesSection>
 
-                <GameRulesSection heading="The Pieces">
+                <GameRulesSection heading="Tiles">
+                    <div class="space-y-8">
+                        <section class="space-y-4">
+                            <h3 id="tile-capacity" class="text-lg font-bold">
+                                Capacity
+                            </h3>
+                            <p>
+                                Each tile displays a number in its center. This is its <dfn>capacity</dfn>.
+                                It is generated at random and will fluctuate depending on the season.
+                            </p>
+                        </section>
+                        <section class="space-y-4">
+                            <h3 id="tile-scoring" class="text-lg font-bold">
+                                Scoring
+                            </h3>
+                            <p>
+                                During round-completion, points are calculated for each player in every
+                                tile containing tokens and the totals are added to the players' running
+                                point total.
+                            </p>
+                            <p>
+                                Tiles containing tokens belonging to only 1 player will earn that player
+                                -1 points.
+                            </p>
+                            <p>
+                                In tiles containing tokens belonging to 2 or more players, points are
+                                calculated for each player using thing following steps.
+                            </p>
+                            <ol class="space-y-1 list-decimal pl-4">
+                                <li>
+                                    Subtract the total value of all tokens in the tile from the tile's
+                                    capacity, divide the result by 2 and round to the nearest whole
+                                    number. Call this the <dfn>tile capacity modifier</dfn>.
+                                </li>
+                                <li>
+                                    Find the total token value of each player's tokens in the tile.
+                                    Call these the tile's <dfn>player token totals</dfn>.
+                                </li>
+                                <li>
+                                    For every <i>player token total</i>, subtract each of the other 
+                                    <i>player token totals</i> and add the results together. Then, add
+                                    the <i>tile capacity modifier</i>. The result is the number of 
+                                    points that the player will earn for this tile.
+                                </li>
+                            </ol>
+                            <div class="bg-slate-200 p-2 rounded">
+                                <h5 class="font-bold inline text-slate-600">Tip</h5>:
+                                <em>
+                                    You can click the <i class="font-semibold">tile capacity</i> display in each tile to see
+                                    details about that tile including the scoring for any player with 
+                                    tokens in it.
+                                </em>
+                            </div>
+                        </section>
+                    </div>
+
+                </GameRulesSection>
+
+                <GameRulesSection heading="Things to know">
                     <p>
-                        Each player controls 16 <span class="font-semibold">tokens</span>. Each
-                        token displays a number in its center. This is its 
-                        <span class="font-semibold">token value</span>.
+                        In Assemblage, each player controls 16 
+                        <dfn>tokens</dfn>.
+                        Each token displays a number in its center. This is its
+                        <dfn>token value</dfn>.
                     </p>
                     <p>
                         Throughout the game, players will move their tokens between their 
@@ -73,15 +146,18 @@ const className = computed(() => ({
                     <p>
                         Gameplay is broken into rounds during which each player each player must
                         take at least one <span class="font-semibold">action</span>. An action
-                        involves moving a token from one tile to another (<span class="italic">move token</span>),
+                        involves moving a token from one tile to another (<i>move token</i>),
                         moving a token from the token reserve and placing it on a tile
-                        (<span class="italic">place token</span>), or removing a token from a tile
-                        and putting it back into the token reserve (<span class="italic">remove token</span>).
+                        (<i>place token</i>), or removing a token from a tile
+                        and putting it back into the token reserve (<i>remove token</i>).
                         When a player 
                     </p>
                 </GameRulesSection>
 
                 <GameRulesSection heading="Setup">
+                    <p>
+                        Throughout the game, each player will control 16 tokens
+                    </p>
                     <p>
                         During setup, 6 tokens are randomly selected from each players' token reserve
                         to be placed onto the board.
@@ -97,6 +173,57 @@ const className = computed(() => ({
                     <p>
                         ...
                     </p>
+                </GameRulesSection>
+
+                <GameRulesSection heading="Glossary">
+                    <div class="space-y-1">
+                        <h3 class="font-semibold text-lg italic">
+                            token
+                        </h3>
+                        <p>
+                            Each player controls 16 tokens. Each token displays a number in its center.
+                            This is its <span class="font-semibold">token value</span>.
+                        </p>
+                    </div>
+                    <div class="space-y-1">
+                        <h3 class="font-semibold text-lg italic">
+                            tile
+                        </h3>
+                        <p>
+                            The board is made up of a 6X9 grid of tiles. Each tile displays a number in
+                            its center. This is its <span class="font-semibold">capacity</span>.
+                        </p>
+                    </div>
+                    <div class="space-y-1">
+                        <h3 class="font-semibold text-lg italic">
+                            rounds & round-completion
+                        </h3>
+                        <p>
+                            Gameplay is broken into rounds during which each player takes a turn.
+                            Round-completion occurs after each player has finished their turn and before
+                            the next round starts. Tiles and 
+                        </p>
+                    </div>
+    
+
+                    <div class="space-y-1">
+                        <h3 class="font-semibold text-lg italic">
+                            rounds, turns & actions
+                        </h3>
+                        <p>
+                            Gameplay unfolds in rounds during which each player must take at least one
+                            action.
+                        </p>
+                    </div>
+                    <div class="space-y-1">
+                        <h3 class="font-semibold text-lg italic">
+                            round-completion
+                        </h3>
+                        <p>
+                            Gameplay unfolds in rounds during which each player must take at least one
+                            action.
+                        </p>
+                    </div>
                 </GameRulesSection>
 
 

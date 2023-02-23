@@ -6,7 +6,6 @@ import type { PlayerTokenIds } from "../tokens.types";
 import { useEventsStore } from "../events.store";
 import { useTokensStore } from "../tokens.store";
 import { nextTick } from "vue";
-import { useGameDataStore } from "../game-data.store";
 
 function getStagedTokenIds(tokens: Game["tokens"], playerTokensIds: PlayerTokenIds): Token["id"][] {
     return Object.values(playerTokensIds).reduce(
@@ -20,17 +19,6 @@ function getStagedTokenIds(tokens: Game["tokens"], playerTokensIds: PlayerTokenI
         ],
         []
     );
-    // return Object.entries(playerTokensIds).reduce((accum: Token["id"][], [, playerTokenIds]) => {
-    //     const playerTokens: Token["id"][] = [];
-    //     while (playerTokens.length < 4) {
-    //         const tokenId = playerTokenIds[randFromRange(0, playerTokenIds.length - 1)];
-    //         if (playerTokens.includes(tokenId)) {
-    //             continue;
-    //         }
-    //         playerTokens.push(tokenId);
-    //     } 
-    //     return accum.concat(playerTokens);
-    // }, []);
 }
 
 function createTokens(players: Record<Player["id"], Player>): Game["tokens"] {

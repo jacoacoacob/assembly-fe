@@ -5,7 +5,7 @@ import { eventHandlers } from "@/utils/event-handlers";
 type E<Name extends string, Data = {}> = Event<"tiles", Name, Data>;
 
 type TilesEvent =
-    E<"set_degrading_tiles", number[]> |
+    E<"update_degrading_tiles", number[]> |
     E<"set_in_play_tiles", number[]>;
 
 function tilesEventHandlers() {
@@ -15,8 +15,8 @@ function tilesEventHandlers() {
         set_in_play_tiles(tileIndeces) {
             tiles.inPlayTiles = tileIndeces;
         },
-        set_degrading_tiles(tileIndeces) {
-            tiles.degredation.tick(tileIndeces);
+        update_degrading_tiles(tileIndeces) {
+            tiles.degredation.updateDegradingTiles(tileIndeces);
         }
     });
 }

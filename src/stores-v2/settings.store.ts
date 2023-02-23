@@ -13,6 +13,8 @@ interface Settings {
         mild: number;
         cold: number;
     };
+    matureTokenAge: number;
+    maxRounds: number;
     degradationRate: number;
     recoveryRate: number;
     playerSortMethod: "shuffle" | "static" | "rotate"; 
@@ -26,6 +28,8 @@ const useSettingsStore = defineStore("settings", {
             mild: 0,
             cold: -4,
         },
+        maxRounds: 50,
+        matureTokenAge: 3,
         degradationRate: 1,
         recoveryRate: 1,
         playerSortMethod: "rotate",

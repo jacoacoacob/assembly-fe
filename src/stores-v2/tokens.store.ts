@@ -3,18 +3,48 @@ import { computed, ref } from "vue";
 import { useGameDataStore } from "./game-data.store";
 import type { Token } from "./game-data.types";
 import { useMoveValidationStore } from "./move-validation.store";
+import { useSettingsStore } from "./settings.store";
 import { useTilesStore } from "./tiles.store";
 import type { PlayerTokenIds, PlayerTokenIdsByTokenValue } from "./tokens.types";
+
+function useMatureTokens() {
+    const settings = useSettingsStore();
+
+    const _maturingTokens = ref<Record<Token["id"], number>>({});
+
+    const matureTokenIds = ref<Token["id"][]>([]);
+
+    function updateMatureTokenIds(onBoardTokenIds: Token["id"][]) {
+        onBoardTokenIds.forEach((tokenId) => {
+            _maturingTokens.value[tokenId] = _maturingTokens.value[tokenId] ?? 0 + 1;
+        });
+        Object.keys(_maturingTokens.value).forEach((tokenId) => {
+            if (!onBoardTokenIds.includes(tokenId)) {
+                delete _maturingTokens.value[tokenId];
+            }
+        });
+        matureTokenIds.value = Object.entries(_maturingTokens.value).reduce(
+            (accum: Token["id"][], [tokenId, age]) => {
+                if (age >= settings.matureTokenAge) {
+                    accum.push(tokenId);
+                }
+                return accum;
+            },
+            []
+        );
+    }
+
+    return { updateMatureTokenIds, matureTokenIds };
+}
 
 const useTokensStore = defineStore("tokens", () => {
     const gameData = useGameDataStore();
     const tiles = useTilesStore();
     const validation = useMoveValidationStore();
 
-    // const candidateTokenId = ref("");
-    // const draggedTokenId = ref("");
-
     const inPlayTokenIds = ref<Token["id"][]>([]);
+
+    const { matureTokenIds, updateMatureTokenIds } = useMatureTokens();
 
     const playerTokenIds = computed(() =>
         Object.values(gameData.tokens).reduce((accum: PlayerTokenIds, token) => {
@@ -26,21 +56,27 @@ const useTokensStore = defineStore("tokens", () => {
         }, {})
     );
 
-    const onBoardTokenIds = computed(() =>
-        Object.keys(gameData.tokens).filter((tokenId) => gameData.tokens[tokenId].tileIndex > -1)
-    );
+    function getOnBoardTokenIds() {
+        return Object.keys(gameData.tokens).filter(
+            (tokenId) => gameData.tokens[tokenId].tileIndex > -1
+        );
+    }
 
-    const onBoardPlayerTokenIds = computed((): PlayerTokenIds =>
-        Object.entries(playerTokenIds.value).reduce(
-            (accum: PlayerTokenIds, [playerId, tokenIds]) => {
-                accum[playerId] = tokenIds.filter(
-                    (tokenId) => onBoardTokenIds.value.includes(tokenId)
-                )
-                return accum;
-            },
-            {}
-        )
-    );
+    // const onBoardTokenIds = computed(() =>
+    //     Object.keys(gameData.tokens).filter((tokenId) => gameData.tokens[tokenId].tileIndex > -1)
+    // );
+
+    // const onBoardPlayerTokenIds = computed((): PlayerTokenIds =>
+    //     Object.entries(playerTokenIds.value).reduce(
+    //         (accum: PlayerTokenIds, [playerId, tokenIds]) => {
+    //             accum[playerId] = tokenIds.filter(
+    //                 (tokenId) => onBoardTokenIds.value.includes(tokenId)
+    //             )
+    //             return accum;
+    //         },
+    //         {}
+    //     )
+    // );
 
     const reserveTokenIds = computed(() =>
         Object.keys(gameData.tokens).filter((tokenId) => gameData.tokens[tokenId].tileIndex === -1)
@@ -100,11 +136,14 @@ const useTokensStore = defineStore("tokens", () => {
     return {
         // candidateTokenId,
         // draggedTokenId,
+        matureTokenIds,
+        updateMatureTokenIds,
         inPlayTokenIds,
         playerTokenIds,
         inPlayReservePlayerTokenIds,
-        onBoardTokenIds,
-        onBoardPlayerTokenIds,
+        getOnBoardTokenIds,
+        // onBoardTokenIds,
+        // onBoardPlayerTokenIds,
         reserveTokenIds,
         reservePlayerTokenIds,
         reservePlayerTokenIdsByTokenValue,

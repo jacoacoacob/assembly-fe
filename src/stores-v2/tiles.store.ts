@@ -55,7 +55,7 @@ function useTileDegredation() {
 
     const tileCapacityModifiers = ref<Record<number, number>>({});
 
-    function tick(currentDegradingTiles: number[]) {
+    function updateDegradingTiles(currentDegradingTiles: number[]) {
         recoveringTiles.value = recoveringTiles.value.concat(
             degradingTiles.value.filter((tileIndex) => !currentDegradingTiles.includes(tileIndex))
         );
@@ -79,7 +79,7 @@ function useTileDegredation() {
         }, []);
     }
     
-    return { tick, degradingTiles, recoveringTiles, tileCapacityModifiers };
+    return { updateDegradingTiles, degradingTiles, recoveringTiles, tileCapacityModifiers };
 }
 
 const useTilesStore = defineStore("tiles", () => {

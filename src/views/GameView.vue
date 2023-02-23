@@ -92,10 +92,9 @@ loses.
 */
 </script>
 
-<GameRules v-if="boardView === 'rules'" />
 <template>
-    <div class="px-8 w-full space-x-6 flex">
-        <div class="space-y-6 ">
+    <div class="px-4 xl:px-8 w-full space-x-6 flex justify-center">
+        <div class="space-y-6">
             <TopBar />
             <GameBoard v-if="boardView === 'game'" />
             <GameRules v-if="boardView === 'rules'" />

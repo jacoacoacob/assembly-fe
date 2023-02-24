@@ -56,7 +56,7 @@ const usePlaceTokensState = defineStore("place-tokens-state", () => {
             ["tiles:set_in_play_tiles", gameData.tiles.map((_, i) => i)],
             ["tokens:set_in_play_token_ids", Object.keys(gameData.tokens)],
             ["tiles:update_degrading_tiles", tiles.getDegradingTiles()],
-            ["tokens:update_token_ages", tokens.getOnBoardTokenIds()],
+            ["tokens:update_aging_tokens", tokens.getOnBoardTokenIds()],
             ["players:shuffle_order", shuffle(players.playerOrder)],
             ["scores:set_point_totals", scores.tileScoresTotals],
             ["scores:set_initial_round_tile_scores", scores.tileScoresTotals],

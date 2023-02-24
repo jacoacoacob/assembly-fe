@@ -4,11 +4,11 @@ import { useGameDataStore } from "./game-data.store";
 import type { Player } from "./game-data.types";
 
 const PLAYER_COLOR_OPTIONS = {
-    green: "bg-green-500",
-    violet: "bg-violet-500",
-    orange: "bg-orange-400",
-    blue: "bg-blue-400",
-    red: "bg-red-400",
+    green: "bg-green-400",
+    violet: "bg-violet-400",
+    orange: "bg-orange-300",
+    blue: "bg-blue-300",
+    red: "bg-red-300",
 };
 
 const usePlayersStore = defineStore("players", () => {

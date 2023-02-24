@@ -4,7 +4,7 @@ import { defineStore } from "pinia";
 import { computed, ref } from "vue";
 import { useEventsStore } from "./events.store";
 import { useGameDataStore } from "./game-data.store";
-import type { Token } from "./game-data.types";
+import type { GameEvent, Token } from "./game-data.types";
 import { useGameStateStore } from "./game-state.store";
 import { useMoveValidationStore } from "./move-validation.store";
 import type { CommittedMove } from "./player-moves.store";
@@ -158,6 +158,17 @@ const useMoveTokenStore = defineStore("move-token", () => {
                 ));
                 if (kind === "remove_token") {
                     events.send("tokens:delete_token_age", { tokenId: candidateToken.id });
+                } else if (kind === "place_token") {
+                    const parentTokenIds = tiles.tileTokenGraph[move.dest].tileTokenIds.filter(
+                        (tokenId) => (
+                            gameData.tokens[tokenId].playerId === candidateToken.playerId &&
+                            tokenId !== candidateToken.id
+                        )
+                    );
+                    events.send("tokens:set_token_ages", parentTokenIds.map((tokenId) => ({
+                        tokenId,
+                        age: parentTokenIds.length - 1,
+                    })));
                 }
             }
         }

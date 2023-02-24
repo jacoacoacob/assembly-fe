@@ -7,13 +7,13 @@ import { useSettingsStore } from "./settings.store";
 import { useTilesStore } from "./tiles.store";
 import type { PlayerTokenIds, PlayerTokenIdsByTokenValue } from "./tokens.types";
 
-function useTokenAges() {
+function useAgingTokens() {
     const settings = useSettingsStore();
 
     const tokenAges = ref<Record<Token["id"], number>>({});
 
     function isTokenMature(tokenId: string) {
-        return (tokenAges.value[tokenId] ?? 0) > settings.matureTokenAge;
+        return (tokenAges.value[tokenId] ?? 0) >= settings.matureTokenAge;
     }
 
     /**
@@ -38,7 +38,7 @@ function useTokenAges() {
      * Call this once per round-completion.
      * @param onBoardTokenIds the IDs of every token on the board during round-completion.
      */
-    function updateTokenAges(onBoardTokenIds: Token["id"][]) {
+    function updateAgingTokens(onBoardTokenIds: Token["id"][]) {
         onBoardTokenIds.forEach((tokenId) => {
             tokenAges.value[tokenId] = (tokenAges.value[tokenId] ?? 0) + 1;
         });
@@ -52,7 +52,7 @@ function useTokenAges() {
     return {
         setTokenAge,
         deleteTokenAge,
-        updateTokenAges,
+        updateAgingTokens,
         tokenAges,
         isTokenMature
     };
@@ -137,7 +137,7 @@ const useTokensStore = defineStore("tokens", () => {
     );
 
     return {
-        ...useTokenAges(),
+        ...useAgingTokens(),
         inPlayTokenIds,
         playerTokenIds,
         inPlayReservePlayerTokenIds,

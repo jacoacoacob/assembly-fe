@@ -80,7 +80,7 @@ const usePlayState = defineStore("play-state", () => {
                 )],
                 ["scores:set_initial_round_tile_scores", scores.tileScoresTotals],
                 ["players:shuffle_order", updatePlayerOrder()],
-                ["tokens:update_token_ages", tokens.getOnBoardTokenIds()],
+                ["tokens:update_aging_tokens", tokens.getOnBoardTokenIds()],
                 ["tiles:update_degrading_tiles", tiles.getDegradingTiles()],
                 ["rounds:next"],
                 ["seasons:next"],

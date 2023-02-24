@@ -55,8 +55,8 @@ const className = computed(() => {
     const cn: Record<string, boolean> = {};
     cn["ring-2 ring-slate-600 shadow-xl"] = candidateToken.id === token.value.id;
     // cn["bg-transparent text-slate-600"] = !isInPlay;
-    cn[PLAYER_COLOR_OPTIONS[playerColor.value]] = isInPlay.value && token.value.tileIndex === -1;
-    cn["text-white"] = isInPlay.value && token.value.tileIndex === -1;
+    // cn[PLAYER_COLOR_OPTIONS[playerColor.value] + ' opacity-50'] = isInPlay.value;
+    // cn["text-white"] = isInPlay.value;
     cn["text-slate-700"] = !tokens.isTokenMature(props.tokenId);
     cn["h-8 w-8"] = token.value.tileIndex > -1;
     cn["h-6 w-6 text-sm"] = token.value.tileIndex === -1
@@ -93,8 +93,9 @@ const isDraggable = computed(() => {
 const styleAgeOverlay = computed((): StyleValue => {
     const age = tokens.tokenAges[props.tokenId] ?? 0;
     if (age > 0) {
+        const percent = Math.round(age / settings.matureTokenAge * 100);
         return {
-            height: `${Math.round(age / settings.matureTokenAge * 100)}%`,
+            height: `${percent > 100 ? 100 : percent}%`,
         };
     }
     return {};
@@ -105,7 +106,7 @@ const styleAgeOverlay = computed((): StyleValue => {
 <template>
     <div
         :id="token.id"
-        class="relative rounded-full border border-slate-600 flex justify-center items-center"
+        class="relative rounded-full border border-slate-600 flex justify-center items-center overflow-hidden"
         :class="className"
         :style="style"
         :draggable="isDraggable"
@@ -113,11 +114,18 @@ const styleAgeOverlay = computed((): StyleValue => {
         @dragstart="drag.onTokenDragStart"
     >
         <div
-            class="absolute bottom-0 w-full overflow-hidden "
+            class="absolute bottom-0 h-full w-full"
+            :class="{
+                [PLAYER_COLOR_OPTIONS[playerColor]]: isInPlay,
+                'opacity-30': token.tileIndex > -1 && gameState.currentState === 'play',
+            }"
+        ></div>
+        <div
+            class="absolute bottom-0 w-full "
             :class="`${PLAYER_COLOR_OPTIONS[playerColor as PlayerColor]}`"
             :style="styleAgeOverlay"
         ></div>
-        <span class="relative">
+        <span class="relative text-black">
             {{ token.value }}
         </span>
     </div>

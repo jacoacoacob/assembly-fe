@@ -8,11 +8,13 @@ import { useMoveTokenStore } from "./move-token.store";
 import { useScoresStore } from "./scores.store";
 import { usePlayState } from "./states/use-play-state";
 import { useTilesStore } from "./tiles.store";
+import { useTokensStore } from "./tokens.store";
 
 const useMoveValidationStore = defineStore("move-validation", () => {
     const gameState = useGameStateStore();
     const gameData = useGameDataStore();
     const tiles = useTilesStore();
+    const tokens = useTokensStore();
     const scores = useScoresStore();
     const playState = usePlayState();
     const moveToken = useMoveTokenStore();
@@ -54,14 +56,38 @@ const useMoveValidationStore = defineStore("move-validation", () => {
         return playerPoints + cost > 0;
     }
 
+    function _checkHasParent(token: Token, origin: number, dest: number) {
+        if (origin > -1) {
+            return true;
+        }
+        const { tileTokenIds } = tiles.tileTokenGraph[dest];
+        const eligibleParentValueTotal = tileTokenIds.reduce(
+            (accum: number, tokenId) => {
+                const _token = gameData.tokens[tokenId];
+                if (token.playerId === _token.playerId && tokens.isTokenMature(tokenId)) {
+                    accum += _token.value;
+                }
+                return accum;
+            },
+            0
+        );
+        return eligibleParentValueTotal >= token.value;
+    }
+
     function _checkTileCapacity(token: Token, origin: number, dest: number) {
         if (dest === -1) {
             return true;
         }
         const tileCapacity = tiles.seasonalTileCapacities[dest];
         const { tileTokenValuesSum, tileTokenIds } = tiles.tileTokenGraph[dest];
+        if (origin === -1) {
+            return (
+                tileTokenIds.length < 3 &&
+                tileTokenValuesSum + token.value <= tileCapacity
+            )
+        }
         return (
-            tileTokenIds.length < (origin === -1 ? 3 : 4) &&
+            tileTokenIds.length < 4 &&
             tileTokenValuesSum + token.value <= tileCapacity
         );
     }
@@ -80,12 +106,14 @@ const useMoveValidationStore = defineStore("move-validation", () => {
                 return (
                     playerOverloads.includes(origin) &&
                     _checkCost(token, origin, dest, moveToken.resolvesOverload) &&
+                    _checkHasParent(token, origin, dest) &&
                     _checkTileCapacity(token, origin, dest)
                 )
             }
             return (
-                _checkTileCapacity(token, origin, dest) &&
-                _checkCost(token, origin, dest, moveToken.resolvesOverload)
+                _checkHasParent(token, origin, dest) &&
+                _checkCost(token, origin, dest, moveToken.resolvesOverload) &&
+                _checkTileCapacity(token, origin, dest)
             )
         }
         return false;

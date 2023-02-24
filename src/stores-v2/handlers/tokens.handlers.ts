@@ -6,15 +6,23 @@ import type { Event } from "../events.types";
 type E<Name extends string, Data = {}> = Event<"tokens", Name, Data>;
 
 type TokensEvent =
-    E<"update_mature_token_ids", string[]> |
+    E<"update_token_ages", string[]> |
+    E<"set_token_age", { tokenId: string; age: number }> |
+    E<"delete_token_age", { tokenId: string }> |
     E<"set_in_play_token_ids", string[]>;
 
 function tokensEventHandlers() {
     const tokens = useTokensStore();
 
     return eventHandlers<"tokens", TokensEvent>({
-        update_mature_token_ids(tokenIds) {
-            tokens.updateMatureTokenIds(tokenIds);
+        set_token_age({ tokenId, age }) {
+            tokens.setTokenAge(tokenId, age);
+        },
+        delete_token_age({ tokenId }) {
+            tokens.deleteTokenAge(tokenId);
+        },
+        update_token_ages(tokenIds) {
+            tokens.updateTokenAges(tokenIds);
         },
         set_in_play_token_ids(tokenIds) {
             tokens.inPlayTokenIds = tokenIds;

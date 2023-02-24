@@ -17,6 +17,7 @@ const PLACE_TOKEN_COST = 1;
 type MoveKind = "place_token" | "move_token" | "remove_token";
 
 interface CommittedMove {
+    tokenId?: string;
     origin: number;
     dest: number;
     tokenValue: number;
@@ -63,57 +64,57 @@ const usePlayerMovesStore = defineStore("player-moves", () => {
         }
     });
 
-    const moveToken = computed(() => {
-        if (players.activePlayer) {
-            const activePlayerId = players.activePlayer.id;
-            const playerPoints = scores.pointTotals[activePlayerId];
-            const eligableTokens = tokens.inPlayReservePlayerTokenIds[activePlayerId];
-            const eligableTiles = tiles.openInPlayTiles;
-            return {
-                eligableTiles,
-                eligableTokens,
-            };
-        }
-        return {
-            eligableTiles: [],
-            eligableTokens: [],
-        };
-    });
+    // const moveToken = computed(() => {
+    //     if (players.activePlayer) {
+    //         const activePlayerId = players.activePlayer.id;
+    //         const playerPoints = scores.pointTotals[activePlayerId];
+    //         const eligableTokens = tokens.inPlayReservePlayerTokenIds[activePlayerId];
+    //         const eligableTiles = tiles.openInPlayTiles;
+    //         return {
+    //             eligableTiles,
+    //             eligableTokens,
+    //         };
+    //     }
+    //     return {
+    //         eligableTiles: [],
+    //         eligableTokens: [],
+    //     };
+    // });
     
-    const removeToken = computed(() => {
-        if (players.activePlayer) {
-            const activePlayerId = players.activePlayer.id;
-            return {
-                eligableTokens: tokens.onBoardPlayerTokenIds[activePlayerId],
-            };
-        }
-        return {
-            eligableTokens: []
-        }
-    })
+    // const removeToken = computed(() => {
+    //     if (players.activePlayer) {
+    //         const activePlayerId = players.activePlayer.id;
+    //         return {
+    //             eligableTokens: tokens.onBoardPlayerTokenIds[activePlayerId],
+    //         };
+    //     }
+    //     return {
+    //         eligableTokens: []
+    //     }
+    // })
 
     const canPlaceToken = computed(() => placeToken.value.eligableTokens.length > 0);
-    const canMoveToken = computed(() => moveToken.value.eligableTokens.length > 0);
-    const canRemoveToken = computed(() => removeToken.value.eligableTokens.length > 0);
+    // const canMoveToken = computed(() => moveToken.value.eligableTokens.length > 0);
+    // const canRemoveToken = computed(() => removeToken.value.eligableTokens.length > 0);
 
-    const availableMoveKinds = computed(
-        (): MoveKind[] => [
-            canPlaceToken.value && "place_token",
-            canMoveToken.value && "move_token",
-            canRemoveToken.value && "remove_token",
-        ].filter(Boolean) as MoveKind[]
-    )
+    // const availableMoveKinds = computed(
+    //     (): MoveKind[] => [
+    //         canPlaceToken.value && "place_token",
+    //         canMoveToken.value && "move_token",
+    //         canRemoveToken.value && "remove_token",
+    //     ].filter(Boolean) as MoveKind[]
+    // )
 
     return {
-        availableMoveKinds,
-        canMoveToken,
+        // availableMoveKinds,
+        // canMoveToken,
         canPlaceToken,
-        canRemoveToken,
+        // canRemoveToken,
         committedMoves,
         committedMovesDetails,
-        moveToken,
-        placeToken,
-        removeToken,
+        // moveToken,
+        // placeToken,
+        // removeToken,
     };
 });
 

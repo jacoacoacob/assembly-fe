@@ -10,6 +10,7 @@ import { useTilesStore } from "@/stores-v2/tiles.store";
 import { useTokensStore } from "@/stores-v2/tokens.store";
 import { useMoveTokenStore } from "@/stores-v2/move-token.store";
 import { useDrag } from "@/composables/use-drag";
+import { useSettingsStore } from "@/stores-v2/settings.store";
 
 const props = defineProps<{ tokenId: Token["id"]; }>();
 
@@ -21,6 +22,7 @@ const players = usePlayersStore();
 const tiles = useTilesStore();
 const tokens = useTokensStore();
 const moveToken = useMoveTokenStore();
+const settings = useSettingsStore();
 
 const token = computed(() => gameData.tokens[props.tokenId]);
 const isInPlay = computed(() => tokens.inPlayTokenIds.includes(props.tokenId));
@@ -52,8 +54,10 @@ const className = computed(() => {
     const candidateToken = gameData.tokens[moveToken.candidateId] || {};
     const cn: Record<string, boolean> = {};
     cn["ring-2 ring-slate-600 shadow-xl"] = candidateToken.id === token.value.id;
-    cn["bg-transparent text-slate-600"] = !isInPlay;
-    cn[PLAYER_COLOR_OPTIONS[playerColor.value]] = isInPlay.value;
+    // cn["bg-transparent text-slate-600"] = !isInPlay;
+    cn[PLAYER_COLOR_OPTIONS[playerColor.value]] = isInPlay.value && token.value.tileIndex === -1;
+    cn["text-white"] = isInPlay.value && token.value.tileIndex === -1;
+    cn["text-slate-700"] = !tokens.isTokenMature(props.tokenId);
     cn["h-8 w-8"] = token.value.tileIndex > -1;
     cn["h-6 w-6 text-sm"] = token.value.tileIndex === -1
     return cn;
@@ -63,7 +67,8 @@ const isDraggable = computed(() => {
     const isActivePlayerToken = token.value.playerId === players.activePlayer.id;
     if (gameState.currentState === "place_tokens") {
         const candidateToken = gameData.tokens[moveToken.candidateId];
-        if (candidateToken && candidateToken.tileIndex > -1) {
+        // if (candidateToken && candidateToken.tileIndex > -1) {
+        if (candidateToken) {
             return (
                 isInPlay.value &&
                 isActivePlayerToken &&
@@ -74,7 +79,6 @@ const isDraggable = computed(() => {
     }
     if (gameState.currentState === "play") {
         const candidateToken = gameData.tokens[moveToken.candidateId];
-        // if (candidateToken && candidateToken.tileIndex > -1) {
         if (candidateToken) {
             return (
                 isInPlay &&
@@ -86,18 +90,35 @@ const isDraggable = computed(() => {
     }
 });
 
+const styleAgeOverlay = computed((): StyleValue => {
+    const age = tokens.tokenAges[props.tokenId] ?? 0;
+    if (age > 0) {
+        return {
+            height: `${Math.round(age / settings.matureTokenAge * 100)}%`,
+        };
+    }
+    return {};
+});
+
 </script>
 
 <template>
     <div
         :id="token.id"
-        class="rounded-full border border-slate-600 flex justify-center items-center text-white"
+        class="relative rounded-full border border-slate-600 flex justify-center items-center"
         :class="className"
         :style="style"
         :draggable="isDraggable"
         @dragend="drag.onTokenDragEnd"
         @dragstart="drag.onTokenDragStart"
     >
-        {{ token.value }}
+        <div
+            class="absolute bottom-0 w-full overflow-hidden "
+            :class="`${PLAYER_COLOR_OPTIONS[playerColor as PlayerColor]}`"
+            :style="styleAgeOverlay"
+        ></div>
+        <span class="relative">
+            {{ token.value }}
+        </span>
     </div>
 </template>

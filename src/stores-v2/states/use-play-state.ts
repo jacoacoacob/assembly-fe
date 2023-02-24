@@ -42,6 +42,7 @@ const usePlayState = defineStore("play-state", () => {
     const currentMove = computed(() => {
         if (moveToken.candidateId) {
             const {
+                candidateId,
                 candidateDestTileIndex,
                 candidateOriginTileIndex,
                 hoveredTileIndex,
@@ -50,7 +51,13 @@ const usePlayState = defineStore("play-state", () => {
             const origin = candidateOriginTileIndex as number;
             const dest = hoveredTileIndex ?? candidateDestTileIndex as number;
             const tokenValue = gameData.tokens[moveToken.candidateId].value;
-            return useMoveDetail({ origin, dest, tokenValue, resolvesOverload });
+            return useMoveDetail({
+                origin,
+                dest,
+                tokenValue,
+                resolvesOverload,
+                tokenId: candidateId
+            });
         }
     })
 
@@ -73,7 +80,7 @@ const usePlayState = defineStore("play-state", () => {
                 )],
                 ["scores:set_initial_round_tile_scores", scores.tileScoresTotals],
                 ["players:shuffle_order", updatePlayerOrder()],
-                ["tokens:update_mature_token_ids", tokens.getOnBoardTokenIds()],
+                ["tokens:update_token_ages", tokens.getOnBoardTokenIds()],
                 ["tiles:update_degrading_tiles", tiles.getDegradingTiles()],
                 ["rounds:next"],
                 ["seasons:next"],

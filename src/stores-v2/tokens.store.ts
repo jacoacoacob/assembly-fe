@@ -7,34 +7,55 @@ import { useSettingsStore } from "./settings.store";
 import { useTilesStore } from "./tiles.store";
 import type { PlayerTokenIds, PlayerTokenIdsByTokenValue } from "./tokens.types";
 
-function useMatureTokens() {
+function useTokenAges() {
     const settings = useSettingsStore();
 
-    const _maturingTokens = ref<Record<Token["id"], number>>({});
+    const tokenAges = ref<Record<Token["id"], number>>({});
 
-    const matureTokenIds = ref<Token["id"][]>([]);
-
-    function updateMatureTokenIds(onBoardTokenIds: Token["id"][]) {
-        onBoardTokenIds.forEach((tokenId) => {
-            _maturingTokens.value[tokenId] = _maturingTokens.value[tokenId] ?? 0 + 1;
-        });
-        Object.keys(_maturingTokens.value).forEach((tokenId) => {
-            if (!onBoardTokenIds.includes(tokenId)) {
-                delete _maturingTokens.value[tokenId];
-            }
-        });
-        matureTokenIds.value = Object.entries(_maturingTokens.value).reduce(
-            (accum: Token["id"][], [tokenId, age]) => {
-                if (age >= settings.matureTokenAge) {
-                    accum.push(tokenId);
-                }
-                return accum;
-            },
-            []
-        );
+    function isTokenMature(tokenId: string) {
+        return (tokenAges.value[tokenId] ?? 0) > settings.matureTokenAge;
     }
 
-    return { updateMatureTokenIds, matureTokenIds };
+    /**
+     * 
+     * Call this for a token that assists in a place_token action when
+     * the action is committed.
+     */
+    function setTokenAge(tokenId: string, age: number) {
+        tokenAges.value[tokenId] = age;
+    }
+
+    /**
+     * 
+     * Call this when a remove_token action is committed.
+     */
+    function deleteTokenAge(tokenId: string) {
+        delete tokenAges.value[tokenId];
+    }
+
+    /**
+     * 
+     * Call this once per round-completion.
+     * @param onBoardTokenIds the IDs of every token on the board during round-completion.
+     */
+    function updateTokenAges(onBoardTokenIds: Token["id"][]) {
+        onBoardTokenIds.forEach((tokenId) => {
+            tokenAges.value[tokenId] = (tokenAges.value[tokenId] ?? 0) + 1;
+        });
+        Object.keys(tokenAges.value).forEach((tokenId) => {
+            if (!onBoardTokenIds.includes(tokenId)) {
+                deleteTokenAge(tokenId);
+            }
+        });
+    }
+
+    return {
+        setTokenAge,
+        deleteTokenAge,
+        updateTokenAges,
+        tokenAges,
+        isTokenMature
+    };
 }
 
 const useTokensStore = defineStore("tokens", () => {
@@ -43,8 +64,6 @@ const useTokensStore = defineStore("tokens", () => {
     const validation = useMoveValidationStore();
 
     const inPlayTokenIds = ref<Token["id"][]>([]);
-
-    const { matureTokenIds, updateMatureTokenIds } = useMatureTokens();
 
     const playerTokenIds = computed(() =>
         Object.values(gameData.tokens).reduce((accum: PlayerTokenIds, token) => {
@@ -61,22 +80,6 @@ const useTokensStore = defineStore("tokens", () => {
             (tokenId) => gameData.tokens[tokenId].tileIndex > -1
         );
     }
-
-    // const onBoardTokenIds = computed(() =>
-    //     Object.keys(gameData.tokens).filter((tokenId) => gameData.tokens[tokenId].tileIndex > -1)
-    // );
-
-    // const onBoardPlayerTokenIds = computed((): PlayerTokenIds =>
-    //     Object.entries(playerTokenIds.value).reduce(
-    //         (accum: PlayerTokenIds, [playerId, tokenIds]) => {
-    //             accum[playerId] = tokenIds.filter(
-    //                 (tokenId) => onBoardTokenIds.value.includes(tokenId)
-    //             )
-    //             return accum;
-    //         },
-    //         {}
-    //     )
-    // );
 
     const reserveTokenIds = computed(() =>
         Object.keys(gameData.tokens).filter((tokenId) => gameData.tokens[tokenId].tileIndex === -1)
@@ -134,16 +137,11 @@ const useTokensStore = defineStore("tokens", () => {
     );
 
     return {
-        // candidateTokenId,
-        // draggedTokenId,
-        matureTokenIds,
-        updateMatureTokenIds,
+        ...useTokenAges(),
         inPlayTokenIds,
         playerTokenIds,
         inPlayReservePlayerTokenIds,
         getOnBoardTokenIds,
-        // onBoardTokenIds,
-        // onBoardPlayerTokenIds,
         reserveTokenIds,
         reservePlayerTokenIds,
         reservePlayerTokenIdsByTokenValue,

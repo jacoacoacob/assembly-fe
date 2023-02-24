@@ -135,6 +135,7 @@ const useMoveTokenStore = defineStore("move-token", () => {
         if (canCommit.value) {
             const candidateToken = gameData.tokens[candidateId.value];
             const move: CommittedMove = {
+                tokenId: candidateId.value,
                 origin: candidateOriginTileIndex.value as number,
                 dest: candidateDestTileIndex.value as number,
                 tokenValue: candidateToken.value,
@@ -154,7 +155,10 @@ const useMoveTokenStore = defineStore("move-token", () => {
                     {
                         [players.activePlayer.id]: kind === "remove_token" && resolvesOverload.value ? 0 : cost,
                     }
-                ))
+                ));
+                if (kind === "remove_token") {
+                    events.send("tokens:delete_token_age", { tokenId: candidateToken.id });
+                }
             }
         }
         candidateId.value = "";

@@ -2,6 +2,7 @@
 
 import SavedGamesView from "@/views/SavedGamesView.vue";
 import NewGameView from "@/views/NewGameView.vue";
+import Signup from "@/views/Signup.vue";
 import WelcomeView from "@/views/WelcomeView.vue";
 import GameView from "@/views/GameView.vue";
 import { loadGameHistory } from "./api/game-api";
@@ -34,6 +35,11 @@ const router = createRouter({
                     }
                 ]
             }
+        },
+        {
+            path: "/signup",
+            name: "login",
+            component: Signup
         },
         {
             path: "/new-game",

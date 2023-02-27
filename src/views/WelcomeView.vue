@@ -17,6 +17,11 @@ import { RouterLink } from 'vue-router';
                         Saved Games
                     </RouterLink>
                 </li>
+                <li class="w-full">
+                    <RouterLink  to="login">
+                        Login
+                    </RouterLink>
+                </li>
             </ul>
         </nav>
     </div>

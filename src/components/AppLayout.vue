@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { RouterLink } from 'vue-router';
+import LogoutButton from './LogoutButton.vue';
 </script>
 
 <template>
@@ -18,6 +19,7 @@ import { RouterLink } from 'vue-router';
                     </li>
                 </ol>
             </nav>
+            <LogoutButton class="absolute top-3 right-4 xl:right-10" />
             <slot></slot>
         </div>
     </div>

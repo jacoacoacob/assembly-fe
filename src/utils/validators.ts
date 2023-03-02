@@ -1,20 +1,20 @@
 
-function checkMinLength(value: string, len: number) {
+function minLength(value: string, len: number) {
     if (value.length < len) {
-        return (thing: string) => `${thing} must be at least ${len} characters in length.`;
+        return `This field must contain at least ${len} characters.`;
     }
 }
 
-function checkMaxLength(value: string, len: number) {
+function maxLength(value: string, len: number) {
     if (value.length > len) {
-        return (thing: string) => `${thing} must be ${len} or fewer characters in lengh.`
+        return `This field must contain ${len} or fewer characters.`
     }
 }
 
-function checkSepecialChars(value: string) {
-    if (!/^[\w-]*$/.test(value)) {
-        return (thing: string) => `${thing} may only contain letters, numbers, hyphens, or underscores.`
+function specialChars(value: string) {
+    if (!/^[\w-]*$/.test(value.trim())) {
+        return "This field may contain only letters, numbers, hyphens, or underscores."
     }
 }
 
-export { checkMinLength, checkMaxLength, checkSepecialChars };
+export { minLength, maxLength, specialChars };

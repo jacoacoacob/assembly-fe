@@ -4,47 +4,53 @@ import { onBeforeRouteLeave } from "vue-router";
 
 import { PLAYER_COLOR_OPTIONS} from "@/stores-v2/players.store";
 import type { Player, PlayerColor } from "@/stores-v2/game-data.types";
-import { checkMaxLength, checkMinLength, checkSepecialChars  } from "@/utils/validators";
+import { maxLength, minLength, specialChars  } from "@/utils/validators";
 import { randId } from "@/utils/rand";
 import AppInput from "@/components/AppInput.vue";
 import { listGames } from "@/api/game-api";
 import { useNewGameState } from "@/stores-v2/states/use-new-game-state";
+import { useInputState } from "@/composables/use-input-state";
 
 const { createGame } = useNewGameState();
 
-function createInputValidator(name: string, minLength: number, maxLength: number) {
+function createInputValidator(minLen: number, maxLen: number) {
     return (value: string) => {
         return [
-            checkMinLength(value, minLength),
-            checkMaxLength(value, maxLength),
-            checkSepecialChars(value),
+            minLength(value, minLen),
+            maxLength(value, maxLen),
+            specialChars(value),
         ].reduce((accum: string[], message) => {
             if (message) {
-                accum.push(message(name));
+                accum.push(message);
             }
             return accum;
         }, []);
     }
 }
 
-const gameNameValidator = createInputValidator("The game name", 1, 32);
-const playerNameValidator = createInputValidator("name", 1, 32);
+const playerNameValidator = createInputValidator(1, 32);
 
 const existingGames = listGames();
 
-const gameName = ref("");
 const gamePlayers = ref<Record<Player["id"], Player>>({});
 const gamePlayersList = computed(() =>
     Object.keys(gamePlayers.value).map((playerId) => gamePlayers.value[playerId])
 );
 
-const gameNameErrors = computed(() => {
-    const errors = gameNameValidator(gameName.value);
-    if (existingGames.some(existingGameName => existingGameName === gameName.value)) {
-        errors.push(`A game with name "${gameName.value}" already exists.`);
-    }
-    return errors;
-});
+const gameName = useInputState({
+    value: "",
+    isRequired: true,
+    validatedOnBlur: true,
+    validators: [
+        (value) => maxLength(value, 32),
+        (value) => specialChars(value),
+        (value) => {
+            if (existingGames.some(existingGameName => existingGameName === value)) {
+                return `A game with name "${value}" already exists.`;
+            }
+        }
+    ]
+})
 
 
 const gameFormError = ref<string>("");
@@ -78,7 +84,7 @@ onBeforeRouteLeave((to) => {
             gameFormError.value = "You need between 2 and 5 players to start.";
             return false;
         }
-        if (gameNameErrors.value.length || playerNameErrors.value.length) {
+        if (gameName.errors.length || playerNameErrors.value.length) {
             gameFormError.value = "Please fix any form errors.";
             return false;
         }
@@ -99,12 +105,10 @@ watchEffect(() => {
 function addPlayer() {
     if (playerNameErrors.value.length === 0) {
         const player: Player = { id: randId(8), name: "", color: availableColors.value[0] as PlayerColor };
-        // if (gamePlayers.value.some(p => p.id === player.id)) {
         if (gamePlayers.value[player.id]) {
             addPlayer();
         } else {
             gamePlayers.value[player.id] = player;
-            // gamePlayers.value.push(player);
             editingPlayerIndex.value = gamePlayersList.value.length - 1;
         }
     }
@@ -125,12 +129,7 @@ function savePlayer() {
             <div class="space-y-12">
                 <div class="space-y-4">
                     <h2 class="text-lg font-bold" id="game-name-heading">Title</h2>
-                    <AppInput
-                        :errors="gameNameErrors"
-                        v-model="gameName"
-                        placeholder="Name your game"
-                        aria-labelledby="game-name-heading"
-                    />
+                    <AppInput :state="gameName" placeholder="Name your game" aria-labelledby="game-name-heading" />
                 </div>
                 <div class="space-y-4">
                     <h2 class="text-lg font-bold">Players</h2>
@@ -162,7 +161,6 @@ function savePlayer() {
                                     <button class="order-2 button button-shadow button-dense ml-2" type="submit">
                                         Save
                                     </button>
-                                    <!-- <button class="order-1 button button-text button-dense text-red-500" @click="gamePlayers.splice(i, 1)"> -->
                                     <button class="order-1 button button-text button-dense text-red-500" @click="() => delete gamePlayers[player.id]">
                                         Remove
                                     </button>
@@ -196,7 +194,7 @@ function savePlayer() {
         </div>
         <div>
             <RouterLink
-                :to="{ name: 'game', params: { name: gameName } }"
+                :to="{ name: 'game', params: { name: gameName.value } }"
                 class="button button-text w-full bg-slate-900 text-slate-50"
             >
                 Start

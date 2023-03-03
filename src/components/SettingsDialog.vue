@@ -12,7 +12,7 @@ import {
 } from '@headlessui/vue';
 
 import { useSettingsStore } from '@/stores-v2/settings.store';
-import AppInput from './AppInput.vue';
+import AppInput from './lib/LInput.vue';
 
 const settings = useSettingsStore();
 

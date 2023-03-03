@@ -28,16 +28,17 @@ onMounted(() => {
     }
 });
 
-const labelClassName = computed(() => ({
-    "before:content-['*'] before:text-red-500 before:mr-1": Boolean(attrs.required)
-}));
-
 
 const errors = computed(() =>
     [...(props.errors ?? []), ...(props.state?.errors ?? [])]
 );
 
 const isErrors = computed(() => errors.value.length > 0);
+
+const labelClassName = computed(() => ({
+    "before:content-['*'] before:text-red-500 before:mr-1": Boolean(attrs.required),
+    "text-red-500": isErrors.value,
+}));
 
 function onFocus(event: FocusEvent) {
     emit("focus");
@@ -51,7 +52,7 @@ function onBlur(event: FocusEvent) {
 function onInput(event: Event) {
     const { value } = (event.target as HTMLInputElement)
     if (props.state) {
-        props.state.value = value
+        props.state.value = value;
     } else {
         emit("update:modelValue", (event.target as HTMLInputElement).value);
     }
@@ -66,7 +67,7 @@ if attrs.type === "password" && props.allowUnmask {
 </script>
 
 <template>
-    <div class="flex flex-col max-w-xs">
+    <div class="flex flex-col w-full">
         <label
             v-if="label"
             :for="($attrs.id as string)"
@@ -76,8 +77,9 @@ if attrs.type === "password" && props.allowUnmask {
         <input
             v-bind="$attrs"
             class="p-2 rounded border"
-            :class="{ 'border-red-500': isErrors }"
+            :class="{ 'border-red-500 placeholder:text-red-400': isErrors }"
             :value="state?.value ?? modelValue"
+            :required="Boolean(state?.isRequired || $attrs.required)"
             ref="inputRef"
             @blur="onBlur"
             @focus="onFocus"

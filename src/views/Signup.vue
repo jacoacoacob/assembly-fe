@@ -3,7 +3,7 @@ import { onMounted, computed, ref } from 'vue';
 import { useRoute } from 'vue-router';
 
 import { supabase } from '@/supabase';
-import AppInput from '@/components/AppInput.vue';
+import AppInput from '@/components/lib/LInput.vue';
 import { isAuthError } from '@supabase/gotrue-js';
 import type { AuthError, Session, User } from '@supabase/gotrue-js';
 

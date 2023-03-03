@@ -4,6 +4,8 @@ import SavedGamesView from "@/views/SavedGamesView.vue";
 import NewGameView from "@/views/NewGameView.vue";
 import Signup from "@/views/Signup.vue";
 import Login from "@/views/Login.vue";
+import ForgotPassword from "@/views/ForgotPassword.vue";
+import ResetPassword from "@/views/ResetPassword.vue";
 import WelcomeView from "@/views/WelcomeView.vue";
 import GameView from "@/views/GameView.vue";
 import { loadGameHistory } from "./api/game-api";
@@ -46,6 +48,16 @@ const router = createRouter({
             path: "/login",
             name: "login",
             component: Login,
+        },
+        {
+            path: "/forgot-password",
+            name: "forgot-password",
+            component: ForgotPassword,
+        },
+        {
+            path: "/reset-password",
+            name: "reset-password",
+            component: ResetPassword,
         },
         {
             path: "/new-game",

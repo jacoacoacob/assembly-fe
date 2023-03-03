@@ -16,6 +16,22 @@ interface InputState<Value extends string | number> {
     onBlur: (event: FocusEvent) => void;
 }
 
+function isErrors(...states: InputState<number | string>[]) {
+    return states.some((state) => state.errors.length > 0);
+}
+
+/**
+ * 
+ * Calls each `InputState`'s `validate` method
+ * @returns `true` if **_no errors_** were detected. Otherwise, `false`.
+ */
+function isValid(...states: InputState<number | string>[]) {
+    states.forEach((state) => {
+        state.validate();
+    });
+    return !isErrors(...states);
+}
+
 function useInputState<Value extends string | number>({
     isRequired,
     value,
@@ -30,7 +46,7 @@ function useInputState<Value extends string | number>({
     function validate() {
         const _validators = validators ?? [];
         if (isRequired) {
-            _validators.push((value) => {
+            _validators.unshift((value) => {
                 if (typeof value === "string" && value.trim().length === 0) {
                     return "This field is required.";
                 }
@@ -46,9 +62,7 @@ function useInputState<Value extends string | number>({
     }
 
     function onBlur(_event: FocusEvent) {
-        if (validatedOnBlur) {
-            validate();
-        }
+        validate();
     }
 
     return reactive({
@@ -73,5 +87,5 @@ function useInputState<Value extends string | number>({
     });
 }
 
-export { useInputState };
+export { useInputState, isErrors, isValid };
 export type { InputState };

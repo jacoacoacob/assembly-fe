@@ -9,6 +9,7 @@ const session = useSessionStore();
 
 onMounted(() => {
   supabase.auth.onAuthStateChange((event, session_) => {
+    console.log("[onAuthStateChange] event", event);
     session.user = session_?.user ?? null;
   });
 });

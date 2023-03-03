@@ -4,9 +4,9 @@ import { onBeforeRouteLeave } from "vue-router";
 
 import { PLAYER_COLOR_OPTIONS} from "@/stores-v2/players.store";
 import type { Player, PlayerColor } from "@/stores-v2/game-data.types";
-import { maxLength, minLength, specialChars  } from "@/utils/validators";
+import { isMaxLength, isMinLength, isValidChars  } from "@/utils/validators";
 import { randId } from "@/utils/rand";
-import AppInput from "@/components/AppInput.vue";
+import AppInput from "@/components/lib/LInput.vue";
 import { listGames } from "@/api/game-api";
 import { useNewGameState } from "@/stores-v2/states/use-new-game-state";
 import { useInputState } from "@/composables/use-input-state";
@@ -16,9 +16,9 @@ const { createGame } = useNewGameState();
 function createInputValidator(minLen: number, maxLen: number) {
     return (value: string) => {
         return [
-            minLength(value, minLen),
-            maxLength(value, maxLen),
-            specialChars(value),
+            isMinLength(value, minLen),
+            isMaxLength(value, maxLen),
+            isValidChars(value),
         ].reduce((accum: string[], message) => {
             if (message) {
                 accum.push(message);
@@ -42,8 +42,8 @@ const gameName = useInputState({
     isRequired: true,
     validatedOnBlur: true,
     validators: [
-        (value) => maxLength(value, 32),
-        (value) => specialChars(value),
+        (value) => isMaxLength(value, 32),
+        (value) => isValidChars(value),
         (value) => {
             if (existingGames.some(existingGameName => existingGameName === value)) {
                 return `A game with name "${value}" already exists.`;

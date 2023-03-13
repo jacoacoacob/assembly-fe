@@ -1,11 +1,10 @@
 <script setup lang="ts">
-import { onMounted, computed, ref } from 'vue';
-import { useRoute } from 'vue-router';
+import { ref } from 'vue';
 
 import { supabase } from '@/supabase';
 import AppInput from '@/components/lib/LInput.vue';
 import { isAuthError } from '@supabase/gotrue-js';
-import type { AuthError, Session, User } from '@supabase/gotrue-js';
+import type { AuthError } from '@supabase/gotrue-js';
 
 import { useInputState, type InputState } from '@/composables/use-input-state';
 import { router } from '@/router';

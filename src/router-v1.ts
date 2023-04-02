@@ -1,9 +1,10 @@
  import { createRouter, createWebHistory, type RouteParams, type RouterLinkProps } from "vue-router";
 
-import SavedGamesView from "@/views/SavedGamesView.vue";
-import NewGameView from "@/views/NewGameView.vue";
-import WelcomeView from "@/views/WelcomeView.vue";
-import GameView from "@/views/GameView.vue";
+import SavedGamesView from "@/views/v1/SavedGamesView.vue";
+import NewGameView from "@/views/v1/NewGameView.vue";
+import WelcomeView from "@/views/v1/WelcomeView.vue";
+import GameView from "@/views/v1/GameView.vue";
+import ChatView from "@/views/v1/ChatView.vue";
 import { loadGameHistory } from "./api/game-api";
 import { useEventsStore } from "./stores-v2/events.store";
 import { useSettingsStore } from "./stores-v2/settings.store";
@@ -20,7 +21,7 @@ declare module "vue-router" {
     }
 }
 
-const router = createRouter({
+const routerV1 = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
     routes: [
         {
@@ -34,6 +35,11 @@ const router = createRouter({
                     }
                 ]
             }
+        },
+        {
+            path: "/chat",
+            name: "chat",
+            component: ChatView,
         },
         {
             path: "/new-game",
@@ -104,4 +110,4 @@ const router = createRouter({
     ],
 });
 
-export { router };
+export { routerV1 };

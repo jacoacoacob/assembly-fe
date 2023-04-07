@@ -1,16 +1,15 @@
 <script setup lang="ts">
-import { RouterLink } from "vue-router";
-import { useSessionStore } from "@/stores-v2/session.store";
+import { useRouter } from "vue-router";
 
-const session = useSessionStore();
+import { fetchCreateGame } from "@/api-v2/fetchers.js";
+import type { CreateGameResponse } from "@/api-v2/types";
+
+const router = useRouter();
 
 async function createGame() {
-/*
-    if logged in:
-        create game
-    else:
-        create account
-*/    
+    const response = await fetchCreateGame();
+    const data = await response.json() as CreateGameResponse;
+    router.push(`/${data.superPlayerLink.token}`);
 }
 
 </script>
@@ -20,13 +19,5 @@ async function createGame() {
         <button class="button button-shadow block" @click="createGame">
             Create Game
         </button>
-        <template v-if="!session.isLoggedIn">
-            <RouterLink to="/login" class="block">
-                Login 
-            </RouterLink>
-            <RouterLink to="/register">
-                Create account
-            </RouterLink>
-        </template>
     </div>
 </template>

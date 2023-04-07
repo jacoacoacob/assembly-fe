@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 
-import { socket, authenticatedSocket } from '@/socket';
+// import { socket, authenticatedSocket } from '@/socket';
 import AppInput from '@/components/AppInput.vue';
 
 const API = import.meta.env.VITE_API;
@@ -23,11 +23,11 @@ async function logout() {
 }
 
 function connect() {
-    socket.connect();
+    // socket.connect();
 
-    socket.on("hello", (name: string) => {
-        console.log("[authenticatedSocket] hello", name);
-    })
+    // socket.on("hello", (name: string) => {
+    //     console.log("[authenticatedSocket] hello", name);
+    // })
 }
 
 async function ping() {

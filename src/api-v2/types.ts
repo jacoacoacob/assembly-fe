@@ -12,7 +12,7 @@ interface CreateGameResponse {
 }
 
 interface CreateClientAuthTokenRepsonse {
-    token: string;
+    clientToken: string;
 }
 
 export type {

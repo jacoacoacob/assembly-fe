@@ -1,6 +1,6 @@
 
 import { defineStore } from "pinia";
-import { io } from "socket.io-client";
+import { Socket, io } from "socket.io-client";
 import { ref, watch } from "vue";
 import { useRoute } from "vue-router";
 import { fetchCreateClientAuthToken } from "./api-v2/fetchers";
@@ -15,20 +15,30 @@ type ConnectionError =
 
 const IO_URL = import.meta.env.VITE_IO_URL;
 
+interface ServerToClientEvents {
+    clients: (clients: any) => void;
+}
+
+interface ClientToServerEvents {
+
+}
+
+type GameSocket = Socket<ServerToClientEvents, ClientToServerEvents>;
+
 const useSocket = defineStore("socket", () => {
     const route = useRoute();
 
-    const socket = io(IO_URL, {
+    const socket: GameSocket = io(IO_URL, {
         autoConnect: false,
         auth: (cb) => {
             if (route.name === "game-page") {
                 return cb({
                     gameToken: route.params.token,
-                    sessionToken: localStorage.sessionToken,
+                    clientToken: localStorage.clientToken,
                 });
             }
             cb({});
-        }
+        },
     });
 
     const connectionError = ref<ConnectionError | null>(null);
@@ -36,10 +46,10 @@ const useSocket = defineStore("socket", () => {
     watch(connectionError, async (newVal) => {
         if (newVal === "missing_session_token" || newVal === "invalid_session_token") {
             const response = await fetchCreateClientAuthToken({
-                token: route.params.token as string,
+                gameToken: route.params.token as string,
             });
             const data: CreateClientAuthTokenRepsonse = await response.json();
-            localStorage.sessionToken = data.token;
+            localStorage.clientToken = data.clientToken;
             socket.connect();
         }
         if (newVal === "invalid_game_token") {

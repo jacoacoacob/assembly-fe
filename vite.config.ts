@@ -14,7 +14,7 @@ export default defineConfig({
           whitespace: "preserve",
         },
       },
-    })
+    }),
   ],
   resolve: {
     alias: {

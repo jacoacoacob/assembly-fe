@@ -7,7 +7,7 @@ function makeFetcher<Body>(path: string, options?: Omit<RequestInit, "body">) {
             "Content-Type": "application/json",
             ...options?.headers
         }
-    })
+    });
 }
 
 const fetchCreateGame = makeFetcher("/game", {
@@ -15,8 +15,8 @@ const fetchCreateGame = makeFetcher("/game", {
 });
 
 const fetchCreateClientAuthToken = makeFetcher<{
-    token: string;
-}>("/game/token", {
+    gameToken: string;
+}>("/game/client-token", {
     method: "POST",
 });
 

@@ -1,15 +1,15 @@
 <script setup lang="ts">
 import { useRouter } from "vue-router";
 
-import { fetchCreateGame } from "@/api-v2/fetchers.js";
-import type { CreateGameResponse } from "@/api-v2/types";
+import { fetchCreateGame } from "@/v2/api/fetchers.js";
+import type { CreateGameResponse } from "@/v2/api/types";
 
 const router = useRouter();
 
 async function createGame() {
     const response = await fetchCreateGame();
     const data = await response.json() as CreateGameResponse;
-    router.push(`/${data.superPlayerLink.token}`);
+    router.push(`/${data.ownerLink.id}`);
 }
 
 </script>

@@ -1,22 +1,16 @@
-
+import { useRoute } from "vue-router";
 import { defineStore } from "pinia";
 import { Socket, io } from "socket.io-client";
-import { ref, watch } from "vue";
-import { useRoute } from "vue-router";
-import { fetchCreateClientAuthToken } from "./api-v2/fetchers";
-import type { CreateClientAuthTokenRepsonse } from "./api-v2/types";
 
-type ConnectionError =
-    "unauthorized" |
-    "invalid_game_token" |
-    "invalid_session_token" |
-    "missing_session_token" |
-    "missing_game_token";
+import type { ClientSession } from "./v2/stores/session-store";
+import { useConnectedClientsStore } from "./v2/stores/connected-clients-store";
+import { useSessionStore } from "./v2/stores/session-store";
 
 const IO_URL = import.meta.env.VITE_IO_URL;
 
 interface ServerToClientEvents {
-    clients: (clients: any) => void;
+    connected_clients: (clients: ClientSession[]) => void;
+    session: (data: ClientSession) => void;
 }
 
 interface ClientToServerEvents {
@@ -27,42 +21,37 @@ type GameSocket = Socket<ServerToClientEvents, ClientToServerEvents>;
 
 const useSocket = defineStore("socket", () => {
     const route = useRoute();
+    const connectedClients = useConnectedClientsStore();
+    const session = useSessionStore();
 
     const socket: GameSocket = io(IO_URL, {
         autoConnect: false,
         auth: (cb) => {
             if (route.name === "game-page") {
                 return cb({
-                    gameToken: route.params.token,
-                    clientToken: localStorage.clientToken,
+                    gameLinkId: route.params.gameLinkId,
+                    clientId: localStorage[`gameLink_${route.params.gameLinkId}`],
                 });
             }
             cb({});
         },
     });
 
-    const connectionError = ref<ConnectionError | null>(null);
-
-    watch(connectionError, async (newVal) => {
-        if (newVal === "missing_session_token" || newVal === "invalid_session_token") {
-            const response = await fetchCreateClientAuthToken({
-                gameToken: route.params.token as string,
-            });
-            const data: CreateClientAuthTokenRepsonse = await response.json();
-            localStorage.clientToken = data.clientToken;
-            socket.connect();
-        }
-        if (newVal === "invalid_game_token") {
-            console.log("Invalid game token!");
-        }
+    socket.on("connect", () => {
+        console.log("[socket] connect", socket)
     });
 
-    socket.on("connect", () => {
-        console.log("[socket] connect")
+    socket.on("session", (session_) => {
+        localStorage[`gameLink_${route.params.gameLinkId}`] = session_.clientId;
+        session.data = session_;
+    });
+
+    socket.on("connected_clients", (clients) => {
+        connectedClients.data = clients;
     });
 
     socket.on("connect_error", (error) => {
-        connectionError.value = error.message as ConnectionError;
+        console.log("[connect_error]", error);
     });
 
     return { socket };

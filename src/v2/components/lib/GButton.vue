@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import IconSpinner from "@/components-v2/IconSpinner.vue";
+import IconSpinner from "@/components-v2/icon/IconSpinner.vue";
 
 defineProps<{ isBusy?: boolean }>();
 </script>

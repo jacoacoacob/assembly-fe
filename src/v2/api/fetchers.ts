@@ -14,10 +14,5 @@ const fetchCreateGame = makeFetcher("/game", {
     method: "POST",
 });
 
-const fetchCreateClientAuthToken = makeFetcher<{
-    gameToken: string;
-}>("/game/client-token", {
-    method: "POST",
-});
 
-export { fetchCreateGame, fetchCreateClientAuthToken };
+export { fetchCreateGame };

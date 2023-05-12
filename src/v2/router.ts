@@ -1,14 +1,14 @@
 import { createRouter, createWebHistory, type RouteParams, type RouterLinkProps } from "vue-router";
 
-import GamePage from "@/views/v2/GamePage.vue";
-import HomePage from "@/views/v2/HomePage.vue";
+import GamePage from "@/v2/views/GamePage.vue";
+import HomePage from "@/v2/views/HomePage.vue";
 
 interface Breadcrumb {
     name: string | ((params: RouteParams) => string);
     to?: RouterLinkProps["to"];
 }
 
-const routerV2 = createRouter({
+const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
     routes: [
         {
@@ -17,11 +17,11 @@ const routerV2 = createRouter({
             component: HomePage
         },
         {
-            path: "/:token",
+            path: "/:gameLinkId",
             name: "game-page",
             component: GamePage
         },
     ],
 });
 
-export { routerV2 }
+export { router }

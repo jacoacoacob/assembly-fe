@@ -2,13 +2,12 @@
 interface GameLink {
     id: string;
     game_id: string;
-    is_revoked: string;
-    token: string;
+    role: "guest" | "owner";
 }
 
 interface CreateGameResponse {
-    playerLink: GameLink;
-    superPlayerLink: GameLink;
+    ownerLink: GameLink;
+    guestLink: GameLink;
 }
 
 interface CreateClientAuthTokenRepsonse {

@@ -1,28 +1,35 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, onUnmounted, onMounted } from "vue";
+import { useRoute } from "vue-router";
 
+import OwnerView from "@/v2/components/game-page/owner-view.vue"
+import GuestView from "@/v2/components/game-page/guest-view.vue"
 import GInput from "@/v2/components/lib/GInput.vue";
-import { useSocket } from "@/socket";
-import { useConnectedClientsStore } from "../stores/connected-clients-store";
+import { socket, connectSocket } from "@/socket";
+import { useSessionStore } from "../stores/session-store";
 
-const connectedClients = useConnectedClientsStore();
-const { socket } = useSocket();
+const session = useSessionStore();
 
-socket.connect();
+connectSocket();
+
+onUnmounted(() => {    
+    socket.disconnect();
+});
 
 const clientName = ref("");
 
 </script>
 
 <template>
-    <div>
-        <GInput v-model="clientName" id="client-name" label="Client Name" />
-        <ul class="max-w-lg">
-            <li v-for="x in connectedClients.data">
-                <pre>
-{{ JSON.stringify(x, null, 4) }}
-                </pre>
-            </li>
-        </ul>
+    <div class="min-h-screen w-full px-4 flex flex-col">
+        <div class="p-1">
+            <ul class="flex space-x-2">
+                <li v-for="x in session.allSessions">{{ x.clientId }}</li>
+            </ul>
+        </div>
+        <div class="flex-1 flex justify-center items-center">
+            <OwnerView v-if="session.clientSession?.role === 'owner'" />
+            <GuestView v-if="session.clientSession?.role === 'guest'" />
+        </div>
     </div>
 </template>

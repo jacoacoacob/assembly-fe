@@ -1,5 +1,6 @@
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import { defineStore } from "pinia";
+import { useRoute } from "vue-router";
 
 interface ClientSession {
     /**
@@ -13,9 +14,13 @@ interface ClientSession {
      */
     clientId: string;
     /**
+     * A human readable name for use in UI
+     */
+    clientDisplayName: string;
+    /**
      * A role endows a client with a set of permissions.
      */
-    role: string;
+    role: "owner" | "guest";
     /** 
      * Each connected client may represent 1 or more players in a game.
      */
@@ -24,10 +29,18 @@ interface ClientSession {
     
 
 const useSessionStore = defineStore("session", () => {
+    /** All clients actively connected to this game */
+    const allSessions = ref<ClientSession[]>([]);
+    
+    /** The clientId assigned to the user's browser */
+    const clientId = ref<ClientSession["clientId"] | null>(null);
 
-    const data = ref<ClientSession | null>(null);
+    /** Session data belonging to the user's browser */
+    const clientSession = computed(
+        () => allSessions.value.find((session) => session.clientId === clientId.value)
+    );
 
-    return { data };
+    return { clientId, clientSession, allSessions };
 });
 
 export { useSessionStore };

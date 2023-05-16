@@ -1,0 +1,3 @@
+<template>
+    Welcome guest!
+</template>

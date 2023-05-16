@@ -3,20 +3,19 @@ import { ref, type Ref, watch, computed } from "vue";
 import { socket } from "@/socket";
 import type { ListenEvents, EmitEvents, ListenEmitEvents } from "@/socket";
 
-
 type ArgsType<T> = T extends (...args: infer U) => any ? U : never;
 
 function lRef<
     E extends keyof ListenEvents,
-    T extends ArgsType<ListenEvents[E]>[number]
+    T extends ArgsType<ListenEvents[E]>
 >(
     event: E,
-    value?: T
+    value: T[number]
 ) {
-    const _ref = ref(value) as Ref<T>;
+    const _ref = ref(value) as Ref<T[number]>;
 
     function listener(data?: T) {
-        _ref.value = data as T;
+        _ref.value = data as T[number];
     }
 
     socket.on(event, listener as any);
@@ -26,12 +25,12 @@ function lRef<
 
 function eRef<
     E extends keyof EmitEvents,
-    T extends ArgsType<EmitEvents[E]>[number]
+    T extends ArgsType<EmitEvents[E]>
 >(
     event: E,
-    value?: T
+    value: T
 ) {
-    const _ref = ref(value) as Ref<T>;
+    const _ref = ref(value) as Ref<T[number]>;
 
     watch(_ref, (current) => {
         (socket as any).emit(event, current);
@@ -42,14 +41,14 @@ function eRef<
 
 function leRef<
     E extends keyof ListenEmitEvents,
-    T extends ArgsType<ListenEmitEvents[E]>[number]
-> (
+    T extends ArgsType<ListenEmitEvents[E]>
+>(
     event: E,
     value?: T
 ) {
-    const _ref = ref(value) as Ref<T>;
+    const _ref = ref(value) as Ref<T[number]>;
 
-    function listener(data?: T) {
+    function listener(data?: T[number]) {
         _ref.value = data as any;
     }
 
@@ -59,7 +58,7 @@ function leRef<
         get() {
             return _ref.value;
         },
-        set(value: T) {
+        set(value: T[number]) {
             _ref.value = value;
             (socket as any).emit(event, value);
         },

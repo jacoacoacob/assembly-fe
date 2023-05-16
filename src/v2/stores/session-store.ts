@@ -1,6 +1,7 @@
 import { computed, ref } from "vue";
 import { defineStore } from "pinia";
 import { useRoute } from "vue-router";
+import { lRef } from "../composables/use-listen-emit-ref";
 
 interface ClientSession {
     /**
@@ -30,10 +31,14 @@ interface ClientSession {
 
 const useSessionStore = defineStore("session", () => {
     /** All clients actively connected to this game */
-    const allSessions = ref<ClientSession[]>([]);
+    const allSessions = lRef("session:all", []);
     
     /** The clientId assigned to the user's browser */
-    const clientId = ref<ClientSession["clientId"] | null>(null);
+    const clientId = lRef("session:client_id", "");
+
+    
+
+    // const clientId = ref<ClientSession["clientId"] | null>(null);
 
     /** Session data belonging to the user's browser */
     const clientSession = computed(

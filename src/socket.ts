@@ -1,34 +1,30 @@
 import { Socket, io } from "socket.io-client";
 import { useRoute } from "vue-router";
 
-import { registerSessionHandlers } from "./v2/handlers/session-handlers";
-import { setupSessionEmitters } from "./v2/emitters/session-emitters";
 import type { ClientSession } from "./v2/stores/session-store";
 import type { Game } from "./v2/stores/game-store";
-import { lRef } from "./v2/composables/use-listen-emit-ref";
 
 const IO_URL = import.meta.env.VITE_IO_URL;
 
-interface ServerToClientEvents {
-    "session:client_id": (data: ClientSession["clientId"]) => void;
-    "session:all": (data: ClientSession[]) => void;
-    "game": (data: any) => void;
-};
+// interface ServerToClientEvents {
+//     "session:client_id": (data: ClientSession["clientId"]) => void;
+//     "session:all": (data: ClientSession[]) => void;
+//     "game": (data: any) => void;
+// };
 
-interface ClientToServerEvents {
-    "session:set_client_display_name": (name: string) => void;
-    "session:claim_player": (playerId: string) => void;
-    "game:add_player": (name: string) => void;
-    "game:set_display_name": (name: string) => void;
-    "game:event": (data: any) => void;
-    "game:start": () => void;
-    "game:end": () => void;
-};
+// interface ClientToServerEvents {
+//     "session:set_client_display_name": (name: string) => void;
+//     "session:claim_player": (playerId: string) => void;
+//     "game:add_player": (name: string) => void;
+//     "game:set_display_name": (name: string) => void;
+//     "game:event": (data: any) => void;
+//     "game:start": () => void;
+//     "game:end": () => void;
+// };
 
 
 interface ListenEmitEvents {
-    "game:start": () => void;
-    "game:end": () => void;
+
 }
 
 interface ListenEvents extends ListenEmitEvents {
@@ -40,6 +36,11 @@ interface ListenEvents extends ListenEmitEvents {
 interface EmitEvents extends ListenEmitEvents {
     "game:add_player": (name: string) => void;
     "game:set_display_name": (name: string) => void;
+    "session:set_client_display_name": (name: string) => void;
+    "session:claim_player": (playerId: string) => void;
+    "game:start": () => void;
+    "game:end": () => void;
+    "game:event": (event: Game["history"][number]) => void;
 }
 
 type GameSocket = Socket<ListenEvents, EmitEvents>;
@@ -47,8 +48,6 @@ type GameSocket = Socket<ListenEvents, EmitEvents>;
 const socket: GameSocket = io(IO_URL, {
     autoConnect: false,
 });
-
-const hi = lRef("session:all");
 
 function connectSocket() {
     const route = useRoute();
@@ -68,11 +67,11 @@ function connectSocket() {
         console.log("[connect_error]", error);
     });
     
-    registerSessionHandlers(socket);
+    // registerSessionHandlers(socket);
     
-    setupSessionEmitters(socket);
+    // setupSessionEmitters(socket);
 
-    socket.on
+    // socket.on
 
     socket.connect();
 }

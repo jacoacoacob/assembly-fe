@@ -1,34 +1,36 @@
 import { defineStore } from "pinia";
-import { ref } from "vue";
 
-import { socket } from "@/socket";
+import { lRef } from "../composables/use-socket-ref";
 
 interface GamePlayer {
     id: string;
     display_name: string;
 }
 
-interface Game {
+interface GameHistoryEvent {
+    type: string;
+    data: unknown;
+}
+
+interface GameMeta {
     id: string;
     display_name: string;
     phase: "setup" | "play" | "complete";
-    players: GamePlayer[];
-    history: { type: string; data: unknown }[];
 }
 
-function initialState(): Game {
-    return {
-        id: "",
+const useGameStore = defineStore("game", () => {
+    const meta = lRef("game:meta", {
         display_name: "",
+        id: "",
         phase: "setup",
-        players: [],
-        history: [],
-    };
-}
+    });
 
-const useGameStore = defineStore("game", {
-    state: initialState,
+    const history = lRef("game:history", []);
+
+    const players = lRef("game:players", []);
+
+    return { meta, history, players };
 });
 
 export { useGameStore };
-export type { Game, GamePlayer };
+export type { GameMeta, GamePlayer, GameHistoryEvent };

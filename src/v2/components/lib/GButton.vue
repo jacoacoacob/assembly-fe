@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import IconSpinner from "@/components-v2/icon/IconSpinner.vue";
+import IconSpinner from "@/v2/components/icon/IconSpinner.vue";
 
 defineProps<{ isBusy?: boolean }>();
 </script>
@@ -8,7 +8,7 @@ defineProps<{ isBusy?: boolean }>();
     <button
         :disabled="isBusy"
         class="
-            relative border px-4 py-1 rounded bg-slate-50
+            relative border border-slate-400 px-4 py-1 rounded
             disabled:opacity-80
         "
     >

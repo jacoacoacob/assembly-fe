@@ -1,5 +1,5 @@
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent, ref } from "vue";
 
 export default defineComponent({
     inheritAttrs: false,
@@ -9,14 +9,17 @@ export default defineComponent({
 <script setup lang="ts">
 defineProps<{
     label?: string;
-    modelValue: string | number;
+    modelValue?: string | number;
 }>();
 
 defineEmits(["update:modelValue"]);
+
+const isFocused = ref(false);
+
 </script>
 
 <template>
-    <div class="flex flex-col space-y-1">
+    <div class="flex flex-col items-center space-y-1">
         <label
             v-if="label"
             :for="($attrs.id as string)"
@@ -24,11 +27,16 @@ defineEmits(["update:modelValue"]);
         >
             {{ label }}
         </label>
-        <input
-            v-bind="$attrs"
-            class="border border-slate-400 p-1 rounded focus:ring-1"
-            :value="modelValue"
-            @input="$emit('update:modelValue', ($event.target as HTMLInputElement).value)"
-        >
+        <div class="border border-slate-400 rounded flex items-center" :class="{ 'ring-2 ring-blue-500': isFocused }">
+            <input
+                v-bind="$attrs"
+                class="p-1 focus:outline-none"
+                :value="modelValue"
+                @focus="isFocused = true"
+                @blur="isFocused = false"
+                @input="$emit('update:modelValue', ($event.target as HTMLInputElement).value)"
+            >
+            <slot name="input-left"></slot>
+        </div>
     </div>
 </template>

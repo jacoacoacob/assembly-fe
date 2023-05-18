@@ -1,7 +1,7 @@
-import { computed, ref } from "vue";
-import { defineStore } from "pinia";
+import { computed, watch } from "vue";
 import { useRoute } from "vue-router";
-import { lRef } from "../composables/use-listen-emit-ref";
+import { defineStore } from "pinia";
+import { lRef } from "../composables/use-socket-ref";
 
 interface ClientSession {
     /**
@@ -36,16 +36,18 @@ const useSessionStore = defineStore("session", () => {
     /** The clientId assigned to the user's browser */
     const clientId = lRef("session:client_id", "");
 
-    
-
-    // const clientId = ref<ClientSession["clientId"] | null>(null);
-
     /** Session data belonging to the user's browser */
     const clientSession = computed(
         () => allSessions.value.find((session) => session.clientId === clientId.value)
     );
 
-    return { clientId, clientSession, allSessions };
+    const route = useRoute();
+
+    watch(clientId, (current) => {
+        localStorage[`glid_${route.params.gameLinkId}`] = current;
+    });
+
+    return { clientSession, allSessions };
 });
 
 export { useSessionStore };

@@ -28,6 +28,7 @@ const isFocused = ref(false);
             {{ label }}
         </label>
         <div class="border border-slate-400 rounded flex items-center" :class="{ 'ring-2 ring-blue-500': isFocused }">
+            <slot name="input-left"></slot>
             <input
                 v-bind="$attrs"
                 class="p-1 focus:outline-none"
@@ -36,7 +37,7 @@ const isFocused = ref(false);
                 @blur="isFocused = false"
                 @input="$emit('update:modelValue', ($event.target as HTMLInputElement).value)"
             >
-            <slot name="input-left"></slot>
+            <slot name="input-right"></slot>
         </div>
     </div>
 </template>

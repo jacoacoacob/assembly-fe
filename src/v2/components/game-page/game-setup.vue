@@ -9,7 +9,7 @@ import { useSessionStore } from "../../stores/session-store";
 
 const session = useSessionStore();
 
-const { _ref: clientName, doEmit } = eRef({
+const { data: clientName, doEmit } = eRef({
     event: "session:set_client_display_name",
     initialValue: "",
     watch: {
@@ -28,7 +28,7 @@ const { _ref: clientName, doEmit } = eRef({
 
         <form @submit.prevent="doEmit" class="bg-cyan-300 p-4">
             <GInput v-model="clientName" label="Name client">
-                <template #input-left>
+                <template v-slot:input-right>
                     <GButton type="submit" class="border-none rounded-none px-2 bg-black text-white">
                         <IconCheckmark />
                     </GButton>

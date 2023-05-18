@@ -43,19 +43,19 @@ function eRef<
 >(options: ERefOptions<E, T>) {
     const { event, initialValue, watch: watch_ } = options;
 
-    const _ref = ref(unref(initialValue)) as Ref<T[number]>;
+    const data = ref(unref(initialValue)) as Ref<T[number]>;
 
     function doEmit() {
-        (socket as any).emit(event, _ref.value);
+        (socket as any).emit(event, data.value);
     }
 
     if (watch_) {
         watch(watch_.source, (current) => {
-            _ref.value = current;
+            data.value = current;
         }, { immediate: watch_.immediate });
     }
 
-    return { _ref, doEmit };
+    return { data, doEmit };
 }
 
 export { eRef, lRef };

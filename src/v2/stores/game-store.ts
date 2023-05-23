@@ -1,6 +1,7 @@
 import { defineStore } from "pinia";
 
 import { lRef } from "../composables/use-socket-ref";
+import { emitWithAck, socket } from "@/socket";
 
 interface GamePlayer {
     id: string;
@@ -29,7 +30,18 @@ const useGameStore = defineStore("game", () => {
 
     const players = lRef("game:players", []);
 
-    return { meta, history, players };
+    async function removePlayer(playerId: string) {
+        try {
+            const { message  } = await emitWithAck("game:remove_player", { playerId });
+            if (typeof message === "string") {
+                console.log("[gameStore.removePlayer]", message);
+            }
+        } catch (error) {
+            console.log((error as Error).message);
+        }
+    }
+
+    return { meta, history, players, removePlayer };
 });
 
 export { useGameStore };

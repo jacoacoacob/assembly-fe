@@ -1,40 +1,29 @@
 <script setup lang="ts">
+import SetClientDisplayName from "./set-client-display-name.vue";
+import AddPlayer from "./add-player.vue";
+import { useGameStore } from "@/v2/stores/game-store";
 
-import { eRef } from "../../composables/use-socket-ref";
+const game = useGameStore();
 
-import GInput from "../lib/GInput.vue";
-import GButton from "../lib/GButton.vue";
-import IconCheckmark from "../icon/IconCheckmark.vue";
-import { useSessionStore } from "../../stores/session-store";
-
-const session = useSessionStore();
-
-const { data: clientName, doEmit } = eRef({
-    event: "session:set_client_display_name",
-    initialValue: "",
-    watch: {
-        source: () => session.clientSession?.clientDisplayName ?? "",
-        immediate: true
-    },
-});
 </script>
 
 <template>
-    <div class="space-y-6">
+    <div class="space-y-6 flex flex-col">
         <p>
             Welcome to the setup phase. This is the time to
             for players to join.
         </p>
-
-        <form @submit.prevent="doEmit" class="bg-cyan-300 p-4">
-            <GInput v-model="clientName" label="Name client">
-                <template v-slot:input-right>
-                    <GButton type="submit" class="border-none rounded-none px-2 bg-black text-white">
-                        <IconCheckmark />
-                    </GButton>
-                </template>
-            </GInput>
-        </form>
-        <p>Add player</p>
+        <SetClientDisplayName />
+        <AddPlayer />
+        <ul class="space-y-2">
+            <li v-for="player in game.players">
+                {{ player.display_name }}
+                <button
+                    class="px-2 bg-gray-200"
+                    @click="() => game.removePlayer(player.id)">
+                    delete
+                </button>
+            </li>
+        </ul>
     </div>
 </template>

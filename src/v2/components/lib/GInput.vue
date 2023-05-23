@@ -19,7 +19,7 @@ const isFocused = ref(false);
 </script>
 
 <template>
-    <div class="flex flex-col items-center space-y-1">
+    <div class="flex flex-col items-start space-y-1">
         <label
             v-if="label"
             :for="($attrs.id as string)"
@@ -27,11 +27,14 @@ const isFocused = ref(false);
         >
             {{ label }}
         </label>
-        <div class="border border-slate-400 rounded flex items-center" :class="{ 'ring-2 ring-blue-500': isFocused }">
+        <div
+            class="border border-slate-400 rounded flex items-center relative"
+            :class="{ 'ring-2 ring-blue-500 border-blue-500': isFocused }"
+        >
             <slot name="input-left"></slot>
             <input
                 v-bind="$attrs"
-                class="p-1 focus:outline-none"
+                class="p-1 px-2 rounded focus:outline-none"
                 :value="modelValue"
                 @focus="isFocused = true"
                 @blur="isFocused = false"

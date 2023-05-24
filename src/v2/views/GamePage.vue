@@ -32,8 +32,8 @@ onUnmounted(() => {
         <div class="flex-1">
             <GameSetup v-if="game.meta.phase === 'setup'" />
         </div>
-        <div class="flex-1 whitespace-pre">
+        <!-- <div class="flex-1 whitespace-pre">
             {{ game }}
-        </div>
+        </div> -->
     </div>
 </template>

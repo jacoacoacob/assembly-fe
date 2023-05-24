@@ -5,7 +5,11 @@ import { emitWithAck, socket } from "@/socket";
 
 interface GamePlayer {
     id: string;
+    game_id: string;
+    client_id: string;
     display_name: string;
+    created: string;
+    updated: string;
 }
 
 interface GameHistoryEvent {
@@ -17,6 +21,8 @@ interface GameMeta {
     id: string;
     display_name: string;
     phase: "setup" | "play" | "complete";
+    created: string;
+    updated: string;
 }
 
 const useGameStore = defineStore("game", () => {
@@ -24,6 +30,8 @@ const useGameStore = defineStore("game", () => {
         display_name: "",
         id: "",
         phase: "setup",
+        created: "",
+        updated: "",
     });
 
     const history = lRef("game:history", []);

@@ -2,8 +2,11 @@
 import SetClientDisplayName from "./set-client-display-name.vue";
 import AddPlayer from "./add-player.vue";
 import { useGameStore } from "@/v2/stores/game-store";
+import { useSessionStore } from "@/v2/stores/session-store";
+import PlayersList from "./players-list.vue";
 
 const game = useGameStore();
+const session = useSessionStore();
 
 </script>
 
@@ -15,15 +18,6 @@ const game = useGameStore();
         </p>
         <SetClientDisplayName />
         <AddPlayer />
-        <ul class="space-y-2">
-            <li v-for="player in game.players">
-                {{ player.display_name }}
-                <button
-                    class="px-2 bg-gray-200"
-                    @click="() => game.removePlayer(player.id)">
-                    delete
-                </button>
-            </li>
-        </ul>
+        <PlayersList />
     </div>
 </template>

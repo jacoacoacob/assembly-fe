@@ -41,13 +41,16 @@ const useSessionStore = defineStore("session", () => {
         () => allSessions.value.find((session) => session.clientId === clientId.value)
     );
 
-    const route = useRoute();
+    const isGuest = computed(() => clientSession.value?.role === "guest");
+    const isOwner = computed(() => clientSession.value?.role === "owner");
 
+    const route = useRoute();
+    
     watch(clientId, (current) => {
         localStorage[`glid_${route.params.gameLinkId}`] = current;
     });
 
-    return { clientSession, allSessions };
+    return { clientSession, allSessions, isGuest, isOwner };
 });
 
 export { useSessionStore };

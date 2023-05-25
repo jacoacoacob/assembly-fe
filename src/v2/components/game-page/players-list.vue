@@ -4,14 +4,13 @@ import { useSessionStore } from '@/v2/stores/session-store';
 import PlayersListItem from './players-list-item.vue';
 
 const game = useGameStore();
-const session = useSessionStore();
 </script>
 
 <template>
-    <div>
-        <h1 class="text-lg font-bold">Players</h1>
+    <div class="space-y-4 p-4 rounded max-w-md bg-slate-100 border border-slate-300">
+        <h1 class="text-xl font-bold">Players</h1>
         <ul class="space-y-2">
-            <PlayersListItem v-for="player in game.players" :data="player" />
+            <PlayersListItem v-for="player in game.players" :player="player" />
         </ul>
     </div>
 </template>

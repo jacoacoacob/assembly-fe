@@ -19,7 +19,7 @@ const isFocused = ref(false);
 </script>
 
 <template>
-    <div class="flex flex-col items-start space-y-1">
+    <div class="flex flex-col items-start relative">
         <label
             v-if="label"
             :for="($attrs.id as string)"
@@ -31,7 +31,7 @@ const isFocused = ref(false);
             class="border border-slate-400 rounded flex items-center relative"
             :class="{ 'ring-2 ring-blue-500 border-blue-500': isFocused }"
         >
-            <slot name="input-left"></slot>
+            <slot name="left"></slot>
             <input
                 v-bind="$attrs"
                 class="p-1 px-2 rounded focus:outline-none"
@@ -40,7 +40,8 @@ const isFocused = ref(false);
                 @blur="isFocused = false"
                 @input="$emit('update:modelValue', ($event.target as HTMLInputElement).value)"
             >
-            <slot name="input-right"></slot>
+            <slot name="right"></slot>
         </div>
+        <slot name="below"></slot>
     </div>
 </template>

@@ -20,7 +20,7 @@ const { data, emit } = eRef({
 <template>
     <form @submit.prevent="emit">
         <GInput v-model="data" label="Name client">
-            <template v-slot:input-right>
+            <template v-slot:right>
                 <GButton type="submit" class="border-none rounded-none px-2 bg-black text-white">
                     <IconCheckmark />
                 </GButton>

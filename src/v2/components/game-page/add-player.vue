@@ -30,7 +30,7 @@ async function onSubmit() {
 <template>
     <form @submit.prevent="onSubmit">
         <GInput v-model="data.name" label="Add a player">
-            <template v-slot:input-right>
+            <template v-slot:right>
                 <GButton type="submit" class="border-none rounded-none px-2 bg-black text-white">
                     <IconCheckmarkVue />
                 </GButton>

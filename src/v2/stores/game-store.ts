@@ -17,6 +17,13 @@ interface GameHistoryEvent {
     data: unknown;
 }
 
+interface GameLink {
+    id: string;
+    game_id: string;
+    role: "guest" | "owner";
+    created: string;
+}
+
 interface GameMeta {
     id: string;
     display_name: string;
@@ -38,6 +45,8 @@ const useGameStore = defineStore("game", () => {
 
     const players = lRef("game:players", []);
 
+    const links = lRef("game:links", []);
+
     async function removePlayer(playerId: string) {
         try {
             const { message  } = await emitWithAck("game:remove_player", { playerId });
@@ -49,8 +58,8 @@ const useGameStore = defineStore("game", () => {
         }
     }
 
-    return { meta, history, players, removePlayer };
+    return { meta, history, players, removePlayer, links };
 });
 
 export { useGameStore };
-export type { GameMeta, GamePlayer, GameHistoryEvent };
+export type { GameMeta, GamePlayer, GameHistoryEvent, GameLink };

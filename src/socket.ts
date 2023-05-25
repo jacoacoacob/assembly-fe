@@ -2,7 +2,7 @@ import { Socket, io } from "socket.io-client";
 import { useRoute } from "vue-router";
 
 import type { ClientSession } from "./v2/stores/session-store";
-import type { GameMeta, GameHistoryEvent, GamePlayer } from "./v2/stores/game-store";
+import type { GameMeta, GameHistoryEvent, GamePlayer, GameLink } from "./v2/stores/game-store";
 import { ACK_TIMEOUT_DEFAULT } from "./v2/composables/use-socket-ref";
 import type { ArgsType } from "./v2/composables/use-socket-ref";
 
@@ -24,6 +24,7 @@ interface ListenEvents {
     "game:meta": (data: GameMeta) => void;
     "game:players": (data: GamePlayer[]) => void;
     "game:history": (data: GameHistoryEvent[]) => void;
+    "game:links": (data: GameLink[]) => void;
     "session:all": (data: ClientSession[]) => void;
     "session:client_id": (clientId: string) => void;
 }
@@ -59,18 +60,25 @@ function connectSocket() {
     socket.on("connect", () => {
         console.log("[socket] connected");
     });
-    
+
     socket.on("connect_error", (error) => {
         console.log("[socket] connection error", error);
     });
-    
+
     socket.connect();
+}
+
+function emit<E extends keyof EmitEvents, T extends ArgsType<EmitEvents[E]>>(
+    event: E,
+    data: T[0]
+) {
+    (socket as any).emit(event, data);
 }
 
 async function emitWithAck<
     E extends keyof EmitEvents,
     T extends ArgsType<EmitEvents[E]>
->(event: keyof EmitEvents, data: T[0]): Promise<AckPayload> {
+>(event: E, data: T[0]): Promise<AckPayload> {
     return new Promise((resolve, reject) => {
         const acknowledgement: Ack<true> = (error, payload) => {
             if (error) {
@@ -85,5 +93,5 @@ async function emitWithAck<
     });
 }
 
-export { socket, emitWithAck, connectSocket };
+export { socket, emit, emitWithAck, connectSocket };
 export type { GameSocket, ListenEvents, EmitEvents, Ack, AckPayload };

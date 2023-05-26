@@ -1,4 +1,4 @@
-import { socket, emit, emitWithAck, type EmitEvents, type Ack } from "@/socket";
+import { socket, type EmitEvents, type Ack } from "@/socket";
 import { ACK_TIMEOUT_DEFAULT, type ArgsType } from "./use-socket-ref";
 import { ref, reactive, readonly,  } from "vue";
 import type { Socket } from "socket.io-client";
@@ -29,7 +29,8 @@ function useEmitWithAck<
         }
     };
 
-    function send(data: T[0]) {
+    function emit(data: T[0]) {
+        reset();
         status.value = "pending";
         (socket as Socket)
             .timeout(ACK_TIMEOUT_DEFAULT)
@@ -46,7 +47,7 @@ function useEmitWithAck<
         error,
         message,
         status,
-        send,
+        emit,
         reset,
     }));
 }

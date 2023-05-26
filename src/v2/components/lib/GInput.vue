@@ -10,6 +10,7 @@ export default defineComponent({
 defineProps<{
     label?: string;
     modelValue?: string | number;
+    errors?: string[];
 }>();
 
 defineEmits(["update:modelValue"]);
@@ -42,6 +43,10 @@ const isFocused = ref(false);
             >
             <slot name="right"></slot>
         </div>
-        <slot name="below"></slot>
+        <!-- <slot name="below"></slot> -->
+        <div v-if="errors?.length" class="text-xs text-red-500">
+            {{ errors[0] }}
+        </div>
+
     </div>
 </template>

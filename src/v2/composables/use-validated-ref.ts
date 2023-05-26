@@ -1,33 +1,24 @@
-import { computed, reactive, ref, unref } from "vue";
-import type { Ref } from "vue";
+import { ref, unref, type Ref } from "vue"
+import { useValidation, type Validator } from "./use-validation";
 
-type Validator<T> = (value: T) => string | undefined;
-
-interface UseValidationOptions<T> {
-    initalValue: T;
-    validators: Validator<T>[];
+interface UseValidatedRefOptions<T> {
+    value: T;
+    fieldName?: string;
+    validators: Validator<T>[]
 }
 
-function useValidation<T>({ initalValue, validators }: UseValidationOptions<T>) {
-    const data = ref(unref(initalValue)) as Ref<T>;
+function useValidatedRef<T>(options: UseValidatedRefOptions<T>): [Ref<T>, Ref<string[]>] {
+    const { validators, value, fieldName } = options;
+    
+    const data = ref(unref(value)) as Ref<T>;
 
-    const errors = computed(() =>
-        validators
-            .map((validator) => (validator(data.value as T) ?? "").trim())
-            .filter(Boolean)
-    );
+    const errors = useValidation({
+        fieldName,
+        validators,
+        ref: data,
+    });
 
-    const isValid = computed(() => errors.value.length === 0);
-
-    return reactive({ data, isValid, errors });
+    return [data, errors];
 }
 
-function maxLen(name: string, len: number) {
-    return (value: string) => {
-        if (value.length > len) {
-            return `${name} must be less than ${len} characters.`;
-        }
-    }   
-}
-
-export { useValidation, maxLen };
+export { useValidatedRef };

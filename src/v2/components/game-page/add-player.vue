@@ -1,35 +1,31 @@
 <script setup lang="ts">
-import { eRef } from '@/v2/composables/use-socket-ref';
 import GInput from '../lib/GInput.vue';
 import GButton from '../lib/GButton.vue';
 import IconCheckmarkVue from '../icon/IconCheckmark.vue';
+import { useValidatedRef } from "@/v2/composables/use-validated-ref";
+import { maxLen } from '@/v2/composables/use-validation';
+import { noSpaces } from '@/v2/composables/use-validation';
+import { useEmitWithAck } from '@/v2/composables/use-emitters';
 
-const { data, emitWithAck } = eRef({
-    event: "game:add_player",
-    initialValue: {
-        name: "",
-        assignToSender: true,
-    },
+const [playerName, playerNameErrors] = useValidatedRef({
+    value: "",
+    validators: [maxLen(16), noSpaces]
 });
 
-async function onSubmit() {
-    try {
-        const { success, message } = await emitWithAck();
-        if (!success) {
-            alert(message);
-        } else {
-            data.value.name = "";
-        }
-    } catch (error) {
-        console.error(error);
-    }
+const addPlayer = useEmitWithAck("game:add_player");
+
+function onSubmit() {
+    addPlayer.emit({
+        name: playerName.value,
+        assignToSender: true
+    });
 }
 
 </script>
 
 <template>
     <form @submit.prevent="onSubmit">
-        <GInput v-model="data.name" label="Add a player">
+        <GInput v-model="playerName" label="Add a player" :errors="playerNameErrors">
             <template v-slot:right>
                 <GButton type="submit" class="border-none rounded-none px-2 bg-black text-white">
                     <IconCheckmarkVue />
@@ -37,4 +33,5 @@ async function onSubmit() {
             </template>
         </GInput>
     </form>
+    {{ addPlayer.message }}
 </template>

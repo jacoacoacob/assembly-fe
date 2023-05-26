@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import { watch, ref } from "vue";
-import { eRef } from "@/v2/composables/use-socket-ref";
+import { ref } from "vue";
 import GInput from "../lib/GInput.vue";
 import { useGameStore, type GamePlayer } from "@/v2/stores/game-store";
 import { useSessionStore } from "@/v2/stores/session-store";
 import GButton from "../lib/GButton.vue";
 import IconCheckmark from "../icon/IconCheckmark.vue";
-import { useValidation, maxLen } from "@/v2/composables/use-validated-ref";
-import { emitWithAck } from "@/socket";
+import { useValidation, maxLen, noSpaces } from "@/v2/composables/use-validation";
+import { useWatchedRef } from "@/v2/composables/use-watched-ref";
+import { useEmitWithAck } from "@/v2/composables/use-emitters";
 
 const props = defineProps<{
     player: GamePlayer;
@@ -18,35 +18,19 @@ const game = useGameStore();
 
 const isEditing = ref(false);
 
-const playerName = useValidation({
-    initalValue: "",
-    validators: [
-        maxLen("player name", 32),
-    ],
+const playerName = useWatchedRef("", () => props.player.display_name);
+const playerNameErrors = useValidation({
+    ref: playerName,
+    validators: [maxLen(16), noSpaces],
 });
 
-watch(
-    () => props.player.display_name,
-    (currentDisplayName) => {
-        playerName.data = currentDisplayName;
-    },
-    { immediate: true }
-);
+const { emit } = useEmitWithAck("game:update_player_name");
 
-async function onSubmit() {
-    try {
-        const { success, message } = await emitWithAck("game:update_player_name", {
-            playerId: props.player.id,
-            name: playerName.data,
-        })
-        if (!success) {
-            alert(message);
-        } else {
-            isEditing.value = false;
-        }
-    } catch (error) {
-        console.error(error);
-    }
+function onSubmit() {
+    emit({
+        playerId: props.player.id,
+        name: playerName.value
+    });
 }
 
 </script>
@@ -55,15 +39,15 @@ async function onSubmit() {
     <li class="flex space-x-2 justify-between">
         <template v-if="isEditing">
             <form @submit.prevent="onSubmit">
-                <GInput v-model="playerName.data">
+                <GInput v-model="playerName">
                     <template v-slot:right>
                         <GButton type="submit" class="border-none rounded-none px-2 bg-black text-white">
                             <IconCheckmark />
                         </GButton>
                     </template>
                     <template v-slot:below>
-                        <div v-if="!playerName.isValid" class="text-sm pl-2 text-red-500">
-                            {{ playerName.errors[0] }}
+                        <div v-if="playerNameErrors.length" class="text-sm text-red-500">
+                            {{ playerNameErrors[0] }}
                         </div>
                     </template>
                 </GInput>
@@ -76,7 +60,7 @@ async function onSubmit() {
             <span class="font-semibold">
                 {{ player.display_name }}
             </span>
-            <div v-if="session.isOwner" class="flex space-x-2">
+            <div v-if="session.isOwner || session.clientSession?.clientId === player.client_id" class="flex space-x-2">
                 <GButton @click="isEditing = true">
                     edit
                 </GButton>

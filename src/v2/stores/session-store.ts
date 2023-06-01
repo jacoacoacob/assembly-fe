@@ -38,11 +38,17 @@ const useSessionStore = defineStore("session", () => {
 
     /** Session data belonging to the user's browser */
     const clientSession = computed(
-        () => allSessions.value.find((session) => session.clientId === clientId.value)
+        () => allSessions.value.find(
+            (session) => session.clientId === clientId.value
+        )
     );
 
     const isGuest = computed(() => clientSession.value?.role === "guest");
     const isOwner = computed(() => clientSession.value?.role === "owner");
+
+    const claimedPlayerIds = computed(
+        (): string[] => allSessions.value.flatMap((session) => session.playerIds)
+    );
 
     const route = useRoute();
     
@@ -50,7 +56,7 @@ const useSessionStore = defineStore("session", () => {
         localStorage[`glid_${route.params.gameLinkId}`] = current;
     });
 
-    return { clientSession, allSessions, isGuest, isOwner };
+    return { clientSession, allSessions, isGuest, isOwner, claimedPlayerIds };
 });
 
 export { useSessionStore };

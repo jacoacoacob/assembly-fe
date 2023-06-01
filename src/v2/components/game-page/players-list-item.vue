@@ -8,6 +8,8 @@ import IconCheckmark from "../icon/IconCheckmark.vue";
 import { useValidation, maxLen, noSpaces } from "@/v2/composables/use-validation";
 import { useWatchedRef } from "@/v2/composables/use-watched-ref";
 import { useEmitWithAck } from "@/v2/composables/use-emitters";
+import ClaimPlayerButton from "@/v2/components/game-page/claim-player-button.vue"
+import { computed } from "vue";
 
 const props = defineProps<{
     player: GamePlayer;
@@ -33,6 +35,13 @@ function onSubmit() {
     });
 }
 
+const canEditOrDelete = computed(
+    () => (
+        session.isOwner ||
+        session.clientSession?.clientId === props.player.created_by
+    )
+);
+
 </script>
 
 <template>
@@ -57,14 +66,19 @@ function onSubmit() {
             </GButton>
         </template>
         <template v-else>
-            <span class="font-semibold">
-                {{ player.display_name }}
-            </span>
-            <div v-if="session.isOwner || session.clientSession?.clientId === player.client_id" class="flex space-x-2">
-                <GButton @click="isEditing = true">
+            <div class="font-semibold flex space-x-2">
+                <IconCheckmark v-if="session.clientSession?.playerIds.includes(player.id)" class="w-4" />
+                <div v-else class="w-4"></div>
+                <span>
+                    {{ player.display_name }}
+                </span>
+            </div>
+            <div class="flex space-x-2">
+                <ClaimPlayerButton :playerId="player.id" />
+                <GButton v-if="canEditOrDelete" @click="isEditing = true">
                     edit
                 </GButton>
-                <GButton @click="() => game.removePlayer(player.id)">
+                <GButton v-if="canEditOrDelete" @click="() => game.removePlayer(player.id)">
                     delete
                 </GButton>
             </div>

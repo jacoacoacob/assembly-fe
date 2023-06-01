@@ -9,7 +9,6 @@ interface UseValidationOptions<T> {
     validators: Validator<T>[];
 }
 
-// function useValidation<T>(name: string, value: Ref<T>, ...validators: Validator<T>[]) {
 function useValidation<T>({ fieldName, ref: ref_, validators }: UseValidationOptions<T>) {
     const errors = ref<string[]>([]);
 

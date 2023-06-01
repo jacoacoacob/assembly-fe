@@ -43,10 +43,8 @@ const isFocused = ref(false);
             >
             <slot name="right"></slot>
         </div>
-        <!-- <slot name="below"></slot> -->
         <div v-if="errors?.length" class="text-xs text-red-500">
             {{ errors[0] }}
         </div>
-
     </div>
 </template>

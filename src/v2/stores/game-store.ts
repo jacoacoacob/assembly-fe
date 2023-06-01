@@ -6,7 +6,8 @@ import { emitWithAck, socket } from "@/socket";
 interface GamePlayer {
     id: string;
     game_id: string;
-    client_id: string;
+    /** the clientId of the client that created this player */
+    created_by: string;
     display_name: string;
     created: string;
     updated: string;

@@ -2,11 +2,10 @@
 import { onUnmounted } from "vue";
 
 import { socket, connectSocket } from "@/socket";
-import { useSessionStore } from "../stores/session-store";
 import { useGameStore } from "../stores/game-store";
 import GameSetup from "../components/game-page/game-setup.vue";
+import ConnectedClients from "../components/connected-clients.vue";
 
-const session = useSessionStore();
 const game = useGameStore();
 
 connectSocket();
@@ -18,22 +17,14 @@ onUnmounted(() => {
 
 <template>
     <div class="min-h-screen w-full px-4 flex flex-col">
-        <div class="p-1">
-            <ul class="flex space-x-2">
-                <li
-                    v-for="x in session.allSessions"
-                    :key="x.clientId"
-                    class="p-1 bg-slate-200 rounded"
-                >
-                    {{ x.clientDisplayName || "anonymous" }}
-                </li>
-            </ul>
+        <div class="flex justify-between">
+            <div class="flex-1 bg-blue-100">
+
+            </div>
+            <ConnectedClients class="flex-0" />
         </div>
         <div class="flex-1">
             <GameSetup v-if="game.meta.phase === 'setup'" />
         </div>
-        <!-- <div class="flex-1 whitespace-pre">
-            {{ game }}
-        </div> -->
     </div>
 </template>

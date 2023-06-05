@@ -48,18 +48,7 @@ const useGameStore = defineStore("game", () => {
 
     const links = lRef("game:links", []);
 
-    async function removePlayer(playerId: string) {
-        try {
-            const { message  } = await emitWithAck("game:remove_player", { playerId });
-            if (typeof message === "string") {
-                console.log("[gameStore.removePlayer]", message);
-            }
-        } catch (error) {
-            console.log((error as Error).message);
-        }
-    }
-
-    return { meta, history, players, removePlayer, links };
+    return { meta, history, players, links };
 });
 
 export { useGameStore };

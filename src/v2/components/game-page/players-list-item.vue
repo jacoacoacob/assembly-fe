@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import GInput from "../lib/GInput.vue";
-import { useGameStore, type GamePlayer } from "@/v2/stores/game-store";
+import type { GamePlayer } from "@/v2/stores/game-store";
 import { useSessionStore } from "@/v2/stores/session-store";
 import GButton from "../lib/GButton.vue";
 import IconCheckmark from "../icon/IconCheckmark.vue";
@@ -16,7 +16,6 @@ const props = defineProps<{
 }>();
 
 const session = useSessionStore();
-const game = useGameStore();
 
 const isEditing = ref(false);
 
@@ -26,14 +25,16 @@ const playerNameErrors = useValidation({
     validators: [maxLen(16), noSpaces],
 });
 
-const { emit } = useEmitWithAck("game:update_player_name");
+const updatePlayerName = useEmitWithAck("game:update_player_name");
 
-function onSubmit() {
-    emit({
+function onUpdatePlayerName() {
+    updatePlayerName.emit({
         playerId: props.player.id,
         name: playerName.value
     });
 }
+
+const deletePlayer = useEmitWithAck("game:remove_player");
 
 const canEditOrDelete = computed(
     () => (
@@ -47,7 +48,7 @@ const canEditOrDelete = computed(
 <template>
     <li class="flex space-x-2 justify-between">
         <template v-if="isEditing">
-            <form @submit.prevent="onSubmit">
+            <form @submit.prevent="onUpdatePlayerName">
                 <GInput v-model="playerName">
                     <template v-slot:right>
                         <GButton type="submit" class="border-none rounded-none px-2 bg-black text-white">
@@ -78,7 +79,7 @@ const canEditOrDelete = computed(
                 <GButton v-if="canEditOrDelete" @click="isEditing = true">
                     edit
                 </GButton>
-                <GButton v-if="canEditOrDelete" @click="() => game.removePlayer(player.id)">
+                <GButton v-if="canEditOrDelete" @click="() => deletePlayer.emit({ playerId: player.id })">
                     delete
                 </GButton>
             </div>

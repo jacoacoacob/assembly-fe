@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory, type RouteParams, type RouterLinkProps } from "vue-router";
 
-import GamePage from "@/v2/views/GamePage.vue";
+import GamePage from "@/v2/views/game-page.vue";
 import HomePage from "@/v2/views/HomePage.vue";
 
 interface Breadcrumb {
@@ -12,7 +12,7 @@ const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
     routes: [
         {
-            path: "/",
+            path: "",
             name: "home-page",
             component: HomePage
         },

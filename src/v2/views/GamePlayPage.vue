@@ -1,0 +1,3 @@
+<template>
+    game play
+</template>

@@ -23,8 +23,10 @@ type ReceiveWithAck<Data> = (data: Data, ack: Ack) => void;
 interface ListenEvents {
     "game:meta": (data: GameMeta) => void;
     "game:players": (data: GamePlayer[]) => void;
-    "game:history": (data: GameHistoryEvent[]) => void;
     "game:links": (data: GameLink[]) => void;
+    "game_history:events": (data: GameHistoryEvent[]) => void;
+    "game_history:events:append": (data: GameHistoryEvent[]) => void;
+    "game_history:updated": (data: string) => void;
     "session:all": (data: ClientSession[]) => void;
     "session:client_id": (clientId: string) => void;
 }

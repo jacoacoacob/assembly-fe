@@ -14,7 +14,7 @@ function lRef<
     T extends ArgsType<ListenEvents[E]>
 >(
     event: E,
-    initialValue: T[number]
+    initialValue: T[number],
 ) {
     const _ref = ref(unref(initialValue)) as Ref<T[number]>;
 
@@ -25,6 +25,28 @@ function lRef<
     socket.on(event, listener as any);
 
     return readonly(_ref);
+}
+
+
+/**
+ * Creates a ref bound to a socket event listener for the provided event type
+ */
+function lmRef<
+    E extends keyof ListenEvents,
+    T extends ArgsType<ListenEvents[E]>
+>(
+    event: E,
+    initialValue: T[number],
+)  {
+    const _ref = ref(unref(initialValue)) as Ref<T[number]>;
+
+    function listener(data?: T) {
+        _ref.value = data as T[number];
+    }
+
+    socket.on(event, listener as any);
+
+    return _ref;
 }
 
 interface ERefOptions<
@@ -80,5 +102,5 @@ function eRef<
 
 type ERef = ReturnType<typeof eRef>;
 
-export { eRef, lRef, ACK_TIMEOUT_DEFAULT };
+export { eRef, lRef, lmRef, ACK_TIMEOUT_DEFAULT };
 export type { ERef, ArgsType };

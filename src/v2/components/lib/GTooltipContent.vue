@@ -16,7 +16,7 @@ const doClose = inject<() => void>("doClose");
         :id="id"
         role="tooltip"
         class="
-            absolute
+            absolute z-10
             whitespace-nowrap
             bg-slate-100
             border shadow rounded

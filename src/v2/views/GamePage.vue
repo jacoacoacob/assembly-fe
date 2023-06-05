@@ -21,9 +21,9 @@ const route = useRoute();
             <div></div>
             <div class="flex space-x-2">
                 <ConnectedClients />
-                <RouterLink :to="`/${route.params.gameLinkId}/play`">
+                <!-- <RouterLink :to="`/${route.params.gameLinkId}/play`">
                     Game
-                </RouterLink>
+                </RouterLink> -->
             </div>
         </div>
         <RouterView></RouterView>

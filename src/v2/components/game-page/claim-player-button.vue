@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 
-import GButton from "../lib/GButton.vue";
+import LButton from "../lib/LButton.vue";
 import type { GamePlayer } from "@/v2/stores/game-store";
 import { useSessionStore } from "@/v2/stores/session-store";
 import { useEmit } from "@/v2/composables/use-emitters";
@@ -37,7 +37,7 @@ function onClick() {
 </script>
 
 <template>
-    <GButton @click="onClick">
+    <LButton @click="onClick">
         <template v-if="isClaimedBySelf">
             unclaim
         </template>
@@ -47,5 +47,5 @@ function onClick() {
         <template v-else>
             claim
         </template>
-    </GButton>
+    </LButton>
 </template>

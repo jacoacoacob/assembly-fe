@@ -18,23 +18,49 @@ function useEmitWithAck<
     const message = ref("");
     const status = ref<"idle" | "pending" | "success" | "fail">("idle");
 
-    const _acknowledgement: Ack<true> = (error_, payload) => {
-        if (error_) {
-            error.value = error_;
-            status.value = "fail";
-        } else {
-            const { success, message: message_ } = payload;
-            status.value = success ? "success" : "fail";
-            message.value = message_ ?? "";
-        }
-    };
+    // const _acknowledgement: Ack<true> = (error_, payload) => {
+    //     if (error_) {
+    //         error.value = error_;
+    //         status.value = "fail";
+    //     } else {
+    //         const { success, message: message_ } = payload;
+    //         status.value = success ? "success" : "fail";
+    //         message.value = message_ ?? "";
+    //     }
+    // };
 
-    function emit(data: T[0]) {
-        reset();
-        status.value = "pending";
-        (socket as Socket)
-            .timeout(ACK_TIMEOUT_DEFAULT)
-            .emit(event, data, _acknowledgement);
+    // function emit(data: T[0]) {
+    //     reset();
+    //     status.value = "pending";
+    //     (socket as Socket)
+    //         .timeout(ACK_TIMEOUT_DEFAULT)
+    //         .emit(event, data, _acknowledgement);
+    // }
+
+    function emit(data: T[0]): Promise<boolean> {
+        return new Promise((resolve, reject) => {
+            const _acknowledgement: Ack<true> = (error_, payload) => {
+                if (error_) {
+                    error.value = error_;
+                    status.value = "fail";
+                    reject(error_);
+                } else {
+                    const { success, message: message_ } = payload;
+                    status.value = success ? "success" : "fail";
+                    message.value = message_ ?? "";
+                    if (success) {
+                        resolve(true);
+                    } else {
+                        reject(new Error(message_));
+                    }
+                }
+            };
+            reset();
+            status.value = "pending";
+            (socket as Socket)
+                .timeout(ACK_TIMEOUT_DEFAULT)
+                .emit(event, data, _acknowledgement);
+        });
     }
 
     function reset() {

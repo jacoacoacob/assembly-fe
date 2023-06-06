@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { useGameStore } from '@/v2/stores/game-store';
-import { useSessionStore } from '@/v2/stores/session-store';
-import PlayersListItem from './players-list-item.vue';
+
+import PlayersListItem from "./GLPlayersListItem.vue";
 
 const game = useGameStore();
+
 </script>
 
 <template>

@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import GInput from "../lib/GInput.vue";
 import { useSessionStore } from "@/v2/stores/session-store";
 import { useGameStore } from "@/v2/stores/game-store";
 

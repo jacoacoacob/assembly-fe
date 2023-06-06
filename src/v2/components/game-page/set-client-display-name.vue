@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { eRef } from "../../composables/use-socket-ref";
 import { useSessionStore } from "../../stores/session-store";
-import GInput from "../lib/GInput.vue";
-import GButton from "../lib/GButton.vue";
+import LInput from "../lib/LInput.vue";
+import LButton from "../lib/LButton.vue";
 import IconCheckmark from "../icon/IconCheckmark.vue";
 
 const session = useSessionStore();
@@ -19,12 +19,12 @@ const { data, emit } = eRef({
 
 <template>
     <form @submit.prevent="emit">
-        <GInput v-model="data" label="Name client">
+        <LInput v-model="data" label="Name client">
             <template v-slot:right>
-                <GButton type="submit" class="border-none rounded-none px-2 bg-black text-white">
+                <LButton type="submit" class="border-none rounded-none px-2 bg-black text-white">
                     <IconCheckmark />
-                </GButton>
+                </LButton>
             </template>
-        </GInput>
+        </LInput>
     </form>
 </template>

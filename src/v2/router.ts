@@ -1,9 +1,10 @@
 import { createRouter, createWebHistory, type RouteParams, type RouterLinkProps } from "vue-router";
 
 import HomePage from "@/v2/views/HomePage.vue";
-import GamePage from "@/v2/views/GamePage.vue";
-import GameWaitingRoomPage from "@/v2/views/GameWaitingRoomPage.vue";
+import GameContainerPage from "@/v2/views/GameContainerPage.vue";
+import GameLobbyPage from "@/v2/views/GameLobbyPage.vue";
 import GamePlayPage from "@/v2/views/GamePlayPage.vue";
+import GameRulesPage from "@/v2/views/GameRulesPage.vue";
 
 interface Breadcrumb {
     name: string | ((params: RouteParams) => string);
@@ -20,19 +21,24 @@ const router = createRouter({
         },
         {
             path: "/:gameLinkId",
-            component: GamePage,
+            component: GameContainerPage,
             children: [
                 {
                     path: "",
-                    name: "waiting-room",
-                    component: GameWaitingRoomPage
+                    name: "game-lobby",
+                    component: GameLobbyPage
                 },
                 {
                     path: "play",
                     name: "game-play",
                     component: GamePlayPage
-                }
-            ]
+                },
+                {
+                    path: "rules",
+                    name: "game-rules",
+                    component: GameRulesPage,
+                },
+            ],
         },
     ],
 });

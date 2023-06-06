@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import GInput from "../lib/GInput.vue";
+import LInput from "./lib/LInput.vue";
 import type { GamePlayer } from "@/v2/stores/game-store";
 import { useSessionStore } from "@/v2/stores/session-store";
-import GButton from "../lib/GButton.vue";
-import IconCheckmark from "../icon/IconCheckmark.vue";
+import LButton from "./lib/LButton.vue";
+import IconCheckmark from "./icon/IconCheckmark.vue";
 import { useValidation, maxLen, noSpaces } from "@/v2/composables/use-validation";
 import { useWatchedRef } from "@/v2/composables/use-watched-ref";
 import { useEmitWithAck } from "@/v2/composables/use-emitters";
@@ -27,11 +27,12 @@ const playerNameErrors = useValidation({
 
 const updatePlayerName = useEmitWithAck("game:update_player_name");
 
-function onUpdatePlayerName() {
-    updatePlayerName.emit({
+async function onUpdatePlayerName() {
+    await updatePlayerName.emit({
         playerId: props.player.id,
         name: playerName.value
     });
+    isEditing.value = false;
 }
 
 const deletePlayer = useEmitWithAck("game:remove_player");
@@ -49,22 +50,22 @@ const canEditOrDelete = computed(
     <li class="flex space-x-2 justify-between">
         <template v-if="isEditing">
             <form @submit.prevent="onUpdatePlayerName">
-                <GInput v-model="playerName">
+                <LInput v-model="playerName">
                     <template v-slot:right>
-                        <GButton type="submit" class="border-none rounded-none px-2 bg-black text-white">
+                        <LButton type="submit" class="border-none rounded-none px-2 bg-black text-white">
                             <IconCheckmark />
-                        </GButton>
+                        </LButton>
                     </template>
                     <template v-slot:below>
                         <div v-if="playerNameErrors.length" class="text-sm text-red-500">
                             {{ playerNameErrors[0] }}
                         </div>
                     </template>
-                </GInput>
+                </LInput>
             </form>
-            <GButton @click="isEditing = false">
+            <LButton @click="isEditing = false">
                 cancel
-            </GButton>
+            </LButton>
         </template>
         <template v-else>
             <div class="font-semibold flex space-x-2">
@@ -76,12 +77,12 @@ const canEditOrDelete = computed(
             </div>
             <div class="flex space-x-2">
                 <ClaimPlayerButton :playerId="player.id" />
-                <GButton v-if="canEditOrDelete" @click="isEditing = true">
+                <LButton v-if="canEditOrDelete" @click="isEditing = true">
                     edit
-                </GButton>
-                <GButton v-if="canEditOrDelete" @click="() => deletePlayer.emit({ playerId: player.id })">
+                </LButton>
+                <LButton v-if="canEditOrDelete" @click="() => deletePlayer.emit({ playerId: player.id })">
                     delete
-                </GButton>
+                </LButton>
             </div>
         </template>
     </li>

@@ -2,7 +2,7 @@
 import { computed, ref } from "vue";
 import { useGameStore } from "@/v2/stores/game-store";
 import { useSessionStore } from "@/v2/stores/session-store";
-import GButton from "../lib/GButton.vue";
+import LButton from "../lib/LButton.vue";
 import IconCheckmark from "../icon/IconCheckmark.vue";
 
 const game = useGameStore();
@@ -46,10 +46,10 @@ async function copyToClipboard(url: string) {
             </div>
             <div class="flex items-center space-x-2">
                 <p class="">{{ link.url }}</p>
-                <GButton @click="() => copyToClipboard(link.url)">
+                <LButton @click="() => copyToClipboard(link.url)">
                     <IconCheckmark v-if="successfulCopy === link.url" class="text-emerald-600" />
                     <span v-else>Copy</span>
-                </GButton>
+                </LButton>
             </div>
         </li>
     </ul>

@@ -35,8 +35,7 @@ interface EmitEvents {
     "session:set_client_display_name": (name: string) => void;
     "session:claim_player": (data: { playerId: string }) => void;
     "session:unclaim_player": (data: { playerId: string }) => void;
-    "game:start": () => void;
-    "game:end": () => void;
+    "game_meta:set_phase": (phase: GameMeta["phase"]) => void;
     "game:set_display_name": (name: string) => void;
     "game:add_player": EmitWithAck<{ name: string; assignToSender: boolean }>
     "game:remove_player": EmitWithAck<{ playerId: string }>;

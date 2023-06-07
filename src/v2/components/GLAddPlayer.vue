@@ -1,11 +1,14 @@
 <script setup lang="ts">
-import LInput from '../lib/LInput.vue';
-import LButton from '../lib/LButton.vue';
-import IconCheckmarkVue from '../icon/IconCheckmark.vue';
+import LInput from './lib/LInput.vue';
+import LButton from './lib/LButton.vue';
+import IconCheckmarkVue from './icon/IconCheckmark.vue';
 import { useValidatedRef } from "@/v2/composables/use-validated-ref";
 import { maxLen } from '@/v2/composables/use-validation';
 import { noSpaces } from '@/v2/composables/use-validation';
 import { useEmitWithAck } from '@/v2/composables/use-emitters';
+import { useGameStore } from '../stores/game-store';
+
+const game = useGameStore();
 
 const [playerName, playerNameErrors] = useValidatedRef({
     value: "",
@@ -32,6 +35,6 @@ function onSubmit() {
                 </LButton>
             </template>
         </LInput>
+        {{ addPlayer.message }}
     </form>
-    {{ addPlayer.message }}
 </template>

@@ -41,14 +41,42 @@ const gamePhase = computed({
 </script>
 
 <template>
+    <div class="border border-slate-300 rounded p-4 bg-slate-100">
+        <template v-if="session.isOwner">
+            <div v-if="gamePhase === 'setup'" class="space-y-2">
+                <button
+                    class="p-2 shadow bg-slate-900 text-white rounded"
+                    @click="gamePhase = 'play'"
+                >
+                    Start game
+                </button>
+                <p>
+                    Once started, no more players may be added.
+                    Players may still be claimed and unclaimed.
+                </p>
+                <p class="font-semibold">
+                    This action cannot be reversed.
+                </p>
+            </div>
+            <template v-else-if="gamePhase === 'play'">
+                The game is in progress.
+            </template>
+            <template v-else>
+                The game has ended.
+            </template>
+        </template>
+        <template v-else>
+            
+        </template>
+    </div>
+</template>
+
+<!-- <template>
     <RadioGroup v-if="session.isOwner" v-model="gamePhase" class="border border-slate-300 rounded p-4 space-y-4">
         <div>
-            <RadioGroupLabel as="h2" class="font-bold">
+            <RadioGroupLabel as="h2" class="font-bold text-lg">
                 Game phase
             </RadioGroupLabel>
-            <RadioGroupDescription class="text-sm">
-                this a thing
-            </RadioGroupDescription>
         </div>
         <div class="space-y-2">
             <RadioGroupOption
@@ -72,6 +100,14 @@ const gamePhase = computed({
         </div>
     </RadioGroup>
     <div v-else>
-        {{ gamePhase }}
+        <div v-if="gamePhase === 'setup'">
+            The game not begun.
+        </div>
+        <div v-else-if="gamePhase === 'play'">
+            The game is in progress.
+        </div>
+        <div v-else>
+            The game has ended.
+        </div>
     </div>
-</template>
+</template> -->

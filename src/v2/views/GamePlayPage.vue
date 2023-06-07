@@ -1,3 +1,12 @@
+<script setup lang="ts">
+import GPCanvas from '../components/GPCanvas.vue';
+import GPLogic from '../components/GPLogic.vue';
+
+
+</script>
+
 <template>
-    game play
+    <GPCanvas>
+        <GPLogic />
+    </GPCanvas>
 </template>

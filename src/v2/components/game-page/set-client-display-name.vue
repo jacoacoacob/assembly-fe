@@ -19,7 +19,7 @@ const { data, emit } = eRef({
 
 <template>
     <form @submit.prevent="emit">
-        <LInput v-model="data" label="Name client">
+        <LInput v-model="data" label="Device name" placeholder="Give your device a name">
             <template v-slot:right>
                 <LButton type="submit" class="border-none rounded-none px-2 bg-black text-white">
                     <IconCheckmark />

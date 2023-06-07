@@ -4,12 +4,19 @@ import LInput from "./lib/LInput.vue";
 import type { GamePlayer } from "@/v2/stores/game-store";
 import { useSessionStore } from "@/v2/stores/session-store";
 import LButton from "./lib/LButton.vue";
+import LIconButton from "./lib/LIconButton.vue";
 import IconCheckmark from "./icon/IconCheckmark.vue";
 import { useValidation, maxLen, noSpaces } from "@/v2/composables/use-validation";
 import { useWatchedRef } from "@/v2/composables/use-watched-ref";
 import { useEmitWithAck } from "@/v2/composables/use-emitters";
 import ClaimPlayerButton from "@/v2/components/game-page/claim-player-button.vue"
 import { computed } from "vue";
+import IconPencilSquare from "./icon/IconPencilSquare.vue";
+import IconTrash from "./icon/IconTrash.vue";
+import LTooltip from "./lib/LTooltip.vue";
+import LTooltipTrigger from "./lib/LTooltipTrigger.vue";
+import LTooltipContent from "./lib/LTooltipContent.vue";
+import IconXCircle from "./icon/IconXCircle.vue";
 
 const props = defineProps<{
     player: GamePlayer;
@@ -49,23 +56,33 @@ const canEditOrDelete = computed(
 <template>
     <li class="flex space-x-2 justify-between">
         <template v-if="isEditing">
-            <form @submit.prevent="onUpdatePlayerName">
+            <form @submit.prevent="onUpdatePlayerName" class="flex-1 flex justify-between space-x-2 ">
                 <LInput v-model="playerName">
-                    <template v-slot:right>
-                        <LButton type="submit" class="border-none rounded-none px-2 bg-black text-white">
-                            <IconCheckmark />
-                        </LButton>
-                    </template>
                     <template v-slot:below>
                         <div v-if="playerNameErrors.length" class="text-sm text-red-500">
                             {{ playerNameErrors[0] }}
                         </div>
                     </template>
                 </LInput>
+                <div class="flex space-x-2">
+                    <LTooltip :id="`save-changes-${player.id}`">
+                        <LTooltipTrigger>
+                            <LIconButton icon="Checkmark" type="submit" />
+                        </LTooltipTrigger>
+                        <LTooltipContent>
+                            Save changes
+                        </LTooltipContent>
+                    </LTooltip>
+                    <LTooltip :id="`discard-changes-${player.id}`">
+                        <LTooltipTrigger :is="LIconButton" icon="XCircle" @click="isEditing = false">
+                            <LIconButton icon="XCircle" @click="isEditing = false" />
+                        </LTooltipTrigger>
+                        <LTooltipContent>
+                            Discard changes
+                        </LTooltipContent>
+                    </LTooltip>
+                </div>
             </form>
-            <LButton @click="isEditing = false">
-                cancel
-            </LButton>
         </template>
         <template v-else>
             <div class="font-semibold flex space-x-2">
@@ -76,13 +93,23 @@ const canEditOrDelete = computed(
                 </span>
             </div>
             <div class="flex space-x-2">
-                <ClaimPlayerButton :playerId="player.id" />
-                <LButton v-if="canEditOrDelete" @click="isEditing = true">
-                    edit
-                </LButton>
-                <LButton v-if="canEditOrDelete" @click="() => deletePlayer.emit({ playerId: player.id })">
-                    delete
-                </LButton>
+                <ClaimPlayerButton :player="player" />
+                <LTooltip v-if="canEditOrDelete" :id="`edit-player-${player.id}`" :delay="1000">
+                    <LTooltipTrigger>
+                        <LIconButton icon="PencilSquare" @click="isEditing = true" />
+                    </LTooltipTrigger>
+                    <LTooltipContent>
+                        Edit name for player "{{ player.display_name }}"
+                    </LTooltipContent>
+                </LTooltip>
+                <LTooltip v-if="canEditOrDelete" :id="`delete-player-${player.id}`" :delay="1000">
+                    <LTooltipTrigger>
+                        <LIconButton icon="Trash" @click="() => deletePlayer.emit({ playerId: player.id })" />
+                    </LTooltipTrigger>
+                    <LTooltipContent>
+                        Delete player &quot;{{ player.display_name }}&quot;
+                    </LTooltipContent>
+                </LTooltip>
             </div>
         </template>
     </li>

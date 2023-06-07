@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import GLSetPhase from "../components/GLSetPhase.vue";
-import AddPlayer from "../components/game-page/add-player.vue";
+import GLPhase from "../components/GLPhase.vue";
+
+import GLAddPlayer from "../components/GLAddPlayer.vue";
 import InviteLinks from "../components/game-page/invite-links.vue";
 import GLPlayersList from "../components/GLPlayersList.vue";
 import SetClientDisplayName from "../components/game-page/set-client-display-name.vue";
@@ -15,8 +16,7 @@ const session = useSessionStore();
 <template>
     <div class="space-y-8 flex flex-col">
         <SetClientDisplayName />
-        <GLSetPhase />
-        <AddPlayer v-if="game.meta.phase === 'setup'" />
+        <GLPhase />
         <GLPlayersList />
         <InviteLinks v-if="session.isOwner" />
     </div>

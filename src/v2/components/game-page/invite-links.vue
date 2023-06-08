@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
+
 import { useGameStore } from "@/v2/stores/game-store";
 import { useSessionStore } from "@/v2/stores/session-store";
-import LButton from "../lib/LButton.vue";
-import IconCheckmark from "../icon/IconCheckmark.vue";
+import LIconButton from "../lib/LIconButton.vue";
 
 const game = useGameStore();
 const session = useSessionStore();
@@ -39,17 +39,17 @@ async function copyToClipboard(url: string) {
 
 <template>
     <ul class="space-y-4">
-        <li v-for="link in gameLinks" class="bg-slate-200 rounded p-4 space-y-2">
+        <li v-for="link in gameLinks" class="bg-slate-100 rounded p-4 space-y-2">
             <div>
                 <h3 class="p-1 bg-slate-300 inline rounded font-bold">{{ link.role }}</h3>
                 <p>{{ link.description }}</p>
             </div>
             <div class="flex items-center space-x-2">
                 <p class="">{{ link.url }}</p>
-                <LButton @click="() => copyToClipboard(link.url)">
-                    <IconCheckmark v-if="successfulCopy === link.url" class="text-emerald-600" />
-                    <span v-else>Copy</span>
-                </LButton>
+                <LIconButton
+                    :icon="successfulCopy === link.url ? 'Checkmark' : 'ClipboardDocument'"
+                    @click="() => copyToClipboard(link.url)"
+                />
             </div>
         </li>
     </ul>

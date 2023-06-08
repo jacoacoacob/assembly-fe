@@ -12,7 +12,20 @@ const game = useGameStore();
     <div class="space-y-4 p-4 rounded max-w-md bg-slate-100 border border-slate-300">
         <h1 class="text-xl font-bold">Players</h1>
         <GLAddPlayer v-if="game.meta.phase === 'setup'" />
-        <ul class="space-y-2">
+        <div class="flex">
+            <div class="font-bold w-20">
+                Claimed
+            </div>
+            <div class="flex-1 flex justify-between">
+                <div class="font-bold">
+                    Name
+                </div>
+                <div class="font-bold">
+                    Actions
+                </div>
+            </div>
+        </div>
+        <ul class="space-y-4">
             <PlayersListItem v-for="player in game.players" :player="player" />
         </ul>
     </div>

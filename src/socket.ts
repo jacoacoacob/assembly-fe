@@ -65,6 +65,7 @@ function connectSocket() {
 
     socket.on("connect_error", (error) => {
         console.log("[socket] connection error", error);
+        alert(JSON.stringify(error) + error)
     });
 
     socket.connect();

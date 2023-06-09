@@ -2,6 +2,7 @@ import { watch } from "vue";
 import { useGameStore } from "../stores/game-store";
 import { useEntitiesStore } from "../stores/entities-store";
 import { setupCanvasListeners } from "./setup-canvas-listeners";
+import { isCollision } from "./collision";
 
 function setupCanvas(ctx: CanvasRenderingContext2D) {
     const { canvas } = ctx;
@@ -16,13 +17,44 @@ function setupCanvas(ctx: CanvasRenderingContext2D) {
     const game = useGameStore();
     const entities = useEntitiesStore();
 
-    watch(() => entities.sprites, (sprites) => {
+    function renderCanvas() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        Object.values(sprites).forEach((sprite) => {
-            const { shape, strokeStyle, fillStyle } = sprite;
+
+        const spriteIds = Array.from(entities.spriteIds);
+
+        const didCollide: Record<string, boolean> = spriteIds.reduce(
+            (accum, spriteId) => ({
+                ...accum,
+                [spriteId]: false,
+            }), {}
+        );
+
+        for (let i = 0; i < spriteIds.length; i++) {
+            const sprite = entities.sprites[entities.spriteIds[i]];
+            
+            if (didCollide[sprite.id]) {
+                continue;
+            }
+
+            for (let k = 0; k < spriteIds.length; k++) {
+                const other = entities.sprites[spriteIds[k]];
+                
+                if (sprite.id === other.id) {
+                    continue;
+                }
+
+                if (isCollision(sprite.shape, other.shape)) {
+                    didCollide[sprite.id] = true;
+                    didCollide[other.id] = true;
+                }
+            }
+        }
+
+        for (let i = 0; i < entities.spriteIds.length; i++) {
+            const { shape, fillStyle, strokeStyle, id } = entities.sprites[entities.spriteIds[i]];
             ctx.beginPath();
             ctx.strokeStyle = strokeStyle;
-            ctx.fillStyle = fillStyle;
+            ctx.fillStyle = didCollide[id] ? "red" : fillStyle;
             if (shape.kind === "circle") {
                 ctx.arc(shape.x, shape.y, shape.r, 0, Math.PI * 2);
             } else {
@@ -31,7 +63,11 @@ function setupCanvas(ctx: CanvasRenderingContext2D) {
             ctx.fill();
             ctx.stroke();
             ctx.closePath();
-        })
+        }
+    }
+
+    watch(() => entities.sprites, () => {
+        renderCanvas();
     }, { immediate: true, deep: true });
 }
 

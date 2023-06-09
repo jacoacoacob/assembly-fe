@@ -1,30 +1,23 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
 
-interface PickupOptions {
-    spriteId: string;
-    mouseCoords?: [number, number];
-}
-
 const useMoveStore = defineStore("move", () => {
 
     const movingSpriteId = ref<string | null>(null);
-    const pickupMouseCoords = ref<[number, number] | null>(null);
 
-    function pickup(spriteId: string, mouseCoords?: [number, number]) {
+    function pickup(spriteId: string) {
         movingSpriteId.value = spriteId;
-        pickupMouseCoords.value = mouseCoords ?? null;
     }
 
     function drop() {
-
+        movingSpriteId.value = null;
     }
 
     function commit() {
 
     }
 
-    return { pickup, drop, commit };
+    return { pickup, drop, commit, movingSpriteId };
 });
 
 export { useMoveStore };

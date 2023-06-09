@@ -6,7 +6,11 @@ import type { GameMeta, GameHistoryEvent, GamePlayer, GameLink } from "./v2/stor
 import { ACK_TIMEOUT_DEFAULT } from "./v2/composables/use-socket-ref";
 import type { ArgsType } from "./v2/composables/use-socket-ref";
 
-const IO_URL = import.meta.env.VITE_IO_URL;
+const IO_PORT = import.meta.env.VITE_IO_PORT;
+const IO_HOST = import.meta.env.VITE_IO_HOST || window.location.hostname;
+
+console.log(IO_HOST)
+
 
 interface AckPayload {
     success: boolean;
@@ -45,7 +49,7 @@ interface EmitEvents {
 
 type GameSocket = Socket<ListenEvents, EmitEvents>;
 
-const socket: GameSocket = io(IO_URL, {
+const socket: GameSocket = io(`ws://${IO_HOST}:${IO_PORT}`, {
     autoConnect: false,
 });
 

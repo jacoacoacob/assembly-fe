@@ -28,7 +28,7 @@ function isCircleCollision(c1: Slim<Circle>, c2: Slim<Circle>) {
     const distanceX = c1.x - c2.x;
     const distanceY = c1.y - c2.y;
     const distance = Math.sqrt(distanceX ** 2 + distanceY ** 2);
-    return distance < c1.r + c2.r;
+    return distance <= c1.r + c2.r;
 }
 
 

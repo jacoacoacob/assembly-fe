@@ -1,14 +1,14 @@
 import { defineStore } from "pinia";
 import { computed, ref } from "vue";
 
-import type { Rect, Circle, Entity } from "../canvas/types";
-
+import type { Rect, Circle, Entity, Shape } from "../canvas/types";
 
 function makeCircle(x: number, y: number, r: number): Entity<Circle> {
     return {
         id: crypto.randomUUID(),
         strokeStyle: "black",
         fillStyle: "#afc",
+        boardTileIndex: -1,
         shape: {
             kind: "circle",
             x,
@@ -23,6 +23,7 @@ function makeRect(x: number, y: number, w: number, h: number): Entity<Rect> {
         id: crypto.randomUUID(),
         strokeStyle: "black",
         fillStyle: "#caf",
+        boardTileIndex: -1,
         shape: {
             kind: "rect",
             x,
@@ -33,7 +34,9 @@ function makeRect(x: number, y: number, w: number, h: number): Entity<Rect> {
     };
 }
 
+
 const useEntitiesStore = defineStore("entities", () => {
+
     const sprites = ref<Record<string, Entity<Circle | Rect>>>([
         ...Array.from(Array(10)).map((_, i) => makeRect(50 * (i + 1), 20, 40, 40)),
         ...Array.from(Array(10)).map((_, i) => makeRect(50 * (i + 1), 70, 40, 40)),

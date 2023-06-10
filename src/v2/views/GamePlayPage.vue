@@ -6,7 +6,7 @@ import GPLogic from '../components/GPLogic.vue';
 </script>
 
 <template>
-    <GPCanvas>
-        <GPLogic />
-    </GPCanvas>
+    <div>
+        <GPCanvas />
+    </div>
 </template>

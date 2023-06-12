@@ -32,7 +32,7 @@ useSessionStore();
         <GCConnectedClients />
     </div>
     <div class="min-h-[calc(100vh-56px)] flex justify-center w-full px-4 xl:px-8 py-4">
-        <div class="flex justify-center">
+        <div class="flex justify-center w-full">
             <RouterView />
         </div>
     </div>

@@ -28,21 +28,31 @@ function makeTileMap(rows: number, cols: number, tileSize: number): TileMap {
 }
 
 const useTileMapsStore = defineStore("tile-maps", () => {
-    const boardTiles = makeTileMap(6, 9, 100);
+    const boardTiles = makeTileMap(6, 9, 60);
     const boardCamera = useCamera({
-        canvasX: 200,
-        canvasY: 200,
+        canvasX: 50,
+        canvasY: 100,
         x: 0,
         y: 0,
         zoom: 2,
-        width: 300,
-        height: 200,
+        width: boardTiles.cols * boardTiles.tileSize,
+        height: boardTiles.rows * boardTiles.tileSize,
         map: boardTiles,
     });
 
     const tokenSupplyTiles = makeTileMap(4, 4, 40);
+    const tokenSupplyCamera = useCamera({
+        canvasX: 700,
+        canvasY: 100,
+        x: 0,
+        y: 0,
+        zoom: 1,
+        width: tokenSupplyTiles.cols * tokenSupplyTiles.tileSize,
+        height: tokenSupplyTiles.rows * tokenSupplyTiles.tileSize,
+        map: tokenSupplyTiles,
+    })
 
-    return { boardCamera };
+    return { boardCamera, tokenSupplyCamera, boardTiles, tokenSupplyTiles };
 });
 
 export { useTileMapsStore };

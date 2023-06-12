@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import GPCanvas from '../components/GPCanvas.vue';
-import GPLogic from '../components/GPLogic.vue';
+import GPBoard from '../components/GPBoard.vue';
 
 
 </script>
 
 <template>
-    <div>
-        <GPCanvas />
-    </div>
+    <GPCanvas>
+        <!-- <GPBoard /> -->
+    </GPCanvas>
 </template>

@@ -4,34 +4,30 @@ import { useEntitiesStore } from "../stores/entities-store";
 import { setupCanvasListeners } from "./setup-canvas-listeners";
 import { isCollision } from "./collision";
 import { useTileMapsStore } from "../stores/tile-maps-store";
+import { useBoardStore } from "../stores/board-store";
 
 function setupCanvas(ctx: CanvasRenderingContext2D) {
     const { canvas } = ctx;
 
-    // setupCanvasListeners(canvas);
-
-    canvas.height = 800;
-    canvas.width = 800;
-
-    canvas.classList.add("border", "shadow-lg")
-
     const entities = useEntitiesStore();
     const tileMaps = useTileMapsStore();
+    const board = useBoardStore();
 
     window.addEventListener("keydown", (ev: KeyboardEvent) => {
         if (ev.key === "ArrowLeft") {
-            tileMaps.boardCamera.move(1, -1, 0);
+            board.tilesCamera.move(1, -1, 0);
         } else if (ev.key === "ArrowDown") {
-            tileMaps.boardCamera.move(1, 0, 1);
+            board.tilesCamera.move(1, 0, 1);
         } else if (ev.key === "ArrowRight") {
-            tileMaps.boardCamera.move(1, 1, 0);
+            board.tilesCamera.move(1, 1, 0);
         } else if (ev.key === "ArrowUp") {
-            tileMaps.boardCamera.move(1, 0, -1);
+            board.tilesCamera.move(1, 0, -1);
         }
-        tileMaps.boardCamera.draw(ctx);
+        board.draw(ctx);
+        // tileMaps.boardCamera.draw(ctx);
     });
     
-    tileMaps.boardCamera.draw(ctx);
+    // tileMaps.boardCamera.draw(ctx);
 
 
 
@@ -84,10 +80,10 @@ function setupCanvas(ctx: CanvasRenderingContext2D) {
         }
     }
 
-    watch(() => entities.sprites, () => {
-        // renderCanvas();
-        // tileMaps.boardCamera.draw(ctx);
-    }, { immediate: true, deep: true });
+    // watch(() => entities.sprites, () => {
+    //     // renderCanvas();
+    //     // tileMaps.boardCamera.draw(ctx);
+    // }, { immediate: true, deep: true });
 }
 
 export { setupCanvas };

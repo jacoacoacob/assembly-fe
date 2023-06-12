@@ -1,6 +1,7 @@
 import { defineStore } from "pinia";
 
 import { useCamera } from "../canvas/use-camera";
+import { computed, ref } from "vue";
 
 
 interface TileMap {
@@ -29,21 +30,25 @@ function useTileMap(rows: number, cols: number, tileSize: number): TileMap {
 }
 
 const useBoardStore = defineStore("board", () => {
+    const hoveredTile = ref(-1);
     const tiles = useTileMap(6, 9, 100);
     const tilesCamera = useCamera({
-        x: 0,
-        y: 0,
+        viewportX: 0,
+        viewportY: 0,
         width: tiles.tileSize * tiles.cols,
         height: tiles.tileSize * tiles.rows,
-        canvasX: 150,
-        canvasY: 120,
+        // width: tiles.tileSize * 6,
+        // height: tiles.tileSize * 4,
+        // canvasX: 150,
+        canvasX: 1,
+        canvasY: 50,
         map: tiles,
         zoom: 1,
     });
 
-    function _drawBoardTiles(ctx: CanvasRenderingContext2D) {
-        const frameTiles = tilesCamera.getFrame();
+    const tileCameraFrame = computed(() => tilesCamera.frame());
 
+    function _drawBoardTiles(ctx: CanvasRenderingContext2D) {
         ctx.clearRect(
             tilesCamera.canvasX.value,
             tilesCamera.canvasY.value,
@@ -51,8 +56,8 @@ const useBoardStore = defineStore("board", () => {
             tiles.tileSize * tiles.rows,
         );
 
-        for (let i = 0; i < frameTiles.length; i++) {
-            const tile = frameTiles[i];
+        for (let i = 0; i < tileCameraFrame.value.length; i++) {
+            const tile = tileCameraFrame.value[i];
 
             ctx.beginPath();
             ctx.rect(
@@ -61,11 +66,11 @@ const useBoardStore = defineStore("board", () => {
                 tile.width,
                 tile.height,
             );
-            const alpha = (1 / ((tiles.cols * tiles.rows)) * (tile.tileIndex + 1));
+            const alpha = (1 / (tiles.cols * tiles.rows)) * (tile.tileIndex + 1);
             // ctx.fillStyle = `rgba(0,200,200,${alpha})`;
             // ctx.fillStyle = `rgba(0,200,100,${alpha})`;
             // ctx.fillStyle = `rgba(250,200,100,${alpha})`;
-            ctx.fillStyle = "#eee"
+            ctx.fillStyle = tile.tileIndex === hoveredTile.value ? "#aaccff" : "#eeeeee";
             ctx.fill();
             ctx.stroke();
             ctx.closePath();
@@ -76,7 +81,7 @@ const useBoardStore = defineStore("board", () => {
         _drawBoardTiles(ctx);
     }
 
-    return { tiles, tilesCamera, draw };
+    return { tiles, tilesCamera, draw, hoveredTile };
 });
 
 export { useBoardStore };

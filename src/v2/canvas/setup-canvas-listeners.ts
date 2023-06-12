@@ -7,9 +7,8 @@ function setupCanvasListeners(canvas: HTMLCanvasElement) {
     const mouse = useMouseStore();
 
     function onMouseUpMouseMove(ev: MouseEvent) {
-        const [x, y] = getMouseCoords(ev);
+        mouse.handleMouseUpMouseMove(getMouseCoords(ev));
     }
-
 
     function onMouseDownMouseMove(ev: MouseEvent) {
         mouse.handleMouseDownMouseMove(getMouseCoords(ev));

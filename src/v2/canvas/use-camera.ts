@@ -7,15 +7,15 @@ const CAMERA_SPEED = 10;
 interface CameraOptions {
     canvasX: number;
     canvasY: number;
-    x: number;
-    y: number;
+    viewportX: number;
+    viewportY: number;
     zoom: number;
     width: number,
     height: number,
     map: TileMap,
 }
 
-interface Tile {
+interface FrameTile {
     tileIndex: number;
     width: number;
     height: number;
@@ -26,23 +26,24 @@ interface Tile {
 }
 
 interface Camera {
-    x: Ref<number>;
-    y: Ref<number>;
+    viewportX: Ref<number>;
+    viewportY: Ref<number>;
     canvasX: Ref<number>;
     canvasY: Ref<number>;
     zoom: Ref<number>;
     width: Ref<number>;
     height: Ref<number>;
     move: (delta: number, dirX: number, dirY: number) => void;
-    getFrame: () => Tile[];
-    draw: (ctx: CanvasRenderingContext2D) => void;
+    frame: () => FrameTile[];
+    /** Returns the tileIndex of tile in tileMap layer */
+    getTileIndex: (x: number, y: number) => number;
 }
 
 function useCamera(options: CameraOptions): Camera {
     const { map } = options;
 
-    const x = ref(options.x);
-    const y = ref(options.y);
+    const viewportX = ref(options.viewportX);
+    const viewportY = ref(options.viewportY);
 
     const canvasX = ref(options.canvasX);
     const canvasY = ref(options.canvasY);
@@ -56,28 +57,40 @@ function useCamera(options: CameraOptions): Camera {
     const maxY = computed(() => map.rows * map.tileSize - height.value);
 
     const camera: Camera = {
-        x,
-        y,
+        viewportX,
+        viewportY,
         canvasX,
         canvasY,
         zoom,
         width,
         height,
         move(delta, dirX, dirY) {
-            const newX = x.value + dirX * CAMERA_SPEED * delta;
-            const newY = y.value + dirY * CAMERA_SPEED * delta;
-            x.value = Math.max(0, Math.min(newX, maxX.value));
-            y.value = Math.max(0, Math.min(newY, maxY.value));
+            const newX = viewportX.value + dirX * CAMERA_SPEED * delta;
+            const newY = viewportY.value + dirY * CAMERA_SPEED * delta;
+            viewportX.value = Math.max(0, Math.min(newX, maxX.value));
+            viewportY.value = Math.max(0, Math.min(newY, maxY.value));
         },
-        getFrame() {
-            let startCol = Math.floor(x.value / map.tileSize);
-            let startRow = Math.floor(y.value / map.tileSize);
+        getTileIndex(x, y) {
+            let translatedX = x + viewportX.value - canvasX.value;
+
+            if (translatedX % map.tileSize === 0) {
+                return -2;
+            }
+
+            const translatedY = y + viewportY.value - canvasY.value;
+            const col = Math.floor(translatedX / map.tileSize);
+            const row = Math.floor(translatedY / map.tileSize);
+            return Math.floor(row * map.cols + col);
+        },
+        frame() {
+            let startCol = Math.floor(viewportX.value / map.tileSize);
+            let startRow = Math.floor(viewportY.value / map.tileSize);
             
             let endCol = Math.floor(startCol + (width.value / map.tileSize));
             let endRow = Math.floor(startRow + (height.value / map.tileSize));
             
-            const offsetX = -x.value + startCol * map.tileSize;
-            const offsetY = -y.value + startRow * map.tileSize;
+            const offsetX = -viewportX.value + startCol * map.tileSize;
+            const offsetY = -viewportY.value + startRow * map.tileSize;
             
             if (offsetX) {
                 endCol += 1;
@@ -87,7 +100,7 @@ function useCamera(options: CameraOptions): Camera {
                 endRow += 1;
             }
 
-            const tiles: Tile[] = [];
+            const tiles: FrameTile[] = [];
 
             for (let row = startRow; row < endRow; row++) {
                 for (let col = startCol; col < endCol; col++) {
@@ -135,73 +148,6 @@ function useCamera(options: CameraOptions): Camera {
             }
 
             return tiles;
-        },
-        draw(ctx) {
-            let startCol = Math.floor(x.value / map.tileSize);
-            let startRow = Math.floor(y.value / map.tileSize);
-            
-            let endCol = Math.ceil(startCol + (width.value / map.tileSize));
-            let endRow = Math.ceil(startRow + (height.value / map.tileSize));
-            
-            const offsetX = -x.value + startCol * map.tileSize;
-            const offsetY = -y.value + startRow * map.tileSize;
-
-            ctx.clearRect(x.value, y.value, width.value, height.value);
-
-            if (offsetX) {
-                endCol += 1;
-            }
-
-            if (offsetY) {
-                endRow += 1;
-            }
-
-            for (let row = startRow; row <= endRow; row++) {
-                for (let col = startCol; col <= endCol; col++) {
-                    let tileWidth = map.tileSize;
-                    let tileHeight = map.tileSize;
-
-                    let cameraX = Math.round(
-                        (col - startCol) * map.tileSize + offsetX
-                    );
-
-                    let cameraY = Math.round(
-                        (row - startRow) * map.tileSize + offsetY
-                    );
-
-                    if (offsetX) {
-                        if (col === startCol) {
-                            cameraX -= offsetX;
-                            tileWidth += offsetX;
-                        } else if (col === endCol) {
-                            cameraX -= offsetX;
-                            tileWidth = offsetX;
-                        }
-                    }
-
-                    if (offsetY) {
-                        if (row === startRow) {
-                            cameraY -= offsetY;
-                            tileHeight += offsetY;
-                        } else if (row === endRow) {
-                            cameraY -= offsetY;
-                            tileHeight = offsetY;
-                        }
-                    }
- 
-                    ctx.beginPath();
-                    ctx.rect(
-                        canvasX.value + cameraX,
-                        canvasY.value + cameraY,
-                        tileWidth,
-                        tileHeight
-                    );
-                    ctx.fillStyle = `rgba(0,200,200,${0.05 * row * col})`;
-                    ctx.fill();
-                    ctx.stroke();
-                    ctx.closePath();
-                }
-            }
         },
     };
 

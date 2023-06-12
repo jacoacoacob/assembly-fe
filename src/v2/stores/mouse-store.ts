@@ -3,17 +3,38 @@ import { ref } from "vue";
 import type { Coords } from "../canvas/utils";
 import { useEntitiesStore } from "./entities-store";
 import { isCollision, type Circle } from "../canvas/collision";
-import type { Entity, Shape } from "../canvas/types";
+import type { Entity, Rect, Shape } from "../canvas/types";
 import { useMoveStore } from "./move-store";
+import { useBoardStore } from "./board-store";
 
 
 const useMouseStore = defineStore("mouse", () => {
 
     const entities = useEntitiesStore();
     const move = useMoveStore();
+    const board = useBoardStore();
 
     const mouseDownCoords = ref<Coords | null>(null);
     const mouseMoveOffset = ref<Coords>([0, 0]);
+
+    function handleMouseUpMouseMove([x, y]: Coords) {
+
+        const mousePoint: Circle = { x, y, r: 0, kind: "circle" }; 
+
+        const camera: Rect = {
+            kind: "rect",
+            x: board.tilesCamera.canvasX,
+            y: board.tilesCamera.canvasY,
+            w: board.tilesCamera.width,
+            h: board.tilesCamera.height,
+        };
+
+        if (isCollision(camera, mousePoint)) {
+            board.hoveredTile = board.tilesCamera.getTileIndex(x, y);
+        } else {
+            board.hoveredTile = -1;
+        }
+    }
 
     function handleMouseDown([x, y]: Coords) {
         const clickPoint: Circle = { x, y, r: 0, kind: "circle" };
@@ -70,6 +91,7 @@ const useMouseStore = defineStore("mouse", () => {
         handleMouseDown,
         handleMouseDownMouseMove,
         handleMouseUp,
+        handleMouseUpMouseMove,
     };
 });
 

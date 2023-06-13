@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 
 import { useCamera } from "../canvas/use-camera";
-import { computed, ref } from "vue";
+import { computed, reactive, ref } from "vue";
 
 
 interface TileMap {
@@ -13,7 +13,7 @@ interface TileMap {
 }
 
 function useTileMap(rows: number, cols: number, tileSize: number): TileMap {
-    return {
+    return reactive({
         rows,
         cols,
         tileSize,
@@ -26,7 +26,7 @@ function useTileMap(rows: number, cols: number, tileSize: number): TileMap {
                 tileIndex % cols
             ];
         }
-    }
+    });
 }
 
 const useBoardStore = defineStore("board", () => {
@@ -37,16 +37,11 @@ const useBoardStore = defineStore("board", () => {
         viewportY: 0,
         width: tiles.tileSize * tiles.cols,
         height: tiles.tileSize * tiles.rows,
-        // width: tiles.tileSize * 6,
-        // height: tiles.tileSize * 4,
-        // canvasX: 150,
         canvasX: 1,
         canvasY: 50,
         map: tiles,
         zoom: 1,
     });
-
-    const tileCameraFrame = computed(() => tilesCamera.frame());
 
     function _drawBoardTiles(ctx: CanvasRenderingContext2D) {
         ctx.clearRect(
@@ -56,8 +51,8 @@ const useBoardStore = defineStore("board", () => {
             tiles.tileSize * tiles.rows,
         );
 
-        for (let i = 0; i < tileCameraFrame.value.length; i++) {
-            const tile = tileCameraFrame.value[i];
+        for (let i = 0; i < tilesCamera.frame.value.length; i++) {
+            const tile = tilesCamera.frame.value[i];
 
             ctx.beginPath();
             ctx.rect(
@@ -66,10 +61,6 @@ const useBoardStore = defineStore("board", () => {
                 tile.width,
                 tile.height,
             );
-            const alpha = (1 / (tiles.cols * tiles.rows)) * (tile.tileIndex + 1);
-            // ctx.fillStyle = `rgba(0,200,200,${alpha})`;
-            // ctx.fillStyle = `rgba(0,200,100,${alpha})`;
-            // ctx.fillStyle = `rgba(250,200,100,${alpha})`;
             ctx.fillStyle = tile.tileIndex === hoveredTile.value ? "#aaccff" : "#eeeeee";
             ctx.fill();
             ctx.stroke();

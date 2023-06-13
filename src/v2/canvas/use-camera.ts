@@ -1,4 +1,4 @@
-import { computed, reactive, ref, type Ref } from "vue";
+import { computed, reactive, ref, type ComputedRef, type Ref } from "vue";
 import type { TileMap } from "../stores/tile-maps-store";
 
 // pixels/second
@@ -33,10 +33,12 @@ interface Camera {
     zoom: Ref<number>;
     width: Ref<number>;
     height: Ref<number>;
+    frame: ComputedRef<FrameTile[]>;
     move: (delta: number, dirX: number, dirY: number) => void;
-    frame: () => FrameTile[];
     /** Returns the tileIndex of tile in tileMap layer */
     getTileIndex: (x: number, y: number) => number;
+    /** Resizes the camera's tileMap tileSize */
+    resizeTile: (size: number) => void;
 }
 
 function useCamera(options: CameraOptions): Camera {
@@ -56,6 +58,74 @@ function useCamera(options: CameraOptions): Camera {
     const maxX = computed(() => Math.ceil(map.cols * map.tileSize - width.value))
     const maxY = computed(() => map.rows * map.tileSize - height.value);
 
+    const frame = computed(() => {
+        let startCol = Math.floor(viewportX.value / map.tileSize);
+        let startRow = Math.floor(viewportY.value / map.tileSize);
+        
+        let endCol = Math.floor(startCol + (width.value / map.tileSize));
+        let endRow = Math.floor(startRow + (height.value / map.tileSize));
+        
+        const offsetX = -viewportX.value + startCol * map.tileSize;
+        const offsetY = -viewportY.value + startRow * map.tileSize;
+        
+        if (offsetX) {
+            endCol += 1;
+        }
+
+        if (offsetY) {
+            endRow += 1;
+        }
+
+        const tiles: FrameTile[] = [];
+
+        for (let row = startRow; row < endRow; row++) {
+            for (let col = startCol; col < endCol; col++) {
+                let tileWidth = map.tileSize;
+                let tileHeight = map.tileSize;
+
+                let cameraX = Math.round(
+                    (col - startCol) * map.tileSize + offsetX
+                );
+
+                let cameraY = Math.round(
+                    (row - startRow) * map.tileSize + offsetY
+                );
+
+                if (offsetX) {
+                    if (col === startCol) {
+                        cameraX -= offsetX;
+                        tileWidth += offsetX;
+                    } else if (col + 1 === endCol) {
+                        cameraX -= offsetX;
+                        tileWidth = offsetX;
+                    }
+                }
+
+                if (offsetY) {
+                    if (row === startRow) {
+                        cameraY -= offsetY;
+                        tileHeight += offsetY;
+                    } else if (row + 1 === endRow) {
+                        cameraY -= offsetY;
+                        tileHeight = offsetY;
+                    }
+                }
+
+                tiles.push({
+                    offsetX,
+                    offsetY,
+                    cameraX,
+                    cameraY,
+                    width: tileWidth,
+                    height: tileHeight,
+                    tileIndex: map.getTileIndex(row, col),
+                });
+            }
+        }
+
+        return tiles;
+    });
+
     const camera: Camera = {
         viewportX,
         viewportY,
@@ -64,6 +134,7 @@ function useCamera(options: CameraOptions): Camera {
         zoom,
         width,
         height,
+        frame,
         move(delta, dirX, dirY) {
             const newX = viewportX.value + dirX * CAMERA_SPEED * delta;
             const newY = viewportY.value + dirY * CAMERA_SPEED * delta;
@@ -71,83 +142,25 @@ function useCamera(options: CameraOptions): Camera {
             viewportY.value = Math.max(0, Math.min(newY, maxY.value));
         },
         getTileIndex(x, y) {
-            let translatedX = x + viewportX.value - canvasX.value;
-
-            if (translatedX % map.tileSize === 0) {
+            const translatedX = x + viewportX.value - canvasX.value;
+            const translatedY = y + viewportY.value - canvasY.value;
+            
+            if (
+                translatedX % map.tileSize === 0 ||
+                translatedY % map.tileSize === 0
+            ) {
                 return -2;
             }
 
-            const translatedY = y + viewportY.value - canvasY.value;
             const col = Math.floor(translatedX / map.tileSize);
             const row = Math.floor(translatedY / map.tileSize);
+
             return Math.floor(row * map.cols + col);
         },
-        frame() {
-            let startCol = Math.floor(viewportX.value / map.tileSize);
-            let startRow = Math.floor(viewportY.value / map.tileSize);
-            
-            let endCol = Math.floor(startCol + (width.value / map.tileSize));
-            let endRow = Math.floor(startRow + (height.value / map.tileSize));
-            
-            const offsetX = -viewportX.value + startCol * map.tileSize;
-            const offsetY = -viewportY.value + startRow * map.tileSize;
-            
-            if (offsetX) {
-                endCol += 1;
-            }
-
-            if (offsetY) {
-                endRow += 1;
-            }
-
-            const tiles: FrameTile[] = [];
-
-            for (let row = startRow; row < endRow; row++) {
-                for (let col = startCol; col < endCol; col++) {
-                    let tileWidth = map.tileSize;
-                    let tileHeight = map.tileSize;
-
-                    let cameraX = Math.round(
-                        (col - startCol) * map.tileSize + offsetX
-                    );
-
-                    let cameraY = Math.round(
-                        (row - startRow) * map.tileSize + offsetY
-                    );
-
-                    if (offsetX) {
-                        if (col === startCol) {
-                            cameraX -= offsetX;
-                            tileWidth += offsetX;
-                        } else if (col + 1 === endCol) {
-                            cameraX -= offsetX;
-                            tileWidth = offsetX;
-                        }
-                    }
-
-                    if (offsetY) {
-                        if (row === startRow) {
-                            cameraY -= offsetY;
-                            tileHeight += offsetY;
-                        } else if (row + 1 === endRow) {
-                            cameraY -= offsetY;
-                            tileHeight = offsetY;
-                        }
-                    }
-
-                    tiles.push({
-                        offsetX,
-                        offsetY,
-                        cameraX,
-                        cameraY,
-                        width: tileWidth,
-                        height: tileHeight,
-                        tileIndex: map.getTileIndex(row, col),
-                    });
-                }
-            }
-
-            return tiles;
+        resizeTile(size) {
+            map.tileSize = size;
+            width.value = map.cols * map.tileSize;
+            height.value = map.rows * map.tileSize;
         },
     };
 

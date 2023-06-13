@@ -6,7 +6,5 @@ import GPBoard from '../components/GPBoard.vue';
 </script>
 
 <template>
-    <GPCanvas>
-        <!-- <GPBoard /> -->
-    </GPCanvas>
+    <GPCanvas />
 </template>

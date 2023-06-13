@@ -34,13 +34,37 @@ onMounted(() => {
         canvas.width = width;
         canvas.height = height;
 
-        if (width < 800) {
-            board.tilesCamera.width = 500;
-        } else if (width < 1000) {
-            board.tilesCamera.width = 700;
-        } else {
-            board.tilesCamera.width = board.tiles.tileSize * board.tiles.cols;
+        if (width < 340) {
+            board.tilesCamera.resizeTile(30);
         }
+        else if (width < 420) {
+            board.tilesCamera.resizeTile(34);
+        }
+        else if (width < 550) {
+            board.tilesCamera.resizeTile(46);
+        }
+        else if (width < 600) {
+            board.tilesCamera.resizeTile(50);
+        }
+        else if (width < 678) {
+            board.tilesCamera.resizeTile(60);
+        }
+        else if (width < 720) {
+            board.tilesCamera.resizeTile(66);
+        }
+        else if (width < 880) {
+            board.tilesCamera.resizeTile(80);
+        }
+        else if (width < 920) {
+            board.tilesCamera.resizeTile(90);
+        }
+        else {
+            board.tilesCamera.resizeTile(100);
+        } 
+
+        board.tilesCamera.canvasY = Math.floor((height - board.tilesCamera.height) / 2);
+        board.tilesCamera.canvasX = Math.floor((width - board.tilesCamera.width) / 2);
+
     }
 
     function onKeydown(ev: KeyboardEvent) {

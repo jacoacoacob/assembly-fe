@@ -1,5 +1,6 @@
 import { computed, reactive, ref, type ComputedRef, type Ref } from "vue";
 import type { TileMap } from "../stores/tile-maps-store";
+import { isCollision, type Circle, type Rect } from "./collision";
 
 // pixels/second
 const CAMERA_SPEED = 10;
@@ -12,10 +13,11 @@ interface CameraOptions {
     zoom: number;
     width: number,
     height: number,
+    tilePadding: number;
     map: TileMap,
 }
 
-interface FrameTile {
+interface CameraFrameTile {
     tileIndex: number;
     width: number;
     height: number;
@@ -33,7 +35,8 @@ interface Camera {
     zoom: Ref<number>;
     width: Ref<number>;
     height: Ref<number>;
-    frame: ComputedRef<FrameTile[]>;
+    tilePadding: Ref<number>;
+    frame: ComputedRef<CameraFrameTile[]>;
     move: (delta: number, dirX: number, dirY: number) => void;
     /** Returns the tileIndex of tile in tileMap layer */
     getTileIndex: (x: number, y: number) => number;
@@ -54,6 +57,8 @@ function useCamera(options: CameraOptions): Camera {
 
     const width = ref(options.width);
     const height = ref(options.height);
+
+    const tilePadding = ref(options.tilePadding);
 
     const maxX = computed(() => Math.ceil(map.cols * map.tileSize - width.value))
     const maxY = computed(() => map.rows * map.tileSize - height.value);
@@ -76,7 +81,7 @@ function useCamera(options: CameraOptions): Camera {
             endRow += 1;
         }
 
-        const tiles: FrameTile[] = [];
+        const tiles: CameraFrameTile[] = [];
 
         for (let row = startRow; row < endRow; row++) {
             for (let col = startCol; col < endCol; col++) {
@@ -134,6 +139,7 @@ function useCamera(options: CameraOptions): Camera {
         zoom,
         width,
         height,
+        tilePadding,
         frame,
         move(delta, dirX, dirY) {
             const newX = viewportX.value + dirX * CAMERA_SPEED * delta;
@@ -142,6 +148,25 @@ function useCamera(options: CameraOptions): Camera {
             viewportY.value = Math.max(0, Math.min(newY, maxY.value));
         },
         getTileIndex(x, y) {
+            const cameraRect: Rect = {
+                x: canvasX.value,
+                y: canvasY.value,
+                w: width.value,
+                h: height.value,
+                kind: "rect",
+            };
+
+            const point: Circle = {
+                x,
+                y,
+                r: 0,
+                kind: "circle",
+            }
+
+            if (!isCollision(cameraRect, point)) {
+                return -1;
+            }
+
             const translatedX = x + viewportX.value - canvasX.value;
             const translatedY = y + viewportY.value - canvasY.value;
             
@@ -168,4 +193,4 @@ function useCamera(options: CameraOptions): Camera {
 }
 
 export { useCamera };
-export type { Camera };
+export type { Camera, CameraFrameTile };

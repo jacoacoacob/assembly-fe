@@ -64,7 +64,6 @@ onMounted(() => {
 
         board.tilesCamera.canvasY = Math.floor((height - board.tilesCamera.height) / 2);
         board.tilesCamera.canvasX = Math.floor((width - board.tilesCamera.width) / 2);
-
     }
 
     function onKeydown(ev: KeyboardEvent) {

@@ -3,9 +3,18 @@ import { computed, ref } from "vue";
 
 import type { Rect, Circle, Entity, Shape } from "../canvas/types";
 
+function randId(len: number) {
+    const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
+    let rv = "";
+    for (let i = 0; i < len; i++) {
+        rv += chars[Math.floor(Math.random() * chars.length)];
+    }
+    return rv;
+}
+
 function makeCircle(x: number, y: number, r: number): Entity<Circle> {
     return {
-        id: crypto.randomUUID(),
+        id: randId(8),
         strokeStyle: "black",
         fillStyle: "#afc",
         boardTileIndex: -1,
@@ -20,7 +29,7 @@ function makeCircle(x: number, y: number, r: number): Entity<Circle> {
 
 function makeRect(x: number, y: number, w: number, h: number): Entity<Rect> {
     return {
-        id: crypto.randomUUID(),
+        id: randId(8),
         strokeStyle: "black",
         fillStyle: "#caf",
         boardTileIndex: -1,

@@ -18,25 +18,13 @@ const useMouseStore = defineStore("mouse", () => {
     const mouseMoveOffset = ref<Coords>([0, 0]);
 
     function handleMouseUpMouseMove([x, y]: Coords) {
-
-        const mousePoint: Circle = { x, y, r: 0, kind: "circle" }; 
-
-        const camera: Rect = {
-            kind: "rect",
-            x: board.tilesCamera.canvasX,
-            y: board.tilesCamera.canvasY,
-            w: board.tilesCamera.width,
-            h: board.tilesCamera.height,
-        };
-
-        if (isCollision(camera, mousePoint)) {
-            board.hoveredTile = board.tilesCamera.getTileIndex(x, y);
-        } else {
-            board.hoveredTile = -1;
-        }
+        board.hoveredTile = board.tilesCamera.getTileIndex(x, y);
     }
 
     function handleMouseDown([x, y]: Coords) {
+
+        board.focusedTile = board.tilesCamera.getTileIndex(x, y);
+
         const clickPoint: Circle = { x, y, r: 0, kind: "circle" };
 
         const clickedSprite = entities.spriteIds.reduce(

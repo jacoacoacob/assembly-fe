@@ -35,31 +35,28 @@ onMounted(() => {
         canvas.height = height;
 
         if (width < 340) {
-            board.tilesCamera.resizeTile(30);
+            board.tilesCamera.resizeTile(28);
         }
-        else if (width < 420) {
-            board.tilesCamera.resizeTile(34);
+        else if (width < 480) {
+            board.tilesCamera.resizeTile(32);
         }
         else if (width < 550) {
-            board.tilesCamera.resizeTile(46);
+            board.tilesCamera.resizeTile(44);
         }
-        else if (width < 600) {
-            board.tilesCamera.resizeTile(50);
+        else if (width < 660) {
+            board.tilesCamera.resizeTile(48);
         }
-        else if (width < 678) {
-            board.tilesCamera.resizeTile(60);
-        }
-        else if (width < 720) {
-            board.tilesCamera.resizeTile(66);
+        else if (width < 768) {
+            board.tilesCamera.resizeTile(64);
         }
         else if (width < 880) {
-            board.tilesCamera.resizeTile(80);
+            board.tilesCamera.resizeTile(78);
         }
-        else if (width < 920) {
-            board.tilesCamera.resizeTile(90);
+        else if (width < 980) {
+            board.tilesCamera.resizeTile(84);
         }
         else {
-            board.tilesCamera.resizeTile(100);
+            board.tilesCamera.resizeTile(88);
         } 
 
         board.tilesCamera.canvasY = Math.floor((height - board.tilesCamera.height) / 2);

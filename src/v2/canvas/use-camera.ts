@@ -36,6 +36,7 @@ interface Camera {
     width: Ref<number>;
     height: Ref<number>;
     tilePadding: Ref<number>;
+    paddedTileSize: ComputedRef<number>;
     frame: ComputedRef<CameraFrameTile[]>;
     move: (delta: number, dirX: number, dirY: number) => void;
     /** Returns the tileIndex of tile in tileMap layer */
@@ -53,25 +54,48 @@ function useCamera(options: CameraOptions): Camera {
     const canvasX = ref(options.canvasX);
     const canvasY = ref(options.canvasY);
 
-    const zoom = ref(options.zoom);
-
-    const width = ref(options.width);
-    const height = ref(options.height);
-
     const tilePadding = ref(options.tilePadding);
 
-    const maxX = computed(() => Math.ceil(map.cols * map.tileSize - width.value))
-    const maxY = computed(() => map.rows * map.tileSize - height.value);
+    const paddedTileSize = computed(() => tilePadding.value + map.tileSize);
+
+    const zoom = ref(options.zoom);
+
+    const _width = ref(0);
+    const _height = ref(0);
+
+    const width = computed({
+        get() {
+            return _width.value;
+        },
+        set(value) {
+            _width.value = value + tilePadding.value * map.cols
+        },
+    });
+
+    const height = computed({
+        get() {
+            return _height.value;
+        },
+        set(value) {
+            _height.value = value + tilePadding.value * map.rows;
+        },
+    });
+
+    width.value = options.width;
+    height.value = options.height;
+
+    const maxX = computed(() =>  map.cols * paddedTileSize.value - width.value);
+    const maxY = computed(() =>  map.rows * paddedTileSize.value - height.value);
 
     const frame = computed(() => {
-        let startCol = Math.floor(viewportX.value / map.tileSize);
-        let startRow = Math.floor(viewportY.value / map.tileSize);
+        let startCol = Math.floor(viewportX.value / paddedTileSize.value);
+        let startRow = Math.floor(viewportY.value / paddedTileSize.value);
         
-        let endCol = Math.floor(startCol + (width.value / map.tileSize));
-        let endRow = Math.floor(startRow + (height.value / map.tileSize));
+        let endCol = Math.floor(startCol + (width.value / paddedTileSize.value));
+        let endRow = Math.floor(startRow + (height.value / paddedTileSize.value));
         
-        const offsetX = -viewportX.value + startCol * map.tileSize;
-        const offsetY = -viewportY.value + startRow * map.tileSize;
+        const offsetX = -viewportX.value + startCol * paddedTileSize.value;
+        const offsetY = -viewportY.value + startRow * paddedTileSize.value;
         
         if (offsetX) {
             endCol += 1;
@@ -89,11 +113,11 @@ function useCamera(options: CameraOptions): Camera {
                 let tileHeight = map.tileSize;
 
                 let cameraX = Math.round(
-                    (col - startCol) * map.tileSize + offsetX
+                    (col - startCol) * paddedTileSize.value + offsetX
                 );
 
                 let cameraY = Math.round(
-                    (row - startRow) * map.tileSize + offsetY
+                    (row - startRow) * paddedTileSize.value + offsetY
                 );
 
                 if (offsetX) {
@@ -119,8 +143,8 @@ function useCamera(options: CameraOptions): Camera {
                 tiles.push({
                     offsetX,
                     offsetY,
-                    cameraX,
-                    cameraY,
+                    cameraX: cameraX + tilePadding.value / 2,
+                    cameraY: cameraY + tilePadding.value / 2,
                     width: tileWidth,
                     height: tileHeight,
                     tileIndex: map.getTileIndex(row, col),
@@ -140,6 +164,7 @@ function useCamera(options: CameraOptions): Camera {
         width,
         height,
         tilePadding,
+        paddedTileSize,
         frame,
         move(delta, dirX, dirY) {
             const newX = viewportX.value + dirX * CAMERA_SPEED * delta;
@@ -167,18 +192,23 @@ function useCamera(options: CameraOptions): Camera {
                 return -1;
             }
 
-            const translatedX = x + viewportX.value - canvasX.value;
-            const translatedY = y + viewportY.value - canvasY.value;
-            
+            const translatedX = x + viewportX.value - canvasX.value + (tilePadding.value / 2);
+            const translatedY = y + viewportY.value - canvasY.value + (tilePadding.value / 2);
+
+            const xRemainder = translatedX % paddedTileSize.value;
+            const yRemainder = translatedY % paddedTileSize.value;
+
             if (
-                translatedX % map.tileSize === 0 ||
-                translatedY % map.tileSize === 0
+                (xRemainder > 0 && xRemainder <= tilePadding.value) ||
+                (yRemainder > 0 && yRemainder <= tilePadding.value) ||
+                translatedX % paddedTileSize.value === 0 ||
+                translatedY % paddedTileSize.value === 0
             ) {
                 return -2;
             }
 
-            const col = Math.floor(translatedX / map.tileSize);
-            const row = Math.floor(translatedY / map.tileSize);
+            const col = Math.floor(translatedX / paddedTileSize.value);
+            const row = Math.floor(translatedY / paddedTileSize.value);
 
             return Math.floor(row * map.cols + col);
         },

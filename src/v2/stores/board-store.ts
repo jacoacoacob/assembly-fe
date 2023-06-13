@@ -32,6 +32,7 @@ function useTileMap(rows: number, cols: number, tileSize: number): TileMap {
 const useBoardStore = defineStore("board", () => {
     const hoveredTile = ref(-1);
     const focusedTile = ref(-1);
+    
     const tiles = useTileMap(6, 9, 100);
     const tilesCamera = useCamera({
         viewportX: 0,
@@ -75,8 +76,8 @@ const useBoardStore = defineStore("board", () => {
         ctx.clearRect(
             tilesCamera.canvasX.value - 4,
             tilesCamera.canvasY.value - 4,
-            tiles.tileSize * tiles.cols + 6,
-            tiles.tileSize * tiles.rows + 6,
+            tilesCamera.paddedTileSize.value * tiles.cols + 6,
+            tilesCamera.paddedTileSize.value * tiles.rows + 6,
         );
 
         const deferred: CameraFrameTile[] = [];

@@ -13,19 +13,19 @@ function setupCanvas(ctx: CanvasRenderingContext2D) {
     const tileMaps = useTileMapsStore();
     const board = useBoardStore();
 
-    window.addEventListener("keydown", (ev: KeyboardEvent) => {
-        if (ev.key === "ArrowLeft") {
-            board.tilesCamera.move(1, -1, 0);
-        } else if (ev.key === "ArrowDown") {
-            board.tilesCamera.move(1, 0, 1);
-        } else if (ev.key === "ArrowRight") {
-            board.tilesCamera.move(1, 1, 0);
-        } else if (ev.key === "ArrowUp") {
-            board.tilesCamera.move(1, 0, -1);
-        }
-        board.draw(ctx);
-        // tileMaps.boardCamera.draw(ctx);
-    });
+    // window.addEventListener("keydown", (ev: KeyboardEvent) => {
+    //     if (ev.key === "ArrowLeft") {
+    //         board.tilesCamera.move(1, -1, 0);
+    //     } else if (ev.key === "ArrowDown") {
+    //         board.tilesCamera.move(1, 0, 1);
+    //     } else if (ev.key === "ArrowRight") {
+    //         board.tilesCamera.move(1, 1, 0);
+    //     } else if (ev.key === "ArrowUp") {
+    //         board.tilesCamera.move(1, 0, -1);
+    //     }
+    //     // board.draw(ctx);
+    //     // tileMaps.boardCamera.draw(ctx);
+    // });
     
     // tileMaps.boardCamera.draw(ctx);
 

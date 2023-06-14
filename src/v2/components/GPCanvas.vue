@@ -3,6 +3,7 @@ import { onMounted, ref } from "vue";
 
 import { setupCanvasListeners } from "../canvas/setup-canvas-listeners";
 import { useBoardStore } from "../stores/board-store";
+import { useAnimationLoop } from "../canvas/use-animation-loop";
 
 const _container = ref<HTMLDivElement>();
 const _canvas = ref<HTMLCanvasElement>();
@@ -14,19 +15,16 @@ onMounted(() => {
     const canvas = _canvas.value as HTMLCanvasElement;
     const ctx = _canvas.value?.getContext("2d") as CanvasRenderingContext2D;
 
+    const { animate } = useAnimationLoop(ctx);
+
     window.addEventListener("keydown", onKeydown);
     window.addEventListener("resize", onResize);
-
-    setupCanvasListeners(canvas);
-
-    function animate() {
-        board.draw(ctx);
-        requestAnimationFrame(animate);
-    }
 
     animate();
 
     onResize();
+
+    setupCanvasListeners(canvas);
 
     function onResize(ev?: UIEvent) {
         const { width, height } = container.getBoundingClientRect();
@@ -34,33 +32,46 @@ onMounted(() => {
         canvas.width = width;
         canvas.height = height;
 
+        let sizeMod: number;
+
         if (width < 340) {
-            board.tilesCamera.resizeTile(28);
+            sizeMod = 60;
         }
         else if (width < 480) {
-            board.tilesCamera.resizeTile(32);
+            sizeMod = 80;
         }
         else if (width < 550) {
-            board.tilesCamera.resizeTile(44);
+            sizeMod = 100;
         }
         else if (width < 660) {
-            board.tilesCamera.resizeTile(48);
+            sizeMod = 120;
         }
         else if (width < 768) {
-            board.tilesCamera.resizeTile(64);
+            sizeMod = 140;
         }
         else if (width < 880) {
-            board.tilesCamera.resizeTile(78);
+            sizeMod = 160;
         }
         else if (width < 980) {
-            board.tilesCamera.resizeTile(84);
+            sizeMod = 180;
         }
         else {
-            board.tilesCamera.resizeTile(88);
-        } 
+            sizeMod = 200;
+        }
 
-        board.tilesCamera.canvasY = Math.floor((height - board.tilesCamera.height) / 2);
-        board.tilesCamera.canvasX = Math.floor((width - board.tilesCamera.width) / 2);
+        board.tilesCamera.resizeTile(
+            Math.floor(
+                (sizeMod / board.tiles.cols) * 4
+            )
+        );
+        
+        board.tilesCamera.canvasY = Math.floor(
+            (height - board.tilesCamera.height) / 2
+        );
+
+        board.tilesCamera.canvasX = Math.floor(
+            (width - board.tilesCamera.width) / 2
+        );
     }
 
     function onKeydown(ev: KeyboardEvent) {

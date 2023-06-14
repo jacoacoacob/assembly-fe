@@ -21,8 +21,8 @@ type Ack<IsSender extends boolean = false> = IsSender extends true
     ? (...args: [Error | null, AckPayload]) => void
     : (...args: [AckPayload]) => void;
 
-type EmitWithAck<Data> = (data: Data, ack: Ack<true>) => void;
-type ReceiveWithAck<Data> = (data: Data, ack: Ack) => void;
+type EmitWithAck<Data = {}> = (data: Data, ack: Ack<true>) => void;
+type ReceiveWithAck<Data = {}> = (data: Data, ack: Ack) => void;
 
 interface ListenEvents {
     "game:meta": (data: GameMeta) => void;
@@ -39,7 +39,8 @@ interface EmitEvents {
     "session:set_client_display_name": (name: string) => void;
     "session:claim_player": (data: { playerId: string }) => void;
     "session:unclaim_player": (data: { playerId: string }) => void;
-    "game_meta:set_phase": (phase: GameMeta["phase"]) => void;
+    // "game_meta:set_phase": (phase: GameMeta["phase"]) => void;
+    "game_meta:start_game": EmitWithAck;
     "game:set_display_name": (name: string) => void;
     "game:add_player": EmitWithAck<{ name: string; assignToSender: boolean }>
     "game:remove_player": EmitWithAck<{ playerId: string }>;

@@ -41,6 +41,7 @@ interface Camera {
     move: (delta: number, dirX: number, dirY: number) => void;
     /** Returns the tileIndex of tile in tileMap layer */
     getTileIndex: (x: number, y: number) => number;
+    getFrameTile: (tileIndex: number) => CameraFrameTile | null;
     /** Resizes the camera's tileMap tileSize */
     resizeTile: (size: number) => void;
 }
@@ -211,6 +212,9 @@ function useCamera(options: CameraOptions): Camera {
             const row = Math.floor(translatedY / paddedTileSize.value);
 
             return Math.floor(row * map.cols + col);
+        },
+        getFrameTile(tileIndex) {
+            return frame.value.find((tile) => tile.tileIndex === tileIndex) ?? null;
         },
         resizeTile(size) {
             map.tileSize = size;

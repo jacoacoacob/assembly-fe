@@ -1,4 +1,4 @@
-import { socket, type EmitEvents, type Ack } from "@/socket";
+import { socket, type EmitEvents, type Ack, type AckPayload } from "@/socket";
 import { ACK_TIMEOUT_DEFAULT, type ArgsType } from "./use-socket-ref";
 import { ref, reactive, readonly,  } from "vue";
 import type { Socket } from "socket.io-client";
@@ -18,26 +18,7 @@ function useEmitWithAck<
     const message = ref("");
     const status = ref<"idle" | "pending" | "success" | "fail">("idle");
 
-    // const _acknowledgement: Ack<true> = (error_, payload) => {
-    //     if (error_) {
-    //         error.value = error_;
-    //         status.value = "fail";
-    //     } else {
-    //         const { success, message: message_ } = payload;
-    //         status.value = success ? "success" : "fail";
-    //         message.value = message_ ?? "";
-    //     }
-    // };
-
-    // function emit(data: T[0]) {
-    //     reset();
-    //     status.value = "pending";
-    //     (socket as Socket)
-    //         .timeout(ACK_TIMEOUT_DEFAULT)
-    //         .emit(event, data, _acknowledgement);
-    // }
-
-    function emit(data: T[0]): Promise<boolean> {
+    function emit(data?: T[0]): Promise<AckPayload> {
         return new Promise((resolve, reject) => {
             const _acknowledgement: Ack<true> = (error_, payload) => {
                 if (error_) {
@@ -49,7 +30,7 @@ function useEmitWithAck<
                     status.value = success ? "success" : "fail";
                     message.value = message_ ?? "";
                     if (success) {
-                        resolve(true);
+                        resolve(payload);
                     } else {
                         reject(new Error(message_));
                     }

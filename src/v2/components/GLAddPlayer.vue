@@ -6,9 +6,6 @@ import { useValidatedRef } from "@/v2/composables/use-validated-ref";
 import { maxLen } from '@/v2/composables/use-validation';
 import { noSpaces } from '@/v2/composables/use-validation';
 import { useEmitWithAck } from '@/v2/composables/use-emitters';
-import { useGameStore } from '../stores/game-store';
-
-const game = useGameStore();
 
 const [playerName, playerNameErrors] = useValidatedRef({
     value: "",
@@ -17,11 +14,14 @@ const [playerName, playerNameErrors] = useValidatedRef({
 
 const addPlayer = useEmitWithAck("game:add_player");
 
-function onSubmit() {
-    addPlayer.emit({
-        name: playerName.value,
-        assignToSender: true
-    });
+async function onSubmit() {
+    try {
+        await addPlayer.emit({
+            name: playerName.value,
+            assignToSender: true
+        });
+        playerName.value = "";
+    } catch (_error) {}
 }
 
 </script>

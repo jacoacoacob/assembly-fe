@@ -25,7 +25,7 @@ const successfulCopy = ref<string | null>(null);
 
 async function copyToClipboard(url: string) {
     try {
-        await navigator.clipboard.writeText(url);
+        await window.navigator.clipboard.writeText(url);
         successfulCopy.value = url;
         setTimeout(() => {
             successfulCopy.value = null;

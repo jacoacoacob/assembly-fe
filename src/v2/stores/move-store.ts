@@ -1,6 +1,8 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
 
+
+
 const useMoveStore = defineStore("move", () => {
 
     const movingSpriteId = ref<string | null>(null);

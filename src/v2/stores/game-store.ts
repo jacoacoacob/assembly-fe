@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 
-import { lRef, lmRef } from "../composables/use-socket-ref";
-import { socket } from "@/socket";
+import { lRef } from "../composables/use-socket-ref";
+import { useGameHistory, type GameHistoryEvents } from "../composables/use-game-history";
 
 interface GamePlayer {
     id: string;
@@ -13,14 +13,20 @@ interface GamePlayer {
     updated: string;
 }
 
-interface GameHistoryEvent {
-    type: string;
-    data: unknown;
+
+interface GameHistoryEvent<Type extends keyof GameHistoryEvents> {
+    type: Type;
+    data: GameHistoryEvents[Type];
+    meta: [
+        string | null, // clientId
+        string | null, // playerId
+        number         // serverTimestamp
+    ];
 }
 
 interface GameHistory {
     game_id: string;
-    events: GameHistoryEvent[];
+    events: GameHistoryEvent<keyof GameHistoryEvents>[];
     updated: string;
 }
 
@@ -48,19 +54,13 @@ const useGameStore = defineStore("game", () => {
         updated: "",
     });
 
-    const history = lmRef("game_history:events", []);
-
-    socket.on("game_history:events:append", (events) => {
-        history.value.push(...events);
-    });
-
-    const historyUpdated = lRef("game_history:updated", "");
+    const history = useGameHistory();
 
     const players = lRef("game:players", []);
 
     const links = lRef("game:links", []);
 
-    return { meta, history, historyUpdated, players, links };
+    return { meta, history, players, links };
 });
 
 export { useGameStore };

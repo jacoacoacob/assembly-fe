@@ -5,6 +5,7 @@ import type { ClientSession } from "./v2/stores/session-store";
 import type { GameMeta, GameHistoryEvent, GamePlayer, GameLink } from "./v2/stores/game-store";
 import { ACK_TIMEOUT_DEFAULT } from "./v2/composables/use-socket-ref";
 import type { ArgsType } from "./v2/composables/use-socket-ref";
+import type { GameHistoryEvents } from "./v2/composables/use-game-history";
 
 const IO_PORT = import.meta.env.VITE_IO_PORT;
 const IO_HOST = import.meta.env.VITE_IO_HOST || window.location.hostname;
@@ -28,8 +29,8 @@ interface ListenEvents {
     "game:meta": (data: GameMeta) => void;
     "game:players": (data: GamePlayer[]) => void;
     "game:links": (data: GameLink[]) => void;
-    "game_history:events": (data: GameHistoryEvent[]) => void;
-    "game_history:events:append": (data: GameHistoryEvent[]) => void;
+    "game_history:events": (data: GameHistoryEvent<keyof GameHistoryEvents>[]) => void;
+    "game_history:events:append": (data: GameHistoryEvent<keyof GameHistoryEvents>[]) => void;
     "game_history:updated": (data: string) => void;
     "session:all": (data: ClientSession[]) => void;
     "session:client_id": (clientId: string) => void;
@@ -39,13 +40,12 @@ interface EmitEvents {
     "session:set_client_display_name": (name: string) => void;
     "session:claim_player": (data: { playerId: string }) => void;
     "session:unclaim_player": (data: { playerId: string }) => void;
-    // "game_meta:set_phase": (phase: GameMeta["phase"]) => void;
     "game_meta:start_game": EmitWithAck;
     "game:set_display_name": (name: string) => void;
     "game:add_player": EmitWithAck<{ name: string; assignToSender: boolean }>
     "game:remove_player": EmitWithAck<{ playerId: string }>;
     "game:update_player_name": EmitWithAck<{ playerId: string, name: string }>;
-    "game:event": (event: GameHistoryEvent) => void;
+    "game:event": (event: GameHistoryEvent<keyof GameHistoryEvents>) => void;
 }
 
 type GameSocket = Socket<ListenEvents, EmitEvents>;

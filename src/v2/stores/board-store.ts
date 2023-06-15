@@ -2,42 +2,47 @@ import { defineStore } from "pinia";
 
 import { useCamera } from "../canvas/use-camera";
 import { reactive, ref } from "vue";
+import type { Ref } from "vue";
 
 interface TileMap {
-    rows: number;
-    cols: number;
-    tileSize: number;
+    rows: Ref<number>;
+    cols: Ref<number>;
+    tileSize: Ref<number>;
     getTileIndex: (row: number, col: number) => number;
     getTileRowCol: (tileIndex: number) => [number, number];
 }
 
 function useSquareTileMap(rows: number, cols: number, tileSize?: number): TileMap {
-    return reactive({
-        rows,
-        cols,
-        tileSize: tileSize ?? 0,
+    const _rows = ref(rows);
+    const _cols = ref(cols);
+    const _tileSize = ref(tileSize ?? 0);
+
+    return {
+        rows: _rows,
+        cols: _cols,
+        tileSize: _tileSize,
         getTileIndex(row, col) {
-            return row * cols + col;
+            return row * _cols.value + col;
         },
         getTileRowCol(tileIndex) {
             return [
                 Math.floor(tileIndex / cols),
-                tileIndex % cols
+                tileIndex % _cols.value
             ];
         }
-    });
+    };
 }
 
 const useBoardStore = defineStore("board", () => {
     const hoveredTile = ref(-1);
     const focusedTile = ref(-1);
     
-    const tiles = useSquareTileMap(6, 9);
+    const tiles = useSquareTileMap(0, 0);
     const tilesCamera = useCamera({
         viewportX: 0,
         viewportY: 0,
-        width: tiles.tileSize * tiles.cols,
-        height: tiles.tileSize * tiles.rows,
+        width: tiles.tileSize.value * tiles.cols.value,
+        height: tiles.tileSize.value * tiles.rows.value,
         tilePadding: 8,
         canvasX: 1,
         canvasY: 50,
@@ -54,3 +59,4 @@ const useBoardStore = defineStore("board", () => {
 });
 
 export { useBoardStore };
+export type { TileMap };

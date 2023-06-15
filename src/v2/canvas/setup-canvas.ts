@@ -1,7 +1,7 @@
 import { watch } from "vue";
 import { useGameStore } from "../stores/game-store";
 import { useEntitiesStore } from "../stores/entities-store";
-import { setupCanvasListeners } from "./setup-canvas-listeners";
+import { setupCanvasListeners } from "./use-canvas-listeners";
 import { isCollision } from "./collision";
 import { useTileMapsStore } from "../stores/tile-maps-store";
 import { useBoardStore } from "../stores/board-store";

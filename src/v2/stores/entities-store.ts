@@ -45,7 +45,6 @@ function makeRect(x: number, y: number, w: number, h: number): Entity<Rect> {
 }
 
 interface PlayerTokenOptions {
-
     tileIndex: number;
 }
 

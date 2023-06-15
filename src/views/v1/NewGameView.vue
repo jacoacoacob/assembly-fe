@@ -141,7 +141,7 @@ function savePlayer() {
                                     <label for="player-color" class="text-sm mx-2 font-sans mb-1">Color</label>
                                     <select
                                         id="player-color"
-                                        :ref="el => playerColorSelect = (el as HTMLSelectElement)"
+                                        :ref="(el: HTMLSelectElement) => playerColorSelect = el"
                                         class="flex-1 p-2 rounded border bg-white"
                                         v-model="player.color"
                                     >

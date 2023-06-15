@@ -1,7 +1,8 @@
+import type { ComputedRef } from "vue";
 import { useBoardStore } from "../stores/board-store";
 import type { CameraFrameTile } from "./use-camera";
 
-function useAnimationLoop(ctx: CanvasRenderingContext2D) {
+function useAnimationLoop(_ctx: ComputedRef<CanvasRenderingContext2D | null | undefined>) {
 
     const board = useBoardStore();
 
@@ -14,6 +15,7 @@ function useAnimationLoop(ctx: CanvasRenderingContext2D) {
     }
 
     function _drawTile(tile: CameraFrameTile) {
+        const ctx = _ctx.value!;
         const isFocused = _isFocused(tile.tileIndex);
         const isHovered = _isHovered(tile.tileIndex);
         ctx.beginPath();
@@ -31,24 +33,10 @@ function useAnimationLoop(ctx: CanvasRenderingContext2D) {
         ctx.stroke();
         ctx.restore();
         ctx.closePath();
-        if (board.tokenTileIndex === tile.tileIndex) {
-            ctx.beginPath();
-            ctx.arc(
-                board.tilesCamera.canvasX + tile.cameraX + (tile.width / 2),
-                board.tilesCamera.canvasY + tile.cameraY + (tile.height / 2),
-                board.tiles.tileSize / 3,
-                0,
-                Math.PI * 2
-            );
-            ctx.fillStyle = "orange";
-            ctx.strokeStyle = "black";
-            ctx.fill();
-            ctx.stroke();
-            ctx.closePath();
-        }
     }
 
     function _drawBoardTiles() {
+        const ctx = _ctx.value!;
         ctx.clearRect(
             board.tilesCamera.canvasX - 6,
             board.tilesCamera.canvasY - 6,
@@ -57,6 +45,8 @@ function useAnimationLoop(ctx: CanvasRenderingContext2D) {
         );
 
         const deferred: CameraFrameTile[] = [];
+
+        // console.log(board.tilesCamera.frame.map((tile) => tile.tileIndex))
 
         for (let i = 0; i < board.tilesCamera.frame.length; i++) {
             const tile = board.tilesCamera.frame[i];
@@ -74,12 +64,18 @@ function useAnimationLoop(ctx: CanvasRenderingContext2D) {
         }
     }
 
-    function animate() {
+    let animationHandle: number;
+
+    function run() {
         _drawBoardTiles();
-        window.requestAnimationFrame(animate);
+        animationHandle = window.requestAnimationFrame(run);
     }
 
-    return { animate };
+    function stop() {
+        window.cancelAnimationFrame(animationHandle);
+    }
+
+    return { run, stop };
 }
 
 export { useAnimationLoop };

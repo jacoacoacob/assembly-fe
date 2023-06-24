@@ -4,6 +4,8 @@ import { computed, onUnmounted, watch, onMounted, ref } from "vue";
 import { useBoardStore } from "../stores/board-store";
 import { useCanvasListeners } from "../canvas/use-canvas-listeners";
 import { useAnimationLoop } from "../canvas/use-animation-loop";
+import { nextTick } from "vue";
+import { usePositioning } from "../composables/use-positioning";
 
 const container = ref<HTMLDivElement>();
 const canvas = ref<HTMLCanvasElement>();
@@ -12,6 +14,7 @@ const ctx = computed(() => canvas.value?.getContext("2d"));
 
 const animation = useAnimationLoop(ctx);
 const canvasListeners = useCanvasListeners(canvas);
+const positioning = usePositioning();
 
 const board = useBoardStore();
 
@@ -40,10 +43,15 @@ onMounted(() => {
 function onResize() {
     if (container.value && canvas.value) {
 
-        const { width, height } = container.value.getBoundingClientRect();
+        let { width, height } = container.value.getBoundingClientRect();
+
+        width = Math.round(width);
+        height = Math.round(height);
         
         canvas.value.width = width;
         canvas.value.height = height;
+        canvas.value.style.width = `${width}px`;
+        canvas.value.style.height = `${height}px`;
         
         let sizeMod: number;
         
@@ -85,17 +93,22 @@ function onResize() {
         board.tilesCamera.canvasX = Math.floor(
             (width - board.tilesCamera.width) / 2
         );
+
+        positioning.organizeTiles();
     }
 }
 
 function onKeydown(ev: KeyboardEvent) {
     if (ev.key === "ArrowLeft") {
         board.tilesCamera.move(1, -1, 0);
-    } else if (ev.key === "ArrowDown") {
+    }
+    else if (ev.key === "ArrowDown") {
         board.tilesCamera.move(1, 0, 1);
-    } else if (ev.key === "ArrowRight") {
+    }
+    else if (ev.key === "ArrowRight") {
         board.tilesCamera.move(1, 1, 0);
-    } else if (ev.key === "ArrowUp") {
+    }
+    else if (ev.key === "ArrowUp") {
         board.tilesCamera.move(1, 0, -1);
     }
 }

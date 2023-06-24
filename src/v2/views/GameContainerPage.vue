@@ -7,6 +7,7 @@ import GCNav from "../components/GCNav.vue";
 import { socket, connectSocket } from "@/socket";
 import { useGameStore } from "../stores/game-store";
 import { useSessionStore } from "../stores/session-store";
+import { useEntitiesStore } from "../stores/entities-store";
 
 connectSocket();
 
@@ -16,6 +17,7 @@ onUnmounted(() => {
 
 useGameStore();
 useSessionStore();
+useEntitiesStore();
 
 </script>
 

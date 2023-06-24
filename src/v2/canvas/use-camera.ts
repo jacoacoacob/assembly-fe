@@ -1,6 +1,7 @@
 import { computed, reactive, ref, type ComputedRef, type Ref } from "vue";
 import type { TileMap } from "../stores/board-store";
 import { isCollision, type Circle, type Rect } from "./collision";
+import type { Entity, Shape } from "./types";
 
 // pixels/second
 const CAMERA_SPEED = 10;
@@ -37,7 +38,7 @@ interface Camera {
     height: Ref<number>;
     tilePadding: Ref<number>;
     paddedTileSize: ComputedRef<number>;
-    frame: ComputedRef<CameraFrameTile[]>;
+    frame: ComputedRef<[CameraFrameTile[], Entity<Shape>[]]>;
     move: (delta: number, dirX: number, dirY: number) => void;
     /** Returns the tileIndex of tile in tileMap layer */
     getTileIndex: (x: number, y: number) => number;
@@ -64,24 +65,6 @@ function useCamera(options: CameraOptions): Camera {
     const _width = ref(0);
     const _height = ref(0);
 
-    // const width = computed({
-    //     get() {
-    //         return _width.value + tilePadding.value * map.cols.value;
-    //     },
-    //     set(value) {
-    //         _width.value = value;
-    //     },
-    // });
-
-    // const height = computed({
-    //     get() {
-    //         return _height.value + tilePadding.value * map.rows.value;
-    //     },
-    //     set(value) {
-    //         _height.value = value;
-    //     },
-    // });
-
     const width = computed({
         get() {
             return _width.value;
@@ -106,7 +89,7 @@ function useCamera(options: CameraOptions): Camera {
     const maxX = computed(() =>  map.cols.value * paddedTileSize.value - width.value);
     const maxY = computed(() =>  map.rows.value * paddedTileSize.value - height.value);
 
-    const frame = computed(() => {
+    const frame = computed((): [CameraFrameTile[], Entity<Shape>[]] => {
         let startCol = Math.floor(viewportX.value / paddedTileSize.value);
         let startRow = Math.floor(viewportY.value / paddedTileSize.value);
         
@@ -124,7 +107,8 @@ function useCamera(options: CameraOptions): Camera {
             endRow += 1;
         }
 
-        const tiles: CameraFrameTile[] = [];
+        const layer1: CameraFrameTile[] = [];
+        const layer2: Entity<Shape>[] = [];
 
         for (let row = startRow; row < endRow; row++) {
             for (let col = startCol; col < endCol; col++) {
@@ -159,7 +143,7 @@ function useCamera(options: CameraOptions): Camera {
                     }
                 }
 
-                tiles.push({
+                layer1.push({
                     offsetX,
                     offsetY,
                     cameraX: cameraX + tilePadding.value / 2,
@@ -168,10 +152,14 @@ function useCamera(options: CameraOptions): Camera {
                     height: tileHeight,
                     tileIndex: map.getTileIndex(row, col),
                 });
+
+                const tileIndex = map.getTileIndex(row, col);
+
+
             }
         }
 
-        return tiles;
+        return [layer1, layer2];
     });
 
     const camera: Camera = {
@@ -232,7 +220,7 @@ function useCamera(options: CameraOptions): Camera {
             return Math.floor(row * map.cols.value + col);
         },
         getFrameTile(tileIndex) {
-            return frame.value.find((tile) => tile.tileIndex === tileIndex) ?? null;
+            return frame.value[0].find((tile) => tile.tileIndex === tileIndex) ?? null;
         },
         resizeTile(size) {
             map.tileSize.value = size;

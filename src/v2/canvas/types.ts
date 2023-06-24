@@ -22,7 +22,7 @@ interface Entity<S extends Shape> {
     id: string;
     strokeStyle: string;
     fillStyle: string;
-    boardTileIndex: number; 
+    tileIndex: number;
     shape: S;
 }
 

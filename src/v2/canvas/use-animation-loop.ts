@@ -1,10 +1,14 @@
 import type { ComputedRef } from "vue";
 import { useBoardStore } from "../stores/board-store";
 import type { CameraFrameTile } from "./use-camera";
+import { useEntitiesStore } from "../stores/entities-store";
+import { useGameStore } from "../stores/game-store";
 
 function useAnimationLoop(_ctx: ComputedRef<CanvasRenderingContext2D | null | undefined>) {
 
+    const game = useGameStore();
     const board = useBoardStore();
+    const entities = useEntitiesStore();
 
     function _isFocused(tileIndex: number) {
         return tileIndex === board.focusedTile;
@@ -36,38 +40,64 @@ function useAnimationLoop(_ctx: ComputedRef<CanvasRenderingContext2D | null | un
     }
 
     function _drawBoardTiles() {
-        const ctx = _ctx.value!;
-        ctx.clearRect(
-            board.tilesCamera.canvasX - 6,
-            board.tilesCamera.canvasY - 6,
-            board.tilesCamera.paddedTileSize * board.tiles.cols + 6,
-            board.tilesCamera.paddedTileSize * board.tiles.rows + 6,
-        );
+        const [tiles] = board.tilesCamera.frame;
+        
+        const deferredTiles: CameraFrameTile[] = [];
 
-        const deferred: CameraFrameTile[] = [];
-
-        // console.log(board.tilesCamera.frame.map((tile) => tile.tileIndex))
-
-        for (let i = 0; i < board.tilesCamera.frame.length; i++) {
-            const tile = board.tilesCamera.frame[i];
+        for (let i = 0; i < tiles.length; i++) {
+            const tile = tiles[i];
 
             if (_isFocused(tile.tileIndex)) {
-                deferred.push(tile);
+                deferredTiles.push(tile);
                 continue;
             }
 
             _drawTile(tile);
         }
 
-        for (let i = 0; i < deferred.length; i++) {
-            _drawTile(deferred[i]);
+        for (let i = 0; i < deferredTiles.length; i++) {
+            _drawTile(deferredTiles[i]);
         }
+    }
+
+    function _drawPlayers() {
+        const ctx = _ctx.value!;
+
+        for (let i = 0; i < entities.spriteIds.length; i++) {
+            const sprite = entities.sprites[entities.spriteIds[i]];
+            ctx.beginPath();
+            ctx.arc(sprite.shape.x, sprite.shape.y, sprite.shape.r, 0, Math.PI * 2);
+            ctx.fillStyle = "#468";
+            ctx.strokeStyle = "black";
+            ctx.fill();
+            ctx.stroke();
+            const player = game.players.find((player) => player.id === sprite.id);
+            if (player) {
+                const displayName = player.display_name.slice(0, 2);
+                const textMeasure = ctx.measureText(displayName);
+                ctx.strokeStyle = "white";
+                ctx.font = "16px Arial";
+                ctx.strokeText(
+                    displayName,
+                    sprite.shape.x - (textMeasure.width / 2),
+                    sprite.shape.y + 4
+                );
+            }
+            ctx.closePath();
+        }
+    }
+
+    function _clearCanvas() {
+        const ctx = _ctx.value!;
+        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
     }
 
     let animationHandle: number;
 
     function run() {
+        _clearCanvas();
         _drawBoardTiles();
+        _drawPlayers();
         animationHandle = window.requestAnimationFrame(run);
     }
 
